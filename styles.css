@@ -41,7 +41,6 @@
     .screen.active {
       display: flex;
     }
-    /* Auth Screen */
     .auth-container {
       padding: 40px 20px;
       text-align: center;
@@ -112,7 +111,6 @@
       cursor: pointer;
       margin-top: 16px;
     }
-    /* Main Screen Header */
     header {
       display: flex;
       justify-content: space-between;
@@ -148,7 +146,6 @@
       justify-content: center;
       padding: 0 6px;
     }
-    /* Bottom Navigation */
     .bottom-nav {
       display: flex;
       justify-content: space-around;
@@ -171,7 +168,6 @@
     .nav-item.active {
       color: #007aff;
     }
-    /* Tab Content */
     .tab-content {
       flex: 1;
       overflow-y: auto;
@@ -184,7 +180,6 @@
     .tab-pane.active {
       display: block;
     }
-    /* Products Grid */
     .products-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -196,13 +191,59 @@
       padding: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
-    .product-card img {
+    /* Стили для фотографий */
+    .product-photo {
+      position: relative;
       width: 100%;
       height: 120px;
-      object-fit: cover;
       border-radius: 12px;
       margin-bottom: 8px;
       background: #f2f2f7;
+      overflow: hidden;
+    }
+    .product-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .photo-nav {
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+    .photo-nav button {
+      background: rgba(0,0,0,0.3);
+      border: none;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .photo-dots {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 3px;
+      background: #ccc;
+      transition: all 0.2s;
+    }
+    .dot.active {
+      background: #007aff;
+      width: 16px;
     }
     .product-card h4 {
       font-size: 16px;
@@ -214,42 +255,12 @@
       font-size: 14px;
       margin-bottom: 12px;
     }
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 8px;
-    }
-    .quantity-control button {
-      background: #f2f2f7;
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 18px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    /* Cart Items */
     .cart-item {
       display: flex;
       background: white;
       border-radius: 16px;
       padding: 12px;
       margin-bottom: 12px;
-    }
-    .cart-item img {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
-      margin-right: 12px;
-    }
-    .cart-item-details {
-      flex: 1;
-    }
-    .cart-item-actions {
-      display: flex;
-      align-items: center;
-      margin-top: 8px;
     }
     .cart-footer {
       background: white;
@@ -269,9 +280,6 @@
       margin-right: 12px;
       color: #007aff;
     }
-    .slot-selector {
-      margin-bottom: 16px;
-    }
     .slot-selector select,
     .address-selector select {
       width: 100%;
@@ -281,7 +289,6 @@
       background: white;
       margin-top: 8px;
     }
-    /* Profile */
     .profile-card {
       display: flex;
       align-items: center;
@@ -293,7 +300,6 @@
     .profile-info {
       margin-left: 16px;
     }
-    /* Admin Panel */
     .admin-tabs {
       display: flex;
       border-bottom: 1px solid #e5e5ea;
@@ -318,7 +324,6 @@
     .admin-pane.active {
       display: block;
     }
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -337,6 +342,8 @@
       border-radius: 24px;
       width: 90%;
       max-width: 350px;
+      max-height: 80vh;
+      overflow-y: auto;
     }
     .modal-content input,
     .modal-content select {
@@ -346,7 +353,6 @@
       border-radius: 12px;
       margin-bottom: 16px;
     }
-    /* дополнительные */
     .admin-product-item {
       display: flex;
       justify-content: space-between;
@@ -374,6 +380,21 @@
       display: flex;
       gap: 10px;
       margin: 15px 0;
+    }
+    .file-input-wrapper {
+      margin-bottom: 16px;
+    }
+    .photo-preview {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+    .photo-preview img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -491,6 +512,8 @@
       <button class="btn secondary" onclick="closeModal('adminLoginModal')">Отмена</button>
     </div>
   </div>
+
+  <!-- Модалка ДОБАВЛЕНИЯ товара с фото -->
   <div id="addProductModal" class="modal">
     <div class="modal-content">
       <i class="fas fa-times close-icon" onclick="closeModal('addProductModal')"></i>
@@ -504,9 +527,15 @@
         <option value="Гигиена">Гигиена</option>
         <option value="Прочее">Прочее</option>
       </select>
+      <div class="file-input-wrapper">
+        <label>Фотографии (до 3):</label>
+        <input type="file" id="productPhotosInput" accept="image/*" multiple>
+        <div id="photoPreviewContainer" class="photo-preview"></div>
+      </div>
       <button class="btn primary" onclick="addProduct()">Сохранить</button>
     </div>
   </div>
+
   <div id="addSlotModal" class="modal">
     <div class="modal-content">
       <i class="fas fa-times close-icon" onclick="closeModal('addSlotModal')"></i>
@@ -536,15 +565,15 @@
       saveCart: (c) => localStorage.setItem('fund_cart', JSON.stringify(c))
     };
 
-    // Инициализация
+    // Инициализация демо-товаров (без фото)
     function initData() {
       if (STORAGE.users().length === 0) {
         STORAGE.saveUsers([{ id: '1', firstName: 'Иван', lastName: 'Иванов', email: 'user@test.com', password: '123456', phone: '+79161234567', role: 'user' }]);
       }
       if (STORAGE.products().length === 0) {
         STORAGE.saveProducts([
-          { id: 'p1', article: 'GR001', name: 'Гречка 1кг', price: 80, category: 'Продукты' },
-          { id: 'p2', article: 'RS002', name: 'Рис 1кг', price: 90, category: 'Продукты' }
+          { id: 'p1', article: 'GR001', name: 'Гречка 1кг', price: 80, category: 'Продукты', photos: [] },
+          { id: 'p2', article: 'RS002', name: 'Рис 1кг', price: 90, category: 'Продукты', photos: [] }
         ]);
       }
       if (STORAGE.slots().length === 0) {
@@ -554,10 +583,14 @@
     }
     initData();
 
+    // Глобальные переменные для фото
+    window.tempProductPhotos = [];
+    window.productPhotoIndex = {};
+
     // Глобальные функции
     window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
     window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
-    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+    window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
     window.openAdminLogin = () => document.getElementById('adminLoginModal').style.display = 'flex';
 
     window.login = () => {
@@ -618,20 +651,75 @@
       if (tabId==='orders') renderUserOrders();
     };
 
+    // Рендер товаров с фотографиями и листанием
     function renderProducts() {
       const prods = STORAGE.products();
-      document.getElementById('productsContainer').innerHTML = prods.map(p => `
-        <div class="product-card">
-          <h4>${p.name}</h4><p>${p.price} ₽</p><small>${p.article || ''}</small>
-          <button class="btn primary" style="padding:8px;" onclick="addToCart('${p.id}')">В корзину</button>
-        </div>`).join('');
+      const container = document.getElementById('productsContainer');
+      container.innerHTML = prods.map(p => {
+        const photos = p.photos || [];
+        const hasPhotos = photos.length > 0;
+        const photoHtml = hasPhotos ? `
+          <div class="product-photo" id="photo-${p.id}">
+            <img src="${photos[0]}" id="img-${p.id}" style="width:100%;height:100%;object-fit:cover;">
+            ${photos.length > 1 ? `
+            <div class="photo-nav">
+              <button onclick="prevPhoto('${p.id}')"><i class="fas fa-chevron-left"></i></button>
+              <button onclick="nextPhoto('${p.id}')"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="photo-dots" id="dots-${p.id}">
+              ${photos.map((_,i) => `<span class="dot ${i===0?'active':''}"></span>`).join('')}
+            </div>
+            ` : ''}
+          </div>
+        ` : `<div class="product-photo"><i class="fas fa-image" style="font-size:32px;color:#ccc;"></i></div>`;
+        
+        return `
+        <div class="product-card" data-product-id="${p.id}" data-photos='${JSON.stringify(photos)}'>
+          ${photoHtml}
+          <h4>${p.name}</h4>
+          <p>${p.price} ₽</p>
+          <small>${p.article || ''}</small>
+          <button class="btn primary" style="padding:8px; margin-top:8px;" onclick="addToCart('${p.id}')">В корзину</button>
+        </div>`;
+      }).join('');
+      
+      prods.forEach(p => { if (!window.productPhotoIndex[p.id]) window.productPhotoIndex[p.id] = 0; });
+    }
+
+    window.prevPhoto = (prodId) => {
+      const card = document.querySelector(`.product-card[data-product-id="${prodId}"]`);
+      if (!card) return;
+      const photos = JSON.parse(card.dataset.photos);
+      if (!photos.length) return;
+      let idx = window.productPhotoIndex[prodId] || 0;
+      idx = (idx - 1 + photos.length) % photos.length;
+      window.productPhotoIndex[prodId] = idx;
+      document.getElementById(`img-${prodId}`).src = photos[idx];
+      updateDots(prodId, idx);
+    };
+    window.nextPhoto = (prodId) => {
+      const card = document.querySelector(`.product-card[data-product-id="${prodId}"]`);
+      if (!card) return;
+      const photos = JSON.parse(card.dataset.photos);
+      if (!photos.length) return;
+      let idx = window.productPhotoIndex[prodId] || 0;
+      idx = (idx + 1) % photos.length;
+      window.productPhotoIndex[prodId] = idx;
+      document.getElementById(`img-${prodId}`).src = photos[idx];
+      updateDots(prodId, idx);
+    };
+    function updateDots(prodId, activeIdx) {
+      const dotsContainer = document.getElementById(`dots-${prodId}`);
+      if (!dotsContainer) return;
+      const dots = dotsContainer.querySelectorAll('.dot');
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === activeIdx));
     }
 
     window.addToCart = (prodId) => {
       const product = STORAGE.products().find(p=>p.id===prodId);
       if (!product) return;
       let cart = STORAGE.cart();
-      if (cart.some(i=>i.id===prodId)) { alert('Этот товар уже в корзине (можно только 1 шт.)'); return; }
+      if (cart.some(i=>i.id===prodId)) { alert('Этот товар уже в корзине'); return; }
       cart.push({ ...product, quantity: 1 });
       STORAGE.saveCart(cart);
       updateCartBadge();
@@ -710,30 +798,76 @@
     function renderAdminProducts() {
       const prods = STORAGE.products();
       document.getElementById('adminProductsList').innerHTML = prods.map(p=>`
-        <div class="admin-product-item"><span>${p.name} (арт. ${p.article}) - ${p.price}₽ [${p.category}]</span><i class="fas fa-trash text-danger" onclick="deleteProduct('${p.id}')"></i></div>
+        <div class="admin-product-item">
+          <span>${p.name} (арт. ${p.article}) - ${p.price}₽ [${p.category}] ${p.photos?.length ? `📸${p.photos.length}` : ''}</span>
+          <i class="fas fa-trash text-danger" onclick="deleteProduct('${p.id}')"></i>
+        </div>
       `).join('');
     }
-    window.deleteProduct = (id) => { STORAGE.saveProducts(STORAGE.products().filter(p=>p.id!==id)); renderAdminProducts(); };
-    window.openAddProductModal = () => document.getElementById('addProductModal').style.display='flex';
+    window.deleteProduct = (id) => { 
+      STORAGE.saveProducts(STORAGE.products().filter(p=>p.id!==id)); 
+      renderAdminProducts(); 
+      if (document.getElementById('homeTab').style.display !== 'none') renderProducts();
+    };
+
+    // Открытие модалки ДОБАВЛЕНИЯ (очистка)
+    window.openAddProductModal = () => {
+      document.getElementById('addProductModal').style.display = 'flex';
+      document.getElementById('prodName').value = '';
+      document.getElementById('prodArticle').value = '';
+      document.getElementById('prodPrice').value = '';
+      document.getElementById('prodCategory').value = 'Продукты';
+      document.getElementById('productPhotosInput').value = '';
+      document.getElementById('photoPreviewContainer').innerHTML = '';
+      window.tempProductPhotos = [];
+    };
+
+    // Предпросмотр фото
+    document.getElementById('productPhotosInput').addEventListener('change', function(e) {
+      const files = Array.from(e.target.files).slice(0, 3);
+      const preview = document.getElementById('photoPreviewContainer');
+      preview.innerHTML = '';
+      window.tempProductPhotos = [];
+      
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          window.tempProductPhotos.push(ev.target.result);
+          const img = document.createElement('img');
+          img.src = ev.target.result;
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
     window.addProduct = () => {
       const name = document.getElementById('prodName').value.trim();
       const article = document.getElementById('prodArticle').value.trim();
       const price = parseFloat(document.getElementById('prodPrice').value);
       const category = document.getElementById('prodCategory').value;
       if(!name||!article||!price) return alert('Заполните все поля');
+      
+      const newProduct = {
+        id: 'p_' + Date.now(),
+        article, name, price, category,
+        photos: window.tempProductPhotos || []
+      };
       const prods = STORAGE.products();
-      prods.push({ id: 'p_'+Date.now(), article, name, price, category });
+      prods.push(newProduct);
       STORAGE.saveProducts(prods);
       closeModal('addProductModal');
       renderAdminProducts();
+      if (document.getElementById('homeTab').style.display !== 'none') renderProducts();
     };
 
+    // Слоты
     function renderAdminSlots() {
       const slots = STORAGE.slots();
       document.getElementById('slotsList').innerHTML = slots.map(s=>`<div>${new Date(s.datetime).toLocaleString()} | занято ${s.used}/${s.capacity} <i class="fas fa-trash" onclick="deleteSlot('${s.id}')"></i></div>`).join('');
     }
     window.deleteSlot = (id) => { STORAGE.saveSlots(STORAGE.slots().filter(s=>s.id!==id)); renderAdminSlots(); };
-    window.openAddSlotModal = () => document.getElementById('addSlotModal').style.display='flex';
+    window.openAddSlotModal = () => document.getElementById('addSlotModal').style.display = 'flex';
     window.addSlot = () => {
       const dt = document.getElementById('slotDateTime').value;
       const cap = parseInt(document.getElementById('slotCapacity').value);
