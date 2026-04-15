@@ -5,406 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Три сестры · Благотворительный фонд</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Для экспорта в Excel -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
-    }
-    body {
-      background: #f5f5f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    #app {
-      width: 100%;
-      max-width: 400px;
-      margin: 0 auto;
-      background: white;
-      min-height: 700px;
-      border-radius: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-      position: relative;
-    }
-    .screen {
-      display: none;
-      height: 100%;
-      min-height: 700px;
-      flex-direction: column;
-    }
-    .screen.active {
-      display: flex;
-    }
-    .auth-container {
-      padding: 40px 20px;
-      text-align: center;
-    }
-    .logo h1 {
-      font-size: 24px;
-      font-weight: 600;
-      color: #1c1c1e;
-      margin-top: 20px;
-    }
-    .logo h2 {
-      font-size: 20px;
-      font-weight: 400;
-      color: #007aff;
-      margin-bottom: 40px;
-    }
-    .input-group {
-      display: flex;
-      align-items: center;
-      background: #f2f2f7;
-      border-radius: 12px;
-      padding: 4px 16px;
-      margin-bottom: 16px;
-    }
-    .input-group i {
-      color: #8e8e93;
-      width: 24px;
-    }
-    .input-group input,
-    .input-group select {
-      flex: 1;
-      border: none;
-      background: transparent;
-      padding: 14px 0;
-      font-size: 16px;
-      outline: none;
-    }
-    .phone-group {
-      padding: 4px 8px;
-    }
-    .country-select {
-      width: 100px;
-      margin-right: 8px;
-    }
-    .btn {
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      margin-bottom: 12px;
-      transition: opacity 0.2s;
-    }
-    .btn.primary {
-      background: #007aff;
-      color: white;
-    }
-    .btn.secondary {
-      background: #f2f2f7;
-      color: #007aff;
-    }
-    .link {
-      color: #007aff;
-      text-decoration: none;
-      font-size: 14px;
-      cursor: pointer;
-      margin-top: 16px;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      background: white;
-      border-bottom: 1px solid #e5e5ea;
-    }
-    header h3 {
-      font-size: 20px;
-      font-weight: 600;
-    }
-    .header-icons {
-      display: flex;
-      align-items: center;
-    }
-    .cart-icon {
-      position: relative;
-    }
-    .badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: #ff3b30;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-      min-width: 20px;
-      height: 20px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 6px;
-    }
-    .bottom-nav {
-      display: flex;
-      justify-content: space-around;
-      background: white;
-      padding: 8px 0 20px;
-      border-top: 1px solid #e5e5ea;
-    }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #8e8e93;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .nav-item i {
-      font-size: 22px;
-      margin-bottom: 4px;
-    }
-    .nav-item.active {
-      color: #007aff;
-    }
-    .tab-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      background: #f5f5f7;
-    }
-    .tab-pane {
-      display: none;
-    }
-    .tab-pane.active {
-      display: block;
-    }
-    .products-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .product-card {
-      background: white;
-      border-radius: 16px;
-      padding: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-    /* Стили для фотографий */
-    .product-photo {
-      position: relative;
-      width: 100%;
-      height: 120px;
-      border-radius: 12px;
-      margin-bottom: 8px;
-      background: #f2f2f7;
-      overflow: hidden;
-    }
-    .product-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .photo-nav {
-      position: absolute;
-      bottom: 4px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 4px;
-    }
-    .photo-nav button {
-      background: rgba(0,0,0,0.3);
-      border: none;
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .photo-dots {
-      display: flex;
-      gap: 4px;
-      justify-content: center;
-      margin-top: 4px;
-    }
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 3px;
-      background: #ccc;
-      transition: all 0.2s;
-    }
-    .dot.active {
-      background: #007aff;
-      width: 16px;
-    }
-    .product-card h4 {
-      font-size: 16px;
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-    .product-card p {
-      color: #8e8e93;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-    .cart-item {
-      display: flex;
-      background: white;
-      border-radius: 16px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-    .cart-footer {
-      background: white;
-      border-radius: 20px;
-      padding: 16px;
-      margin-top: 20px;
-    }
-    .address-box {
-      display: flex;
-      align-items: center;
-      background: #f2f2f7;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-    .address-box i {
-      margin-right: 12px;
-      color: #007aff;
-    }
-    .slot-selector select,
-    .address-selector select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #e5e5ea;
-      background: white;
-      margin-top: 8px;
-    }
-    .profile-card {
-      display: flex;
-      align-items: center;
-      background: white;
-      padding: 20px;
-      border-radius: 20px;
-      margin-bottom: 20px;
-    }
-    .profile-info {
-      margin-left: 16px;
-    }
-    .admin-tabs {
-      display: flex;
-      border-bottom: 1px solid #e5e5ea;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 16px;
-      background: none;
-      border: none;
-      font-size: 16px;
-      color: #8e8e93;
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      color: #007aff;
-      border-bottom: 2px solid #007aff;
-    }
-    .admin-pane {
-      display: none;
-      padding: 20px;
-    }
-    .admin-pane.active {
-      display: block;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: white;
-      padding: 24px;
-      border-radius: 24px;
-      width: 90%;
-      max-width: 350px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .modal-content input,
-    .modal-content select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #e5e5ea;
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-    .admin-product-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      background: #f8f9fc;
-      border-radius: 12px;
-      margin-bottom: 8px;
-    }
-    .order-card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }
-    .close-icon {
-      float: right;
-      font-size: 24px;
-      cursor: pointer;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; }
+    body { background: #f5f5f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    #app { width: 100%; max-width: 400px; margin: 0 auto; background: white; min-height: 700px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; position: relative; }
+    .screen { display: none; height: 100%; min-height: 700px; flex-direction: column; }
+    .screen.active { display: flex; }
+    .auth-container { padding: 40px 20px; text-align: center; }
+    .logo h1 { font-size: 24px; font-weight: 600; color: #1c1c1e; margin-top: 20px; }
+    .logo h2 { font-size: 20px; font-weight: 400; color: #007aff; margin-bottom: 40px; }
+    .input-group { display: flex; align-items: center; background: #f2f2f7; border-radius: 12px; padding: 4px 16px; margin-bottom: 16px; }
+    .input-group i { color: #8e8e93; width: 24px; }
+    .input-group input, .input-group select { flex: 1; border: none; background: transparent; padding: 14px 0; font-size: 16px; outline: none; }
+    .phone-group { padding: 4px 8px; }
+    .country-select { width: 100px; margin-right: 8px; }
+    .btn { border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 12px; transition: opacity 0.2s; }
+    .btn.primary { background: #007aff; color: white; }
+    .btn.secondary { background: #f2f2f7; color: #007aff; }
+    .link { color: #007aff; text-decoration: none; font-size: 14px; cursor: pointer; margin-top: 16px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: white; border-bottom: 1px solid #e5e5ea; }
+    header h3 { font-size: 20px; font-weight: 600; }
+    .header-icons { display: flex; align-items: center; }
+    .cart-icon { position: relative; }
+    .badge { position: absolute; top: -8px; right: -8px; background: #ff3b30; color: white; font-size: 12px; font-weight: bold; min-width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+    .bottom-nav { display: flex; justify-content: space-around; background: white; padding: 8px 0 20px; border-top: 1px solid #e5e5ea; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 12px; cursor: pointer; }
+    .nav-item i { font-size: 22px; margin-bottom: 4px; }
+    .nav-item.active { color: #007aff; }
+    .tab-content { flex: 1; overflow-y: auto; padding: 16px; background: #f5f5f7; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .product-card { background: white; border-radius: 16px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .product-photo { position: relative; width: 100%; height: 120px; border-radius: 12px; margin-bottom: 8px; background: #f2f2f7; overflow: hidden; cursor: pointer; }
+    .product-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-nav { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 4px; }
+    .photo-nav button { background: rgba(0,0,0,0.3); border: none; color: white; width: 24px; height: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
+    .photo-dots { display: flex; gap: 4px; justify-content: center; margin-top: 4px; }
+    .dot { width: 6px; height: 6px; border-radius: 3px; background: #ccc; transition: all 0.2s; }
+    .dot.active { background: #007aff; width: 16px; }
+    .product-card h4 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+    .cart-item { display: flex; justify-content: space-between; background: white; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+    .cart-footer { background: white; border-radius: 20px; padding: 16px; margin-top: 20px; }
+    .address-box { display: flex; align-items: center; background: #f2f2f7; padding: 12px; border-radius: 12px; margin-bottom: 16px; }
+    .address-box i { margin-right: 12px; color: #007aff; }
+    .slot-selector select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e5e5ea; background: white; margin-top: 8px; }
+    .profile-card { display: flex; align-items: center; background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+    .profile-info { margin-left: 16px; }
+    .admin-tabs { display: flex; border-bottom: 1px solid #e5e5ea; flex-wrap: wrap; }
+    .tab-btn { flex: 1; padding: 12px 8px; background: none; border: none; font-size: 14px; color: #8e8e93; cursor: pointer; }
+    .tab-btn.active { color: #007aff; border-bottom: 2px solid #007aff; }
+    .admin-pane { display: none; padding: 20px; }
+    .admin-pane.active { display: block; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: white; padding: 24px; border-radius: 24px; width: 90%; max-width: 350px; max-height: 80vh; overflow-y: auto; }
+    .modal-content input, .modal-content select { width: 100%; padding: 14px; border: 1px solid #e5e5ea; border-radius: 12px; margin-bottom: 16px; }
+    .admin-product-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8f9fc; border-radius: 12px; margin-bottom: 8px; }
+    .order-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .close-icon { float: right; font-size: 24px; cursor: pointer; }
     .mt-2 { margin-top: 8px; }
     .text-danger { color: #ff3b30; }
-    .admin-actions {
-      display: flex;
-      gap: 10px;
-      margin: 15px 0;
-    }
-    .file-input-wrapper {
-      margin-bottom: 16px;
-    }
-    .photo-preview {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 8px 0;
-    }
-    .photo-preview img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
+    .admin-actions { display: flex; gap: 10px; margin: 15px 0; }
+    .file-input-wrapper { margin-bottom: 16px; }
+    .photo-preview { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+    .photo-preview img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+    .avatar-upload { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .fullscreen-photo-modal .modal-content { background: black; max-width: 90%; padding: 8px; }
+    .fullscreen-photo-modal img { width: 100%; height: auto; border-radius: 16px; }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- АВТОРИЗАЦИЯ -->
+  <!-- АВТОРИЗАЦИЯ (единый вход) -->
   <div id="authScreen" class="screen active">
     <div class="auth-container">
       <div class="logo">
-        <i class="fas fa-church" style="font-size: 48px; color: #007aff;"></i>
+        <i class="fas fa-church" style="font-size:48px;color:#007aff;"></i>
         <h1>Благотворительный фонд</h1>
         <h2>«Три сестры»</h2>
       </div>
@@ -413,6 +90,7 @@
         <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="loginPassword" placeholder="Пароль" value="123456"></div>
         <button class="btn primary" onclick="login()">Войти</button>
         <p class="link" onclick="showRegister()">Зарегистрировать аккаунт</p>
+        <p class="link" style="margin-top:5px; font-size:12px;">Админ: admin@fond.ru / admin123</p>
       </div>
       <div id="registerForm" style="display:none;">
         <div class="input-group"><i class="fas fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
@@ -436,22 +114,17 @@
       <h3>Три сестры</h3>
       <div class="header-icons">
         <div class="cart-icon" onclick="switchTab('cart')"><i class="fas fa-church"></i><span id="cartBadge" class="badge">0</span></div>
-        <i class="fas fa-user-cog" onclick="openAdminLogin()" style="margin-left:15px;"></i>
       </div>
     </header>
     <div class="tab-content">
       <div id="homeTab" class="tab-pane active"><div class="products-grid" id="productsContainer"></div></div>
       <div id="cartTab" class="tab-pane" style="display:none;">
-        <div class="cart-header"><h4>Моя корзина</h4></div>
+        <div class="cart-header"><h4>Заказать помощь</h4></div>
         <div id="cartItems"></div>
         <div class="cart-footer">
           <div class="address-box">
             <i class="fas fa-map-pin"></i>
-            <select id="pickupAddressSelect" class="address-selector" style="flex:1; margin-left:8px;">
-              <option value="Остафьевская улица, Южное Бутово, д.44 вл.3">Остафьевская ул., д.44 вл.3</option>
-              <option value="Бунинская аллея">Бунинская аллея</option>
-              <option value="ул. Ленина, 10 (склад фонда)">ул. Ленина, 10 (склад)</option>
-            </select>
+            <span>Южное Бутово, Остафьевская улица, д 44, вл 3, Москва</span>
           </div>
           <div class="slot-selector">
             <label>Выберите время получения:</label>
@@ -461,14 +134,28 @@
         </div>
       </div>
       <div id="profileTab" class="tab-pane" style="display:none;">
-        <div class="profile-card"><i class="fas fa-user-circle" style="font-size:64px;color:#007aff;"></i><div class="profile-info"><p><strong id="profileName"></strong></p><p id="profilePhone"></p></div></div>
+        <div class="profile-card">
+          <div style="position:relative;">
+            <img id="profileAvatar" src="" style="width:64px;height:64px;border-radius:32px;object-fit:cover;background:#f2f2f7;" onerror="this.style.display='none'">
+            <i class="fas fa-user-circle" id="defaultAvatar" style="font-size:64px;color:#007aff;"></i>
+          </div>
+          <div class="profile-info">
+            <p><strong id="profileName"></strong></p>
+            <p id="profilePhone"></p>
+          </div>
+        </div>
+        <div class="avatar-upload">
+          <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+          <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
+          <button class="btn secondary" onclick="saveAvatar()">Сохранить</button>
+        </div>
         <button class="btn secondary" onclick="logout()">Выйти</button>
       </div>
       <div id="ordersTab" class="tab-pane" style="display:none;"><div id="ordersList"></div></div>
     </div>
     <nav class="bottom-nav">
       <div class="nav-item active" data-tab="home"><i class="fas fa-home"></i><span>Главная</span></div>
-      <div class="nav-item" data-tab="cart"><i class="fas fa-shopping-bag"></i><span>Корзина</span></div>
+      <div class="nav-item" data-tab="cart"><i class="fas fa-church"></i><span>Заказать помощь</span></div>
       <div class="nav-item" data-tab="profile"><i class="fas fa-user"></i><span>Профиль</span></div>
       <div class="nav-item" data-tab="orders"><i class="fas fa-list"></i><span>Моя помощь</span></div>
     </nav>
@@ -481,6 +168,7 @@
       <button class="tab-btn active" data-admin-tab="products">Товары</button>
       <button class="tab-btn" data-admin-tab="calendar">Календарь</button>
       <button class="tab-btn" data-admin-tab="history">Заказы</button>
+      <button class="tab-btn" data-admin-tab="recipients">Получатели</button>
     </div>
     <div class="admin-content">
       <div id="adminProducts" class="admin-pane active">
@@ -499,28 +187,25 @@
         </div>
         <div id="allOrdersList"></div>
       </div>
+      <div id="adminRecipients" class="admin-pane">
+        <h4>Лимит товаров в заказе</h4>
+        <div class="input-group">
+          <input type="number" id="maxItemsLimit" placeholder="Макс. товаров" value="10" min="1">
+        </div>
+        <button class="btn primary" onclick="saveMaxItemsLimit()">Сохранить</button>
+        <button class="btn secondary" onclick="cancelMaxItemsLimit()">Отмена</button>
+        <p class="mt-2">Текущий лимит: <span id="currentLimitDisplay">10</span></p>
+      </div>
     </div>
   </div>
 
   <!-- МОДАЛКИ -->
-  <div id="adminLoginModal" class="modal">
-    <div class="modal-content">
-      <h3>Вход для администратора</h3>
-      <input type="text" id="adminLoginInput" placeholder="Логин" value="STROGANOVA">
-      <input type="password" id="adminPasswordInput" placeholder="Пароль" value="12345">
-      <button class="btn primary" onclick="adminLogin()">Войти</button>
-      <button class="btn secondary" onclick="closeModal('adminLoginModal')">Отмена</button>
-    </div>
-  </div>
-
-  <!-- Модалка ДОБАВЛЕНИЯ товара с фото -->
   <div id="addProductModal" class="modal">
     <div class="modal-content">
       <i class="fas fa-times close-icon" onclick="closeModal('addProductModal')"></i>
       <h3>Новый товар</h3>
       <input type="text" id="prodName" placeholder="Название">
       <input type="text" id="prodArticle" placeholder="Артикул">
-      <input type="number" id="prodPrice" placeholder="Цена (руб)">
       <select id="prodCategory">
         <option value="Продукты">Продукты</option>
         <option value="Одежда">Одежда</option>
@@ -545,6 +230,14 @@
       <button class="btn primary" onclick="addSlot()">Добавить</button>
     </div>
   </div>
+
+  <!-- Полноэкранное фото -->
+  <div id="fullscreenPhotoModal" class="modal fullscreen-photo-modal" onclick="closeModal('fullscreenPhotoModal')">
+    <div class="modal-content" style="background:black; text-align:center;">
+      <i class="fas fa-times close-icon" style="color:white; position:absolute; right:16px; top:16px;" onclick="closeModal('fullscreenPhotoModal')"></i>
+      <img id="fullscreenImage" src="" style="max-height:80vh;">
+    </div>
+  </div>
 </div>
 
 <script>
@@ -562,18 +255,23 @@
       currentUser: () => JSON.parse(sessionStorage.getItem('currentUser') || 'null'),
       setCurrentUser: (u) => sessionStorage.setItem('currentUser', JSON.stringify(u)),
       cart: () => JSON.parse(localStorage.getItem('fund_cart') || '[]'),
-      saveCart: (c) => localStorage.setItem('fund_cart', JSON.stringify(c))
+      saveCart: (c) => localStorage.setItem('fund_cart', JSON.stringify(c)),
+      maxItemsLimit: () => parseInt(localStorage.getItem('maxItemsLimit') || '10'),
+      saveMaxItemsLimit: (v) => localStorage.setItem('maxItemsLimit', v)
     };
 
-    // Инициализация демо-товаров (без фото)
+    // Инициализация
     function initData() {
       if (STORAGE.users().length === 0) {
-        STORAGE.saveUsers([{ id: '1', firstName: 'Иван', lastName: 'Иванов', email: 'user@test.com', password: '123456', phone: '+79161234567', role: 'user' }]);
+        STORAGE.saveUsers([
+          { id: '1', firstName: 'Иван', lastName: 'Иванов', email: 'user@test.com', password: '123456', phone: '+79161234567', role: 'user', avatar: '' },
+          { id: 'adm', firstName: 'Админ', email: 'admin@fond.ru', password: 'admin123', role: 'admin', phone: '', avatar: '' }
+        ]);
       }
       if (STORAGE.products().length === 0) {
         STORAGE.saveProducts([
-          { id: 'p1', article: 'GR001', name: 'Гречка 1кг', price: 80, category: 'Продукты', photos: [] },
-          { id: 'p2', article: 'RS002', name: 'Рис 1кг', price: 90, category: 'Продукты', photos: [] }
+          { id: 'p1', article: 'GR001', name: 'Гречка 1кг', category: 'Продукты', photos: [] },
+          { id: 'p2', article: 'RS002', name: 'Рис 1кг', category: 'Продукты', photos: [] }
         ]);
       }
       if (STORAGE.slots().length === 0) {
@@ -583,15 +281,13 @@
     }
     initData();
 
-    // Глобальные переменные для фото
+    // Глобальные переменные
     window.tempProductPhotos = [];
     window.productPhotoIndex = {};
 
-    // Глобальные функции
     window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
     window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
     window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
-    window.openAdminLogin = () => document.getElementById('adminLoginModal').style.display = 'flex';
 
     window.login = () => {
       const email = document.getElementById('loginEmail').value.trim();
@@ -614,7 +310,7 @@
       if (!first || !last || !email || !pass || !phone) return alert('Заполните все поля');
       if (pass !== confirm) return alert('Пароли не совпадают');
       if (STORAGE.users().some(u => u.email === email)) return alert('Email занят');
-      const newUser = { id: Date.now()+'', firstName: first, lastName: last, email, password: pass, phone: code+phone, role: 'user' };
+      const newUser = { id: Date.now()+'', firstName: first, lastName: last, email, password: pass, phone: code+phone, role: 'user', avatar: '' };
       STORAGE.saveUsers([...STORAGE.users(), newUser]);
       STORAGE.setCurrentUser(newUser);
       showScreen('mainScreen');
@@ -622,19 +318,6 @@
     };
 
     window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; };
-
-    window.adminLogin = () => {
-      const login = document.getElementById('adminLoginInput').value;
-      const pass = document.getElementById('adminPasswordInput').value;
-      if (login === 'STROGANOVA' && pass === '12345') {
-        let admin = STORAGE.users().find(u => u.email === 'admin@fond.ru');
-        if (!admin) { admin = { id:'adm', firstName:'Админ', email:'admin@fond.ru', password:'admin123', role:'admin', phone:'' }; STORAGE.saveUsers([...STORAGE.users(), admin]); }
-        STORAGE.setCurrentUser(admin);
-        closeModal('adminLoginModal');
-        showScreen('adminScreen');
-        renderAdmin();
-      } else alert('Неверные данные');
-    };
 
     function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
@@ -651,20 +334,19 @@
       if (tabId==='orders') renderUserOrders();
     };
 
-    // Рендер товаров с фотографиями и листанием
+    // Рендер товаров (без цены, с открытием фото)
     function renderProducts() {
       const prods = STORAGE.products();
       const container = document.getElementById('productsContainer');
       container.innerHTML = prods.map(p => {
         const photos = p.photos || [];
-        const hasPhotos = photos.length > 0;
-        const photoHtml = hasPhotos ? `
-          <div class="product-photo" id="photo-${p.id}">
-            <img src="${photos[0]}" id="img-${p.id}" style="width:100%;height:100%;object-fit:cover;">
+        const photoHtml = photos.length ? `
+          <div class="product-photo" onclick="openFullscreenPhoto('${photos[0]}')">
+            <img src="${photos[0]}" id="img-${p.id}">
             ${photos.length > 1 ? `
             <div class="photo-nav">
-              <button onclick="prevPhoto('${p.id}')"><i class="fas fa-chevron-left"></i></button>
-              <button onclick="nextPhoto('${p.id}')"><i class="fas fa-chevron-right"></i></button>
+              <button onclick="event.stopPropagation();prevPhoto('${p.id}')"><i class="fas fa-chevron-left"></i></button>
+              <button onclick="event.stopPropagation();nextPhoto('${p.id}')"><i class="fas fa-chevron-right"></i></button>
             </div>
             <div class="photo-dots" id="dots-${p.id}">
               ${photos.map((_,i) => `<span class="dot ${i===0?'active':''}"></span>`).join('')}
@@ -672,25 +354,25 @@
             ` : ''}
           </div>
         ` : `<div class="product-photo"><i class="fas fa-image" style="font-size:32px;color:#ccc;"></i></div>`;
-        
         return `
         <div class="product-card" data-product-id="${p.id}" data-photos='${JSON.stringify(photos)}'>
           ${photoHtml}
           <h4>${p.name}</h4>
-          <p>${p.price} ₽</p>
           <small>${p.article || ''}</small>
           <button class="btn primary" style="padding:8px; margin-top:8px;" onclick="addToCart('${p.id}')">В корзину</button>
         </div>`;
       }).join('');
-      
-      prods.forEach(p => { if (!window.productPhotoIndex[p.id]) window.productPhotoIndex[p.id] = 0; });
+      prods.forEach(p => { window.productPhotoIndex[p.id] = 0; });
     }
 
+    window.openFullscreenPhoto = (src) => {
+      document.getElementById('fullscreenImage').src = src;
+      document.getElementById('fullscreenPhotoModal').style.display = 'flex';
+    };
     window.prevPhoto = (prodId) => {
       const card = document.querySelector(`.product-card[data-product-id="${prodId}"]`);
       if (!card) return;
       const photos = JSON.parse(card.dataset.photos);
-      if (!photos.length) return;
       let idx = window.productPhotoIndex[prodId] || 0;
       idx = (idx - 1 + photos.length) % photos.length;
       window.productPhotoIndex[prodId] = idx;
@@ -701,7 +383,6 @@
       const card = document.querySelector(`.product-card[data-product-id="${prodId}"]`);
       if (!card) return;
       const photos = JSON.parse(card.dataset.photos);
-      if (!photos.length) return;
       let idx = window.productPhotoIndex[prodId] || 0;
       idx = (idx + 1) % photos.length;
       window.productPhotoIndex[prodId] = idx;
@@ -711,15 +392,16 @@
     function updateDots(prodId, activeIdx) {
       const dotsContainer = document.getElementById(`dots-${prodId}`);
       if (!dotsContainer) return;
-      const dots = dotsContainer.querySelectorAll('.dot');
-      dots.forEach((dot, i) => dot.classList.toggle('active', i === activeIdx));
+      dotsContainer.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === activeIdx));
     }
 
     window.addToCart = (prodId) => {
+      const limit = STORAGE.maxItemsLimit();
+      const cart = STORAGE.cart();
+      if (cart.length >= limit) return alert(`Можно заказать не более ${limit} товаров`);
       const product = STORAGE.products().find(p=>p.id===prodId);
       if (!product) return;
-      let cart = STORAGE.cart();
-      if (cart.some(i=>i.id===prodId)) { alert('Этот товар уже в корзине'); return; }
+      if (cart.some(i=>i.id===prodId)) { alert('Товар уже в корзине'); return; }
       cart.push({ ...product, quantity: 1 });
       STORAGE.saveCart(cart);
       updateCartBadge();
@@ -732,7 +414,7 @@
       const cont = document.getElementById('cartItems');
       if (!cart.length) cont.innerHTML = '<p>Корзина пуста</p>';
       else cont.innerHTML = cart.map((item,idx)=>`
-        <div class="cart-item"><span>${item.name} (1 шт.)</span><span>${item.price} ₽ <i class="fas fa-trash" onclick="removeFromCart(${idx})"></i></span></div>
+        <div class="cart-item"><span>${item.name}</span><i class="fas fa-trash" onclick="removeFromCart(${idx})"></i></div>
       `).join('');
       const slots = STORAGE.slots().filter(s=>s.used < s.capacity);
       const select = document.getElementById('timeSlotSelect');
@@ -744,39 +426,89 @@
       const user = STORAGE.currentUser(); if(!user) return;
       const cart = STORAGE.cart(); if(!cart.length) return alert('Корзина пуста');
       const slotId = document.getElementById('timeSlotSelect').value; if(!slotId) return alert('Выберите время');
-      const address = document.getElementById('pickupAddressSelect').value;
       const slots = STORAGE.slots(); const slot = slots.find(s=>s.id===slotId);
       if(slot.used >= slot.capacity) return alert('Слот заполнен');
+
+      // Удаляем товары из доступных
+      const prods = STORAGE.products();
+      const cartIds = cart.map(i => i.id);
+      const newProds = prods.filter(p => !cartIds.includes(p.id));
+      STORAGE.saveProducts(newProds);
+
       const order = {
         id: 'ORD-'+Date.now(),
         userId: user.id,
-        items: cart.map(i=>({ article: i.article || '—', name: i.name, price: i.price })),
-        total: cart.reduce((s,i)=>s+i.price, 0),
+        items: cart.map(i=>({ article: i.article || '—', name: i.name })),
         slotId: slot.id, slotTime: slot.datetime,
-        address: address,
+        address: 'Южное Бутово, Остафьевская улица, д 44, вл 3, Москва',
         status: 'Новый',
         createdAt: new Date().toISOString(),
-        recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email }
+        recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email },
+        comment: ''
       };
       STORAGE.saveOrders([...STORAGE.orders(), order]);
       slot.used += 1; STORAGE.saveSlots(slots);
       STORAGE.saveCart([]); updateCartBadge();
       alert('Заказ оформлен!');
       switchTab('orders');
+      renderProducts();
     };
 
     function renderProfile() {
       const u = STORAGE.currentUser();
-      if(u) { document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName}`; document.getElementById('profilePhone').textContent = u.phone; }
+      if(u) {
+        document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName}`;
+        document.getElementById('profilePhone').textContent = u.phone;
+        const avatarImg = document.getElementById('profileAvatar');
+        const defaultIcon = document.getElementById('defaultAvatar');
+        if (u.avatar) {
+          avatarImg.src = u.avatar;
+          avatarImg.style.display = 'block';
+          defaultIcon.style.display = 'none';
+        } else {
+          avatarImg.style.display = 'none';
+          defaultIcon.style.display = 'block';
+        }
+      }
     }
+
+    window.saveAvatar = () => {
+      const file = document.getElementById('avatarInput').files[0];
+      if (!file) return alert('Выберите изображение');
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const users = STORAGE.users();
+        const cur = STORAGE.currentUser();
+        const idx = users.findIndex(u => u.id === cur.id);
+        users[idx].avatar = e.target.result;
+        STORAGE.saveUsers(users);
+        STORAGE.setCurrentUser(users[idx]);
+        renderProfile();
+      };
+      reader.readAsDataURL(file);
+    };
 
     function renderUserOrders() {
       const user = STORAGE.currentUser();
       const orders = STORAGE.orders().filter(o=>o.userId===user.id);
-      document.getElementById('ordersList').innerHTML = orders.map(o=>`
-        <div class="order-card"><strong>${o.id}</strong> (${new Date(o.createdAt).toLocaleDateString()})<br>Адрес: ${o.address}<br>Слот: ${new Date(o.slotTime).toLocaleString()}<br>Статус: ${o.status}</div>
+      const cont = document.getElementById('ordersList');
+      cont.innerHTML = orders.map(o => `
+        <div class="order-card">
+          <strong>${o.id}</strong> (${new Date(o.createdAt).toLocaleDateString()})<br>
+          Адрес: ${o.address}<br>Слот: ${new Date(o.slotTime).toLocaleString()}<br>
+          Товары: ${o.items.map(i=>i.name).join(', ')}<br>
+          Статус: ${o.status}<br>
+          <textarea id="comment-${o.id}" placeholder="Комментарий" style="width:100%; margin-top:8px; padding:8px; border-radius:8px; border:1px solid #ddd;">${o.comment || ''}</textarea>
+          <button class="btn secondary" style="padding:8px;" onclick="saveComment('${o.id}')">Сохранить комментарий</button>
+        </div>
       `).join('');
     }
+    window.saveComment = (orderId) => {
+      const comment = document.getElementById(`comment-${orderId}`).value;
+      const orders = STORAGE.orders();
+      const order = orders.find(o => o.id === orderId);
+      if (order) { order.comment = comment; STORAGE.saveOrders(orders); alert('Комментарий сохранён'); }
+    };
 
     function updateUIForUser() { updateCartBadge(); renderProducts(); switchTab('home'); }
 
@@ -785,6 +517,7 @@
       renderAdminProducts();
       renderAdminSlots();
       renderAllOrders();
+      renderRecipientsTab();
       document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           document.querySelectorAll('.admin-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -799,69 +532,45 @@
       const prods = STORAGE.products();
       document.getElementById('adminProductsList').innerHTML = prods.map(p=>`
         <div class="admin-product-item">
-          <span>${p.name} (арт. ${p.article}) - ${p.price}₽ [${p.category}] ${p.photos?.length ? `📸${p.photos.length}` : ''}</span>
+          <span>${p.name} (арт. ${p.article}) [${p.category}] ${p.photos?.length ? `📸${p.photos.length}` : ''}</span>
           <i class="fas fa-trash text-danger" onclick="deleteProduct('${p.id}')"></i>
         </div>
       `).join('');
     }
-    window.deleteProduct = (id) => { 
-      STORAGE.saveProducts(STORAGE.products().filter(p=>p.id!==id)); 
-      renderAdminProducts(); 
-      if (document.getElementById('homeTab').style.display !== 'none') renderProducts();
-    };
+    window.deleteProduct = (id) => { STORAGE.saveProducts(STORAGE.products().filter(p=>p.id!==id)); renderAdminProducts(); if (document.getElementById('homeTab').style.display !== 'none') renderProducts(); };
 
-    // Открытие модалки ДОБАВЛЕНИЯ (очистка)
     window.openAddProductModal = () => {
       document.getElementById('addProductModal').style.display = 'flex';
       document.getElementById('prodName').value = '';
       document.getElementById('prodArticle').value = '';
-      document.getElementById('prodPrice').value = '';
       document.getElementById('prodCategory').value = 'Продукты';
       document.getElementById('productPhotosInput').value = '';
       document.getElementById('photoPreviewContainer').innerHTML = '';
       window.tempProductPhotos = [];
     };
-
-    // Предпросмотр фото
     document.getElementById('productPhotosInput').addEventListener('change', function(e) {
       const files = Array.from(e.target.files).slice(0, 3);
       const preview = document.getElementById('photoPreviewContainer');
       preview.innerHTML = '';
       window.tempProductPhotos = [];
-      
       files.forEach(file => {
         const reader = new FileReader();
-        reader.onload = (ev) => {
-          window.tempProductPhotos.push(ev.target.result);
-          const img = document.createElement('img');
-          img.src = ev.target.result;
-          preview.appendChild(img);
-        };
+        reader.onload = (ev) => { window.tempProductPhotos.push(ev.target.result); const img = document.createElement('img'); img.src = ev.target.result; preview.appendChild(img); };
         reader.readAsDataURL(file);
       });
     });
-
     window.addProduct = () => {
       const name = document.getElementById('prodName').value.trim();
       const article = document.getElementById('prodArticle').value.trim();
-      const price = parseFloat(document.getElementById('prodPrice').value);
       const category = document.getElementById('prodCategory').value;
-      if(!name||!article||!price) return alert('Заполните все поля');
-      
-      const newProduct = {
-        id: 'p_' + Date.now(),
-        article, name, price, category,
-        photos: window.tempProductPhotos || []
-      };
-      const prods = STORAGE.products();
-      prods.push(newProduct);
-      STORAGE.saveProducts(prods);
+      if(!name||!article) return alert('Заполните поля');
+      const newProduct = { id: 'p_'+Date.now(), article, name, category, photos: window.tempProductPhotos || [] };
+      STORAGE.saveProducts([...STORAGE.products(), newProduct]);
       closeModal('addProductModal');
       renderAdminProducts();
       if (document.getElementById('homeTab').style.display !== 'none') renderProducts();
     };
 
-    // Слоты
     function renderAdminSlots() {
       const slots = STORAGE.slots();
       document.getElementById('slotsList').innerHTML = slots.map(s=>`<div>${new Date(s.datetime).toLocaleString()} | занято ${s.used}/${s.capacity} <i class="fas fa-trash" onclick="deleteSlot('${s.id}')"></i></div>`).join('');
@@ -884,25 +593,34 @@
         return `<div class="order-card">
           <b>${o.id}</b> | ${new Date(o.slotTime).toLocaleString()}<br>
           <b>${o.recipient?.lastName || ''} ${o.recipient?.firstName || ''}</b> тел: ${o.recipient?.phone || ''} email: ${o.recipient?.email || ''}<br>
-          Товары: ${itemsStr}<br> Адрес: ${o.address} | Статус: ${o.status}
+          Товары: ${itemsStr}<br> Адрес: ${o.address}<br>
+          Комментарий: ${o.comment || '—'}<br> Статус: ${o.status}
         </div>`;
       }).join('');
     }
 
-    // Экспорт в Excel
+    function renderRecipientsTab() {
+      document.getElementById('maxItemsLimit').value = STORAGE.maxItemsLimit();
+      document.getElementById('currentLimitDisplay').textContent = STORAGE.maxItemsLimit();
+    }
+    window.saveMaxItemsLimit = () => {
+      const val = parseInt(document.getElementById('maxItemsLimit').value);
+      if (val > 0) { STORAGE.saveMaxItemsLimit(val); renderRecipientsTab(); alert('Лимит сохранён'); }
+    };
+    window.cancelMaxItemsLimit = () => { document.getElementById('maxItemsLimit').value = STORAGE.maxItemsLimit(); };
+
+    // Экспорт
     window.exportOrdersToExcel = () => {
       const orders = STORAGE.orders();
       const data = orders.map(o => ({
         'Номер заказа': o.id,
-        'Дата создания': new Date(o.createdAt).toLocaleString(),
         'Слот': new Date(o.slotTime).toLocaleString(),
-        'ФИО получателя': `${o.recipient?.lastName || ''} ${o.recipient?.firstName || ''}`,
-        'Телефон': o.recipient?.phone || '',
-        'Email': o.recipient?.email || '',
-        'Адрес выдачи': o.address,
-        'Товары (артикул)': o.items.map(i=>`${i.name} (${i.article})`).join('; '),
-        'Сумма': o.total,
-        'Статус': o.status
+        'ФИО': `${o.recipient?.lastName} ${o.recipient?.firstName}`,
+        'Телефон': o.recipient?.phone,
+        'Email': o.recipient?.email,
+        'Адрес': o.address,
+        'Товары': o.items.map(i=>`${i.name} (${i.article})`).join('; '),
+        'Комментарий': o.comment || ''
       }));
       const ws = XLSX.utils.json_to_sheet(data);
       const wb = XLSX.utils.book_new();
@@ -910,7 +628,6 @@
       XLSX.writeFile(wb, "orders.xlsx");
     };
 
-    // Печать стикеров (Word)
     window.printStickersWord = () => {
       const orders = STORAGE.orders();
       let content = '';
@@ -922,6 +639,7 @@
         content += `ТОВАРЫ: ${items}\n`;
         content += `АДРЕС ВЫДАЧИ: ${o.address}\n`;
         content += `ВРЕМЯ: ${new Date(o.slotTime).toLocaleString()}\n`;
+        content += `КОММЕНТАРИЙ: ${o.comment || ''}\n`;
         content += `----------------------------------------\n\n`;
       });
       const blob = new Blob([content], { type: 'application/msword' });
