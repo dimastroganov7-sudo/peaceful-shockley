@@ -1,391 +1,805 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    sans-serif;
-}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Три сестры · Благотворительный фонд</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Для экспорта в Excel -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
+    }
+    body {
+      background: #f5f5f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    #app {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      min-height: 700px;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+    .screen {
+      display: none;
+      height: 100%;
+      min-height: 700px;
+      flex-direction: column;
+    }
+    .screen.active {
+      display: flex;
+    }
+    /* Auth Screen */
+    .auth-container {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .logo h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1c1c1e;
+      margin-top: 20px;
+    }
+    .logo h2 {
+      font-size: 20px;
+      font-weight: 400;
+      color: #007aff;
+      margin-bottom: 40px;
+    }
+    .input-group {
+      display: flex;
+      align-items: center;
+      background: #f2f2f7;
+      border-radius: 12px;
+      padding: 4px 16px;
+      margin-bottom: 16px;
+    }
+    .input-group i {
+      color: #8e8e93;
+      width: 24px;
+    }
+    .input-group input,
+    .input-group select {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 14px 0;
+      font-size: 16px;
+      outline: none;
+    }
+    .phone-group {
+      padding: 4px 8px;
+    }
+    .country-select {
+      width: 100px;
+      margin-right: 8px;
+    }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 12px;
+      transition: opacity 0.2s;
+    }
+    .btn.primary {
+      background: #007aff;
+      color: white;
+    }
+    .btn.secondary {
+      background: #f2f2f7;
+      color: #007aff;
+    }
+    .link {
+      color: #007aff;
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    /* Main Screen Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: white;
+      border-bottom: 1px solid #e5e5ea;
+    }
+    header h3 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .header-icons {
+      display: flex;
+      align-items: center;
+    }
+    .cart-icon {
+      position: relative;
+    }
+    .badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff3b30;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+    }
+    /* Bottom Navigation */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      padding: 8px 0 20px;
+      border-top: 1px solid #e5e5ea;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #8e8e93;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .nav-item i {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .nav-item.active {
+      color: #007aff;
+    }
+    /* Tab Content */
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #f5f5f7;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    /* Products Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .product-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: #f2f2f7;
+    }
+    .product-card h4 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .product-card p {
+      color: #8e8e93;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+    .quantity-control button {
+      background: #f2f2f7;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    /* Cart Items */
+    .cart-item {
+      display: flex;
+      background: white;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .cart-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      margin-right: 12px;
+    }
+    .cart-item-details {
+      flex: 1;
+    }
+    .cart-item-actions {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .cart-footer {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+    .address-box {
+      display: flex;
+      align-items: center;
+      background: #f2f2f7;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .address-box i {
+      margin-right: 12px;
+      color: #007aff;
+    }
+    .slot-selector {
+      margin-bottom: 16px;
+    }
+    .slot-selector select,
+    .address-selector select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #e5e5ea;
+      background: white;
+      margin-top: 8px;
+    }
+    /* Profile */
+    .profile-card {
+      display: flex;
+      align-items: center;
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .profile-info {
+      margin-left: 16px;
+    }
+    /* Admin Panel */
+    .admin-tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e5ea;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 16px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #8e8e93;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      color: #007aff;
+      border-bottom: 2px solid #007aff;
+    }
+    .admin-pane {
+      display: none;
+      padding: 20px;
+    }
+    .admin-pane.active {
+      display: block;
+    }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 24px;
+      width: 90%;
+      max-width: 350px;
+    }
+    .modal-content input,
+    .modal-content select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #e5e5ea;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    /* дополнительные */
+    .admin-product-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #f8f9fc;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .order-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .close-icon {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .mt-2 { margin-top: 8px; }
+    .text-danger { color: #ff3b30; }
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- АВТОРИЗАЦИЯ -->
+  <div id="authScreen" class="screen active">
+    <div class="auth-container">
+      <div class="logo">
+        <i class="fas fa-church" style="font-size: 48px; color: #007aff;"></i>
+        <h1>Благотворительный фонд</h1>
+        <h2>«Три сестры»</h2>
+      </div>
+      <div id="loginForm">
+        <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="loginEmail" placeholder="Email" value="user@test.com"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="loginPassword" placeholder="Пароль" value="123456"></div>
+        <button class="btn primary" onclick="login()">Войти</button>
+        <p class="link" onclick="showRegister()">Зарегистрировать аккаунт</p>
+      </div>
+      <div id="registerForm" style="display:none;">
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
+        <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
+        <div class="input-group phone-group">
+          <select id="countryCode" class="country-select"><option value="+7">🇷🇺 +7</option></select>
+          <input type="tel" id="regPhone" placeholder="Номер телефона">
+        </div>
+        <button class="btn primary" onclick="register()">Зарегистрироваться</button>
+        <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
+      </div>
+    </div>
+  </div>
 
-body {
-  background: #f5f5f7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
+  <!-- ОСНОВНОЙ ЭКРАН ПОЛЬЗОВАТЕЛЯ -->
+  <div id="mainScreen" class="screen">
+    <header>
+      <h3>Три сестры</h3>
+      <div class="header-icons">
+        <div class="cart-icon" onclick="switchTab('cart')"><i class="fas fa-church"></i><span id="cartBadge" class="badge">0</span></div>
+        <i class="fas fa-user-cog" onclick="openAdminLogin()" style="margin-left:15px;"></i>
+      </div>
+    </header>
+    <div class="tab-content">
+      <div id="homeTab" class="tab-pane active"><div class="products-grid" id="productsContainer"></div></div>
+      <div id="cartTab" class="tab-pane" style="display:none;">
+        <div class="cart-header"><h4>Моя корзина</h4></div>
+        <div id="cartItems"></div>
+        <div class="cart-footer">
+          <div class="address-box">
+            <i class="fas fa-map-pin"></i>
+            <select id="pickupAddressSelect" class="address-selector" style="flex:1; margin-left:8px;">
+              <option value="Остафьевская улица, Южное Бутово, д.44 вл.3">Остафьевская ул., д.44 вл.3</option>
+              <option value="Бунинская аллея">Бунинская аллея</option>
+              <option value="ул. Ленина, 10 (склад фонда)">ул. Ленина, 10 (склад)</option>
+            </select>
+          </div>
+          <div class="slot-selector">
+            <label>Выберите время получения:</label>
+            <select id="timeSlotSelect"></select>
+          </div>
+          <button class="btn primary" onclick="createOrder()">Получить помощь</button>
+        </div>
+      </div>
+      <div id="profileTab" class="tab-pane" style="display:none;">
+        <div class="profile-card"><i class="fas fa-user-circle" style="font-size:64px;color:#007aff;"></i><div class="profile-info"><p><strong id="profileName"></strong></p><p id="profilePhone"></p></div></div>
+        <button class="btn secondary" onclick="logout()">Выйти</button>
+      </div>
+      <div id="ordersTab" class="tab-pane" style="display:none;"><div id="ordersList"></div></div>
+    </div>
+    <nav class="bottom-nav">
+      <div class="nav-item active" data-tab="home"><i class="fas fa-home"></i><span>Главная</span></div>
+      <div class="nav-item" data-tab="cart"><i class="fas fa-shopping-bag"></i><span>Корзина</span></div>
+      <div class="nav-item" data-tab="profile"><i class="fas fa-user"></i><span>Профиль</span></div>
+      <div class="nav-item" data-tab="orders"><i class="fas fa-list"></i><span>Моя помощь</span></div>
+    </nav>
+  </div>
 
-#app {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  background: white;
-  min-height: 700px;
-  border-radius: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  position: relative;
-}
+  <!-- АДМИН-ПАНЕЛЬ -->
+  <div id="adminScreen" class="screen">
+    <header><h3>Администратор</h3><i class="fas fa-sign-out-alt" onclick="logout()"></i></header>
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-admin-tab="products">Товары</button>
+      <button class="tab-btn" data-admin-tab="calendar">Календарь</button>
+      <button class="tab-btn" data-admin-tab="history">Заказы</button>
+    </div>
+    <div class="admin-content">
+      <div id="adminProducts" class="admin-pane active">
+        <button class="btn primary" onclick="openAddProductModal()">+ Добавить товар</button>
+        <div id="adminProductsList" class="mt-2"></div>
+      </div>
+      <div id="adminCalendar" class="admin-pane">
+        <h4>Слоты раздачи</h4>
+        <div id="slotsList"></div>
+        <button class="btn primary mt-2" onclick="openAddSlotModal()">+ Добавить слот</button>
+      </div>
+      <div id="adminHistory" class="admin-pane">
+        <div class="admin-actions">
+          <button class="btn secondary" onclick="exportOrdersToExcel()"><i class="fas fa-file-excel"></i> Выгрузить в Excel</button>
+          <button class="btn secondary" onclick="printStickersWord()"><i class="fas fa-print"></i> Стикеры (Word)</button>
+        </div>
+        <div id="allOrdersList"></div>
+      </div>
+    </div>
+  </div>
 
-.screen {
-  display: none;
-  height: 100%;
-  min-height: 700px;
-  flex-direction: column;
-}
+  <!-- МОДАЛКИ -->
+  <div id="adminLoginModal" class="modal">
+    <div class="modal-content">
+      <h3>Вход для администратора</h3>
+      <input type="text" id="adminLoginInput" placeholder="Логин" value="STROGANOVA">
+      <input type="password" id="adminPasswordInput" placeholder="Пароль" value="12345">
+      <button class="btn primary" onclick="adminLogin()">Войти</button>
+      <button class="btn secondary" onclick="closeModal('adminLoginModal')">Отмена</button>
+    </div>
+  </div>
+  <div id="addProductModal" class="modal">
+    <div class="modal-content">
+      <i class="fas fa-times close-icon" onclick="closeModal('addProductModal')"></i>
+      <h3>Новый товар</h3>
+      <input type="text" id="prodName" placeholder="Название">
+      <input type="text" id="prodArticle" placeholder="Артикул">
+      <input type="number" id="prodPrice" placeholder="Цена (руб)">
+      <select id="prodCategory">
+        <option value="Продукты">Продукты</option>
+        <option value="Одежда">Одежда</option>
+        <option value="Гигиена">Гигиена</option>
+        <option value="Прочее">Прочее</option>
+      </select>
+      <button class="btn primary" onclick="addProduct()">Сохранить</button>
+    </div>
+  </div>
+  <div id="addSlotModal" class="modal">
+    <div class="modal-content">
+      <i class="fas fa-times close-icon" onclick="closeModal('addSlotModal')"></i>
+      <h3>Новый слот</h3>
+      <input type="datetime-local" id="slotDateTime">
+      <input type="number" id="slotCapacity" placeholder="Макс. заказов" value="5">
+      <button class="btn primary" onclick="addSlot()">Добавить</button>
+    </div>
+  </div>
+</div>
 
-.screen.active {
-  display: flex;
-}
+<script>
+  (function(){
+    // ---------- Хранилище ----------
+    const STORAGE = {
+      users: () => JSON.parse(localStorage.getItem('fund_users') || '[]'),
+      saveUsers: (u) => localStorage.setItem('fund_users', JSON.stringify(u)),
+      products: () => JSON.parse(localStorage.getItem('fund_products') || '[]'),
+      saveProducts: (p) => localStorage.setItem('fund_products', JSON.stringify(p)),
+      slots: () => JSON.parse(localStorage.getItem('fund_slots') || '[]'),
+      saveSlots: (s) => localStorage.setItem('fund_slots', JSON.stringify(s)),
+      orders: () => JSON.parse(localStorage.getItem('fund_orders') || '[]'),
+      saveOrders: (o) => localStorage.setItem('fund_orders', JSON.stringify(o)),
+      currentUser: () => JSON.parse(sessionStorage.getItem('currentUser') || 'null'),
+      setCurrentUser: (u) => sessionStorage.setItem('currentUser', JSON.stringify(u)),
+      cart: () => JSON.parse(localStorage.getItem('fund_cart') || '[]'),
+      saveCart: (c) => localStorage.setItem('fund_cart', JSON.stringify(c))
+    };
 
-/* Auth Screen */
-.auth-container {
-  padding: 40px 20px;
-  text-align: center;
-}
+    // Инициализация
+    function initData() {
+      if (STORAGE.users().length === 0) {
+        STORAGE.saveUsers([{ id: '1', firstName: 'Иван', lastName: 'Иванов', email: 'user@test.com', password: '123456', phone: '+79161234567', role: 'user' }]);
+      }
+      if (STORAGE.products().length === 0) {
+        STORAGE.saveProducts([
+          { id: 'p1', article: 'GR001', name: 'Гречка 1кг', price: 80, category: 'Продукты' },
+          { id: 'p2', article: 'RS002', name: 'Рис 1кг', price: 90, category: 'Продукты' }
+        ]);
+      }
+      if (STORAGE.slots().length === 0) {
+        let tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+        STORAGE.saveSlots([{ id: 's1', datetime: tomorrow.toISOString().slice(0,16), capacity: 5, used: 0 }]);
+      }
+    }
+    initData();
 
-.logo h1 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1c1c1e;
-  margin-top: 20px;
-}
+    // Глобальные функции
+    window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
+    window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+    window.openAdminLogin = () => document.getElementById('adminLoginModal').style.display = 'flex';
 
-.logo h2 {
-  font-size: 20px;
-  font-weight: 400;
-  color: #007aff;
-  margin-bottom: 40px;
-}
+    window.login = () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      const user = STORAGE.users().find(u => u.email === email && u.password === pass);
+      if (!user) return alert('Неверные данные');
+      STORAGE.setCurrentUser(user);
+      if (user.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
+      else { showScreen('mainScreen'); updateUIForUser(); }
+    };
 
-.input-group {
-  display: flex;
-  align-items: center;
-  background: #f2f2f7;
-  border-radius: 12px;
-  padding: 4px 16px;
-  margin-bottom: 16px;
-}
+    window.register = () => {
+      const first = document.getElementById('regFirstName').value.trim();
+      const last = document.getElementById('regLastName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regConfirm').value;
+      const phone = document.getElementById('regPhone').value.trim();
+      const code = document.getElementById('countryCode').value;
+      if (!first || !last || !email || !pass || !phone) return alert('Заполните все поля');
+      if (pass !== confirm) return alert('Пароли не совпадают');
+      if (STORAGE.users().some(u => u.email === email)) return alert('Email занят');
+      const newUser = { id: Date.now()+'', firstName: first, lastName: last, email, password: pass, phone: code+phone, role: 'user' };
+      STORAGE.saveUsers([...STORAGE.users(), newUser]);
+      STORAGE.setCurrentUser(newUser);
+      showScreen('mainScreen');
+      updateUIForUser();
+    };
 
-.input-group i {
-  color: #8e8e93;
-  width: 24px;
-}
+    window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; };
 
-.input-group input,
-.input-group select {
-  flex: 1;
-  border: none;
-  background: transparent;
-  padding: 14px 0;
-  font-size: 16px;
-  outline: none;
-}
+    window.adminLogin = () => {
+      const login = document.getElementById('adminLoginInput').value;
+      const pass = document.getElementById('adminPasswordInput').value;
+      if (login === 'STROGANOVA' && pass === '12345') {
+        let admin = STORAGE.users().find(u => u.email === 'admin@fond.ru');
+        if (!admin) { admin = { id:'adm', firstName:'Админ', email:'admin@fond.ru', password:'admin123', role:'admin', phone:'' }; STORAGE.saveUsers([...STORAGE.users(), admin]); }
+        STORAGE.setCurrentUser(admin);
+        closeModal('adminLoginModal');
+        showScreen('adminScreen');
+        renderAdmin();
+      } else alert('Неверные данные');
+    };
 
-.phone-group {
-  padding: 4px 8px;
-}
+    function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-.country-select {
-  width: 100px;
-  margin-right: 8px;
-}
+    // Навигация
+    document.querySelectorAll('.nav-item').forEach(el => el.addEventListener('click', ()=> switchTab(el.dataset.tab)));
+    window.switchTab = (tabId) => {
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
+      document.querySelectorAll('.tab-pane').forEach(p=>p.style.display='none');
+      document.getElementById(tabId+'Tab').style.display='block';
+      if (tabId==='home') renderProducts();
+      if (tabId==='cart') renderCart();
+      if (tabId==='profile') renderProfile();
+      if (tabId==='orders') renderUserOrders();
+    };
 
-.btn {
-  border: none;
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom: 12px;
-  transition: opacity 0.2s;
-}
+    function renderProducts() {
+      const prods = STORAGE.products();
+      document.getElementById('productsContainer').innerHTML = prods.map(p => `
+        <div class="product-card">
+          <h4>${p.name}</h4><p>${p.price} ₽</p><small>${p.article || ''}</small>
+          <button class="btn primary" style="padding:8px;" onclick="addToCart('${p.id}')">В корзину</button>
+        </div>`).join('');
+    }
 
-.btn.primary {
-  background: #007aff;
-  color: white;
-}
+    window.addToCart = (prodId) => {
+      const product = STORAGE.products().find(p=>p.id===prodId);
+      if (!product) return;
+      let cart = STORAGE.cart();
+      if (cart.some(i=>i.id===prodId)) { alert('Этот товар уже в корзине (можно только 1 шт.)'); return; }
+      cart.push({ ...product, quantity: 1 });
+      STORAGE.saveCart(cart);
+      updateCartBadge();
+    };
 
-.btn.secondary {
-  background: #f2f2f7;
-  color: #007aff;
-}
+    function updateCartBadge() { document.getElementById('cartBadge').textContent = STORAGE.cart().length; }
 
-.link {
-  color: #007aff;
-  text-decoration: none;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 16px;
-}
+    function renderCart() {
+      const cart = STORAGE.cart();
+      const cont = document.getElementById('cartItems');
+      if (!cart.length) cont.innerHTML = '<p>Корзина пуста</p>';
+      else cont.innerHTML = cart.map((item,idx)=>`
+        <div class="cart-item"><span>${item.name} (1 шт.)</span><span>${item.price} ₽ <i class="fas fa-trash" onclick="removeFromCart(${idx})"></i></span></div>
+      `).join('');
+      const slots = STORAGE.slots().filter(s=>s.used < s.capacity);
+      const select = document.getElementById('timeSlotSelect');
+      select.innerHTML = slots.map(s=>`<option value="${s.id}">${new Date(s.datetime).toLocaleString()} (ост. ${s.capacity-s.used})</option>`).join('');
+    }
+    window.removeFromCart = (idx) => { let cart=STORAGE.cart(); cart.splice(idx,1); STORAGE.saveCart(cart); renderCart(); updateCartBadge(); };
 
-/* Main Screen Header */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: white;
-  border-bottom: 1px solid #e5e5ea;
-}
+    window.createOrder = () => {
+      const user = STORAGE.currentUser(); if(!user) return;
+      const cart = STORAGE.cart(); if(!cart.length) return alert('Корзина пуста');
+      const slotId = document.getElementById('timeSlotSelect').value; if(!slotId) return alert('Выберите время');
+      const address = document.getElementById('pickupAddressSelect').value;
+      const slots = STORAGE.slots(); const slot = slots.find(s=>s.id===slotId);
+      if(slot.used >= slot.capacity) return alert('Слот заполнен');
+      const order = {
+        id: 'ORD-'+Date.now(),
+        userId: user.id,
+        items: cart.map(i=>({ article: i.article || '—', name: i.name, price: i.price })),
+        total: cart.reduce((s,i)=>s+i.price, 0),
+        slotId: slot.id, slotTime: slot.datetime,
+        address: address,
+        status: 'Новый',
+        createdAt: new Date().toISOString(),
+        recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email }
+      };
+      STORAGE.saveOrders([...STORAGE.orders(), order]);
+      slot.used += 1; STORAGE.saveSlots(slots);
+      STORAGE.saveCart([]); updateCartBadge();
+      alert('Заказ оформлен!');
+      switchTab('orders');
+    };
 
-header h3 {
-  font-size: 20px;
-  font-weight: 600;
-}
+    function renderProfile() {
+      const u = STORAGE.currentUser();
+      if(u) { document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName}`; document.getElementById('profilePhone').textContent = u.phone; }
+    }
 
-.header-icons {
-  display: flex;
-  align-items: center;
-}
+    function renderUserOrders() {
+      const user = STORAGE.currentUser();
+      const orders = STORAGE.orders().filter(o=>o.userId===user.id);
+      document.getElementById('ordersList').innerHTML = orders.map(o=>`
+        <div class="order-card"><strong>${o.id}</strong> (${new Date(o.createdAt).toLocaleDateString()})<br>Адрес: ${o.address}<br>Слот: ${new Date(o.slotTime).toLocaleString()}<br>Статус: ${o.status}</div>
+      `).join('');
+    }
 
-.cart-icon {
-  position: relative;
-}
+    function updateUIForUser() { updateCartBadge(); renderProducts(); switchTab('home'); }
 
-.badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #ff3b30;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
-}
+    // ---------- АДМИНКА ----------
+    function renderAdmin() {
+      renderAdminProducts();
+      renderAdminSlots();
+      renderAllOrders();
+      document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          document.querySelectorAll('.admin-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          document.querySelectorAll('.admin-pane').forEach(p=>p.classList.remove('active'));
+          document.getElementById('admin'+btn.dataset.adminTab.charAt(0).toUpperCase()+btn.dataset.adminTab.slice(1)).classList.add('active');
+        });
+      });
+    }
 
-/* Bottom Navigation */
-.bottom-nav {
-  display: flex;
-  justify-content: space-around;
-  background: white;
-  padding: 8px 0 20px;
-  border-top: 1px solid #e5e5ea;
-}
+    function renderAdminProducts() {
+      const prods = STORAGE.products();
+      document.getElementById('adminProductsList').innerHTML = prods.map(p=>`
+        <div class="admin-product-item"><span>${p.name} (арт. ${p.article}) - ${p.price}₽ [${p.category}]</span><i class="fas fa-trash text-danger" onclick="deleteProduct('${p.id}')"></i></div>
+      `).join('');
+    }
+    window.deleteProduct = (id) => { STORAGE.saveProducts(STORAGE.products().filter(p=>p.id!==id)); renderAdminProducts(); };
+    window.openAddProductModal = () => document.getElementById('addProductModal').style.display='flex';
+    window.addProduct = () => {
+      const name = document.getElementById('prodName').value.trim();
+      const article = document.getElementById('prodArticle').value.trim();
+      const price = parseFloat(document.getElementById('prodPrice').value);
+      const category = document.getElementById('prodCategory').value;
+      if(!name||!article||!price) return alert('Заполните все поля');
+      const prods = STORAGE.products();
+      prods.push({ id: 'p_'+Date.now(), article, name, price, category });
+      STORAGE.saveProducts(prods);
+      closeModal('addProductModal');
+      renderAdminProducts();
+    };
 
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #8e8e93;
-  font-size: 12px;
-  cursor: pointer;
-}
+    function renderAdminSlots() {
+      const slots = STORAGE.slots();
+      document.getElementById('slotsList').innerHTML = slots.map(s=>`<div>${new Date(s.datetime).toLocaleString()} | занято ${s.used}/${s.capacity} <i class="fas fa-trash" onclick="deleteSlot('${s.id}')"></i></div>`).join('');
+    }
+    window.deleteSlot = (id) => { STORAGE.saveSlots(STORAGE.slots().filter(s=>s.id!==id)); renderAdminSlots(); };
+    window.openAddSlotModal = () => document.getElementById('addSlotModal').style.display='flex';
+    window.addSlot = () => {
+      const dt = document.getElementById('slotDateTime').value;
+      const cap = parseInt(document.getElementById('slotCapacity').value);
+      if(!dt||!cap) return alert('Заполните');
+      STORAGE.saveSlots([...STORAGE.slots(), { id:'s_'+Date.now(), datetime: dt, capacity: cap, used:0 }]);
+      closeModal('addSlotModal'); renderAdminSlots();
+    };
 
-.nav-item i {
-  font-size: 22px;
-  margin-bottom: 4px;
-}
+    function renderAllOrders() {
+      const orders = STORAGE.orders();
+      const cont = document.getElementById('allOrdersList');
+      cont.innerHTML = orders.map(o=>{
+        const itemsStr = o.items.map(it=>`${it.name} (арт.${it.article})`).join(', ');
+        return `<div class="order-card">
+          <b>${o.id}</b> | ${new Date(o.slotTime).toLocaleString()}<br>
+          <b>${o.recipient?.lastName || ''} ${o.recipient?.firstName || ''}</b> тел: ${o.recipient?.phone || ''} email: ${o.recipient?.email || ''}<br>
+          Товары: ${itemsStr}<br> Адрес: ${o.address} | Статус: ${o.status}
+        </div>`;
+      }).join('');
+    }
 
-.nav-item.active {
-  color: #007aff;
-}
+    // Экспорт в Excel
+    window.exportOrdersToExcel = () => {
+      const orders = STORAGE.orders();
+      const data = orders.map(o => ({
+        'Номер заказа': o.id,
+        'Дата создания': new Date(o.createdAt).toLocaleString(),
+        'Слот': new Date(o.slotTime).toLocaleString(),
+        'ФИО получателя': `${o.recipient?.lastName || ''} ${o.recipient?.firstName || ''}`,
+        'Телефон': o.recipient?.phone || '',
+        'Email': o.recipient?.email || '',
+        'Адрес выдачи': o.address,
+        'Товары (артикул)': o.items.map(i=>`${i.name} (${i.article})`).join('; '),
+        'Сумма': o.total,
+        'Статус': o.status
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Заказы");
+      XLSX.writeFile(wb, "orders.xlsx");
+    };
 
-/* Tab Content */
-.tab-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  background: #f5f5f7;
-}
+    // Печать стикеров (Word)
+    window.printStickersWord = () => {
+      const orders = STORAGE.orders();
+      let content = '';
+      orders.forEach(o => {
+        const items = o.items.map(i=>`${i.name} (арт. ${i.article})`).join(', ');
+        content += `НОМЕР ЗАКАЗА: ${o.id}\n`;
+        content += `ПОЛУЧАТЕЛЬ: ${o.recipient?.lastName} ${o.recipient?.firstName}\n`;
+        content += `ТЕЛЕФОН: ${o.recipient?.phone}   EMAIL: ${o.recipient?.email}\n`;
+        content += `ТОВАРЫ: ${items}\n`;
+        content += `АДРЕС ВЫДАЧИ: ${o.address}\n`;
+        content += `ВРЕМЯ: ${new Date(o.slotTime).toLocaleString()}\n`;
+        content += `----------------------------------------\n\n`;
+      });
+      const blob = new Blob([content], { type: 'application/msword' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'stickers.doc'; a.click();
+    };
 
-.tab-pane {
-  display: none;
-}
-
-.tab-pane.active {
-  display: block;
-}
-
-/* Products Grid */
-.products-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.product-card {
-  background: white;
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.product-card img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  background: #f2f2f7;
-}
-
-.product-card h4 {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
-.product-card p {
-  color: #8e8e93;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-.quantity-control {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.quantity-control button {
-  background: #f2f2f7;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* Cart Items */
-.cart-item {
-  display: flex;
-  background: white;
-  border-radius: 16px;
-  padding: 12px;
-  margin-bottom: 12px;
-}
-
-.cart-item img {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  margin-right: 12px;
-}
-
-.cart-item-details {
-  flex: 1;
-}
-
-.cart-item-actions {
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
-}
-
-.cart-footer {
-  background: white;
-  border-radius: 20px;
-  padding: 16px;
-  margin-top: 20px;
-}
-
-.address-box {
-  display: flex;
-  align-items: center;
-  background: #f2f2f7;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-}
-
-.address-box i {
-  margin-right: 12px;
-  color: #007aff;
-}
-
-.slot-selector {
-  margin-bottom: 16px;
-}
-
-.slot-selector select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #e5e5ea;
-  background: white;
-  margin-top: 8px;
-}
-
-/* Profile */
-.profile-card {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 20px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-}
-
-.profile-info {
-  margin-left: 16px;
-}
-
-/* Admin Panel */
-.admin-tabs {
-  display: flex;
-  border-bottom: 1px solid #e5e5ea;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 16px;
-  background: none;
-  border: none;
-  font-size: 16px;
-  color: #8e8e93;
-  cursor: pointer;
-}
-
-.tab-btn.active {
-  color: #007aff;
-  border-bottom: 2px solid #007aff;
-}
-
-.admin-pane {
-  display: none;
-  padding: 20px;
-}
-
-.admin-pane.active {
-  display: block;
-}
-
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 24px;
-  border-radius: 24px;
-  width: 90%;
-  max-width: 350px;
-}
-
-.modal-content input {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #e5e5ea;
-  border-radius: 12px;
-  margin-bottom: 16px;
-}
+    // Запуск
+    const cur = STORAGE.currentUser();
+    if (cur) { if(cur.role==='admin'){ showScreen('adminScreen'); renderAdmin(); } else { showScreen('mainScreen'); updateUIForUser(); } }
+    else showScreen('authScreen');
+    updateCartBadge();
+  })();
+</script>
+</body>
+</html>
