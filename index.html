@@ -20,16 +20,16 @@
     .input-group { display: flex; align-items: center; background: #f2f2f7; border-radius: 16px; padding: 4px 16px; margin-bottom: 16px; }
     .input-group i { color: #8e8e93; width: 24px; }
     .input-group input, .input-group select { flex: 1; border: none; background: transparent; padding: 14px 0; font-size: 16px; outline: none; }
-    .btn { border: none; border-radius: 16px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 12px; transition: 0.2s; }
+    .btn { border: none; border-radius: 16px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 12px; transition: 0.2s; }
     .btn.primary { background: #007aff; color: white; }
     .btn.secondary { background: #f2f2f7; color: #007aff; }
     .btn.danger { background: #ff3b30; color: white; }
-    .btn.small { padding: 8px 12px; font-size: 14px; width: auto; }
+    .btn.small { padding: 10px 14px; font-size: 14px; width: auto; }
     .link { color: #007aff; text-decoration: none; font-size: 14px; cursor: pointer; margin-top: 16px; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: white; border-bottom: 1px solid #e5e5ea; }
     header h3 { font-size: 20px; font-weight: 600; }
     .header-icons { display: flex; align-items: center; }
-    .profile-icon-header { cursor: pointer; width: 36px; height: 36px; border-radius: 18px; background: #f2f2f7; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .profile-icon-header { cursor: pointer; width: 40px; height: 40px; border-radius: 20px; background: #f2f2f7; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .profile-icon-header img { width: 100%; height: 100%; object-fit: cover; }
     .tab-content { flex: 1; overflow-y: auto; padding: 16px; background: #f5f5f7; }
     .tab-pane { display: none; }
@@ -43,7 +43,7 @@
     .cart-item-photo { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; background: #f2f2f7; }
     .cart-item-info { flex: 1; }
     .map-container { height: 180px; border-radius: 16px; margin: 12px 0; }
-    .slot-select { background: #f2f2f7; border-radius: 16px; padding: 14px 16px; margin: 16px 0; }
+    .slot-select { background: #f2f2f7; border-radius: 16px; padding: 16px; margin: 16px 0; }
     .slot-select select { width: 100%; border: none; background: transparent; font-size: 16px; font-weight: 500; color: #1c1c1e; outline: none; }
     .bottom-nav { display: flex; justify-content: space-around; background: white; padding: 12px 0 20px; border-top: 1px solid #e5e5ea; border-radius: 20px 20px 0 0; }
     .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 12px; cursor: pointer; position: relative; }
@@ -51,7 +51,7 @@
     .nav-item.active { color: #007aff; }
     .badge { position: absolute; top: -6px; right: 4px; background: #ff3b30; color: white; font-size: 12px; font-weight: bold; min-width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-    .filter-bar select, .filter-bar input { flex: 1; padding: 12px; border-radius: 16px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
+    .filter-bar select, .filter-bar input { flex: 1; padding: 12px 14px; border-radius: 16px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
     .admin-tabs { display: flex; border-bottom: 1px solid #e5e5ea; flex-wrap: wrap; }
     .tab-btn { flex: 1; padding: 14px 8px; background: none; border: none; font-size: 14px; font-weight: 500; color: #8e8e93; cursor: pointer; }
     .tab-btn.active { color: #007aff; border-bottom: 2px solid #007aff; }
@@ -60,34 +60,36 @@
     .admin-products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
     .admin-product-card { background: white; border-radius: 20px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-    .modal-content { background: white; padding: 24px; border-radius: 24px; width: 100%; max-width: 350px; max-height: 80vh; overflow-y: auto; }
-    .modal-content input, .modal-content select { width: 100%; padding: 16px; border: 1px solid #e5e5ea; border-radius: 16px; margin-bottom: 20px; font-size: 16px; background: #f9f9fb; }
+    .modal-content { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
     .order-card { background: white; border-radius: 20px; padding: 16px; margin-bottom: 12px; }
     .petition-item { background: white; border-radius: 20px; padding: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .petition-item .product-name { font-size: 15px; font-weight: 600; }
     .selection-circle { width: 24px; height: 24px; border-radius: 12px; border: 2px solid #ccc; background: white; cursor: pointer; }
     .selection-circle.selected { background: #007aff; border-color: #007aff; }
     .mini-photo { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; margin-right: 4px; cursor: pointer; }
     .photo-filter-strip { display: flex; gap: 10px; overflow-x: auto; padding: 8px 0; margin-bottom: 16px; }
-    .photo-filter-item { width: 56px; height: 56px; border-radius: 28px; border: 3px solid transparent; padding: 2px; cursor: pointer; }
+    .photo-filter-item { width: 56px; height: 56px; border-radius: 28px; border: 3px solid transparent; padding: 2px; cursor: pointer; flex-shrink: 0; }
     .photo-filter-item.active { border-color: #007aff; }
     .photo-filter-item img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 16px; }
-    .calendar-day { padding: 8px; text-align: center; border-radius: 12px; background: #f2f2f7; cursor: pointer; }
-    .calendar-day.has-slot { background: #007aff; color: white; }
+    .calendar-day { padding: 10px; text-align: center; border-radius: 12px; background: #f2f2f7; cursor: pointer; font-weight: 500; }
+    .calendar-day.has-slot { background: #ff3b30; color: white; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .calendar-nav { display: flex; gap: 8px; }
-    .calendar-nav button { width: 44px; height: 44px; border-radius: 22px; background: #007aff; color: white; border: none; cursor: pointer; font-size: 18px; }
+    .calendar-nav button { width: 44px; height: 44px; border-radius: 22px; background: #007aff; color: white; border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
     .fullscreen-photo-modal .modal-content { background: black; padding: 8px; }
     .fullscreen-photo-modal img { width: 100%; border-radius: 16px; }
     .checkbox-label { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 16px; }
     .limit-card { background: white; border-radius: 24px; padding: 28px; text-align: center; }
     .limit-card input { width: 100%; padding: 18px; font-size: 20px; text-align: center; border: 1px solid #e5e5ea; border-radius: 20px; margin: 20px 0; }
-    .petition-stats { margin-top: 16px; padding: 12px; background: #f2f2f7; border-radius: 16px; text-align: center; font-weight: 500; }
+    .petition-stats { margin-top: 16px; padding: 14px; background: #f2f2f7; border-radius: 16px; text-align: center; font-weight: 500; }
+    .day-detail-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 16px; margin-bottom: 8px; }
+    .filter-row { display: flex; align-items: center; gap: 8px; }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- АВТОРИЗАЦИЯ (без изменений) -->
+  <!-- АВТОРИЗАЦИЯ -->
   <div id="authScreen" class="screen active">
     <div class="auth-container">
       <div class="logo"><i class="fas fa-church" style="font-size:48px;color:#007aff;"></i><h1>Благотворительный фонд</h1><h2>«Три сестры»</h2></div>
@@ -130,13 +132,13 @@
         <div class="products-grid" id="productsContainer"></div>
       </div>
       <div id="cartTab" class="tab-pane">
-        <h4>Корзина помощи</h4>
+        <h4 style="margin-bottom:12px;">Корзина помощи</h4>
         <div id="cartItems"></div>
         <div class="map-container" id="cartMap"></div>
         <div class="slot-select">
           <select id="timeSlotSelect"></select>
         </div>
-        <button class="btn primary" style="margin-top: 12px;" onclick="createOrder()">Отправить на согласование</button>
+        <button class="btn primary" style="margin-top: 8px;" onclick="createOrder()">Отправить на согласование</button>
       </div>
       <div id="profileTab" class="tab-pane">
         <div class="profile-card"><img id="profileAvatar" style="width:64px;height:64px;border-radius:32px;"><i id="defaultAvatar" class="fas fa-user-circle" style="font-size:64px;color:#007aff;"></i><div><p><strong id="profileName"></strong></p><p id="profilePhone"></p></div></div>
@@ -171,10 +173,12 @@
     <div class="admin-content" style="flex:1; overflow-y:auto;">
       <div id="adminProducts" class="admin-pane active"><button class="btn primary" onclick="openAddProductModal()">+ Добавить товар</button><div id="adminProductsList" class="admin-products-grid"></div></div>
       <div id="adminPetitions" class="admin-pane">
-        <div class="filter-bar"><input id="petitionSearch" placeholder="Поиск"></div>
+        <div class="filter-row" style="margin-bottom:12px;">
+          <input id="petitionSearch" placeholder="Поиск" style="flex:1;">
+          <button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Изм</button>
+        </div>
         <div class="photo-filter-strip" id="photoFilterStrip"></div>
-        <div style="display:flex; gap:8px; margin-bottom:12px;"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Изм</button></div>
-        <div id="petitionBulkActions" style="display:none;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div>
+        <div id="petitionBulkActions" style="display:none; margin-bottom:12px;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div>
         <div id="petitionsList"></div>
         <div id="petitionStats" class="petition-stats"></div>
       </div>
@@ -200,8 +204,8 @@
   </div>
 
   <!-- МОДАЛКИ -->
-  <div id="addProductModal" class="modal"><div class="modal-content"><i class="fas fa-times close-icon" onclick="closeModal('addProductModal')"></i><h3 style="margin-bottom:20px;">Новый товар</h3><input id="prodName" placeholder="Название"><input id="prodArticle" placeholder="Артикул"><select id="prodCategory"><option>Продукты</option><option>Одежда</option><option>Гигиена</option><option>Прочее</option></select><input type="number" id="prodQuantity" value="1" min="1"><div class="checkbox-label"><input type="checkbox" id="prodPlaceImmediately"> Разместить сразу</div><input type="file" id="productPhotosInput" multiple><div id="photoPreviewContainer" class="photo-preview"></div><button class="btn primary" onclick="addProduct()">Сохранить</button></div></div>
-  <div id="addSlotModal" class="modal"><div class="modal-content"><i class="fas fa-times close-icon" onclick="closeModal('addSlotModal')"></i><h3 style="margin-bottom:20px;">Новый слот</h3><input type="datetime-local" id="slotDateTime"><input type="number" id="slotCapacity" placeholder="Макс. заказов" value="5" min="1"><button class="btn primary" style="margin-top:12px;" onclick="addSlot()">Добавить</button></div></div>
+  <div id="addProductModal" class="modal"><div class="modal-content"><i class="fas fa-times close-icon" onclick="closeModal('addProductModal')"></i><h3>Новый товар</h3><input id="prodName" placeholder="Название"><input id="prodArticle" placeholder="Артикул"><select id="prodCategory"><option>Продукты</option><option>Одежда</option><option>Гигиена</option><option>Прочее</option></select><input type="number" id="prodQuantity" value="1" min="1"><div class="checkbox-label"><input type="checkbox" id="prodPlaceImmediately"> Разместить сразу</div><input type="file" id="productPhotosInput" multiple><div id="photoPreviewContainer" class="photo-preview"></div><button class="btn primary" onclick="addProduct()">Сохранить</button></div></div>
+  <div id="addSlotModal" class="modal"><div class="modal-content"><i class="fas fa-times close-icon" onclick="closeModal('addSlotModal')"></i><h3>Новый слот</h3><input type="datetime-local" id="slotDateTime"><input type="number" id="slotCapacity" placeholder="Макс. заказов" value="5" min="1"><button class="btn primary" style="margin-top:8px;" onclick="addSlot()">Добавить</button></div></div>
   <div id="fullscreenPhotoModal" class="modal fullscreen-photo-modal" onclick="closeModal('fullscreenPhotoModal')"><div class="modal-content"><img id="fullscreenImage"></div></div>
 </div>
 
@@ -274,7 +278,7 @@
     function updateHeaderAvatar() {
       const u = STORAGE.currentUser(); if (!u) return;
       const icon = document.getElementById('headerProfileIcon');
-      if (u.avatar) icon.innerHTML = `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+      if (u.avatar) icon.innerHTML = `<img src="${u.avatar}">`;
       else icon.innerHTML = '<i class="fas fa-user-circle" style="font-size:28px;color:#007aff;"></i>';
     }
 
@@ -396,16 +400,23 @@
       const firstDay = new Date(year, month, 1).getDay() || 7, daysInMonth = new Date(year, month + 1, 0).getDate();
       const slots = STORAGE.slots(); const slotDates = slots.map(s => s.datetime.split('T')[0]);
       let html = ''; for (let i = 1; i < firstDay; i++) html += '<div></div>';
-      for (let d = 1; d <= daysInMonth; d++) { const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; html += `<div class="calendar-day ${slotDates.includes(dateStr)?'has-slot':''}" onclick="showSlotsForDate('${dateStr}')">${d}</div>`; }
+      for (let d = 1; d <= daysInMonth; d++) { const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; html += `<div class="calendar-day ${slotDates.includes(dateStr)?'has-slot':''}" onclick="showDayDetails('${dateStr}')">${d}</div>`; }
       document.getElementById('calendarGrid').innerHTML = html;
     }
     window.changeCalendarMonth = (d) => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + d); renderCalendar(); };
-    window.showSlotsForDate = (dateStr) => {
-      const orders = STORAGE.orders().filter(o => o.slotTime?.startsWith(dateStr));
+    window.showDayDetails = (dateStr) => {
+      const orders = STORAGE.orders().filter(o => o.slotTime?.startsWith(dateStr) && o.status === 'approved');
       const products = STORAGE.products();
-      const details = orders.flatMap(o => o.items.map(i => ({ ...i, orderId: o.id, recipient: o.recipient })));
-      const html = details.map(d => `<div style="display:flex;align-items:center;gap:12px;padding:8px;background:white;border-radius:12px;margin-bottom:8px;"><img src="${products.find(p=>p.id===d.productId)?.photos?.[0]||''}" style="width:40px;height:40px;border-radius:20px;" onclick="openFullscreenPhoto('${products.find(p=>p.id===d.productId)?.photos?.[0]}')"><div><b>${d.name}</b><br>${d.recipient?.firstName} ${d.recipient?.lastName}</div><span style="margin-left:auto;">${d.status==='approved'?'✅':d.status==='rejected'?'❌':'⏳'}</span></div>`).join('');
-      document.getElementById('calendarDayDetails').innerHTML = html || '<p>Нет заказов на эту дату</p>';
+      const aggregated = {};
+      orders.forEach(o => {
+        o.items.forEach(item => {
+          if (item.status !== 'approved') return;
+          if (!aggregated[item.productId]) aggregated[item.productId] = { product: products.find(p => p.id === item.productId), count: 0 };
+          aggregated[item.productId].count++;
+        });
+      });
+      const html = Object.values(aggregated).map(agg => `<div class="day-detail-item"><img src="${agg.product?.photos?.[0] || ''}" style="width:40px;height:40px;border-radius:20px;" onclick="openFullscreenPhoto('${agg.product?.photos?.[0]}')"><div><b>${agg.product?.name}</b><br>Одобрено: ${agg.count} шт.</div></div>`).join('');
+      document.getElementById('calendarDayDetails').innerHTML = html || '<p>Нет одобренных товаров на эту дату</p>';
     };
 
     // Прошения
@@ -423,7 +434,7 @@
       if (selectedPhotoFilters.size > 0) petitions = petitions.filter(p => selectedPhotoFilters.has(p.productId));
       const productPhotos = [...new Set(petitions.map(p => p.productPhoto).filter(Boolean))];
       document.getElementById('photoFilterStrip').innerHTML = productPhotos.map(src => `<div class="photo-filter-item ${selectedPhotoFilters.has(petitions.find(p=>p.productPhoto===src)?.productId) ? 'active' : ''}" onclick="togglePhotoFilter('${petitions.find(p=>p.productPhoto===src)?.productId}')"><img src="${src}"></div>`).join('');
-      document.getElementById('petitionsList').innerHTML = petitions.map(p => `<div class="petition-item">${petitionSelectMode ? `<div class="selection-circle ${selectedPetitionKeys.has(p.key)?'selected':''}" onclick="togglePetitionSelection('${p.key}')"></div>`:''}<img src="${p.productPhoto}" style="width:50px;height:50px;border-radius:25px;" onclick="openFullscreenPhoto('${p.productPhoto}')"><div><b>${p.productName}</b><br>${p.userName}<br>📞${p.userPhone}</div>${p.userAvatar?`<img src="${p.userAvatar}" style="width:40px;height:40px;border-radius:20px;" onclick="openFullscreenPhoto('${p.userAvatar}')">`:'<i class="fas fa-user-circle"></i>'}${!petitionSelectMode?`<div><button class="btn primary small" onclick="approvePetitionItem('${p.orderId}',${p.itemIndex})">✓</button><button class="btn danger small" onclick="rejectPetitionItem('${p.orderId}',${p.itemIndex})">✗</button></div>`:''}</div>`).join('') || '<p>Нет прошений</p>';
+      document.getElementById('petitionsList').innerHTML = petitions.map(p => `<div class="petition-item">${petitionSelectMode ? `<div class="selection-circle ${selectedPetitionKeys.has(p.key)?'selected':''}" onclick="togglePetitionSelection('${p.key}')"></div>`:''}<img src="${p.productPhoto}" style="width:50px;height:50px;border-radius:25px;" onclick="openFullscreenPhoto('${p.productPhoto}')"><div><b class="product-name">${p.productName}</b><br>${p.userName}<br>📞${p.userPhone}</div>${p.userAvatar?`<img src="${p.userAvatar}" style="width:40px;height:40px;border-radius:20px;" onclick="openFullscreenPhoto('${p.userAvatar}')">`:'<i class="fas fa-user-circle"></i>'}${!petitionSelectMode?`<div><button class="btn primary small" onclick="approvePetitionItem('${p.orderId}',${p.itemIndex})">✓</button><button class="btn danger small" onclick="rejectPetitionItem('${p.orderId}',${p.itemIndex})">✗</button></div>`:''}</div>`).join('') || '<p>Нет прошений</p>';
       document.getElementById('petitionBulkActions').style.display = petitionSelectMode ? 'block' : 'none';
       const totalQty = petitions.reduce((sum, p) => sum + 1, 0);
       const available = STORAGE.products().filter(p => petitions.some(pt => pt.productId === p.id)).reduce((sum, p) => sum + p.availableQuantity, 0);
@@ -450,8 +461,8 @@
       let orders = STORAGE.orders(); const filter = document.getElementById('adminOrderDateFilter')?.value; if (filter) orders = orders.filter(o => o.slotTime === filter);
       document.getElementById('allOrdersList').innerHTML = orders.map(o => `<div class="order-card"><b>${o.id}</b> ${new Date(o.slotTime).toLocaleString()}<br>${o.recipient?.lastName} ${o.recipient?.firstName}<br>${o.items.map(i => `<span>${STORAGE.products().find(p=>p.id===i.productId)?.photos?.[0]?`<img src="${STORAGE.products().find(p=>p.id===i.productId).photos[0]}" class="mini-photo" onclick="openFullscreenPhoto('${STORAGE.products().find(p=>p.id===i.productId).photos[0]}')">`:''}${i.name} (${i.status==='approved'?'✓':i.status==='rejected'?'✗':'⏳'})</span>`).join(', ')}</div>`).join('');
     }
-    window.exportOrdersToExcel = () => { /* ... */ alert('Excel exported'); };
-    window.printStickersWord = () => { /* ... */ alert('Stickers printed'); };
+    window.exportOrdersToExcel = () => { alert('Excel exported (demo)'); };
+    window.printStickersWord = () => { alert('Stickers printed (demo)'); };
     function renderRecipientsTab() { document.getElementById('maxItemsLimit').value = STORAGE.maxItemsLimit(); document.getElementById('currentLimitDisplay').textContent = STORAGE.maxItemsLimit(); }
     window.saveMaxItemsLimit = () => { const v = parseInt(document.getElementById('maxItemsLimit').value); if (v > 0) { STORAGE.saveMaxItemsLimit(v); renderRecipientsTab(); } };
     window.openFullscreenPhoto = (src) => { if (!src) return; document.getElementById('fullscreenImage').src = src; document.getElementById('fullscreenPhotoModal').style.display = 'flex'; };
