@@ -94,7 +94,7 @@
 </head>
 <body>
 <div id="app">
-  <!-- АВТОРИЗАЦИЯ (без изменений) -->
+  <!-- АВТОРИЗАЦИЯ -->
   <div id="authScreen" class="screen active">
     <div class="auth-container">
       <div class="logo"><i class="fas fa-church" style="font-size:48px;color:#007aff;"></i><h1>Благотворительный фонд</h1><h2>«Три сестры»</h2></div>
@@ -223,7 +223,7 @@
 
 <script>
   (function(){
-    // ---------- Хранилище (расширенное) ----------
+    // ---------- Хранилище ----------
     const STORAGE = {
       users: () => JSON.parse(localStorage.getItem('fund_users') || '[]'),
       saveUsers: (u) => localStorage.setItem('fund_users', JSON.stringify(u)),
@@ -379,39 +379,20 @@
       document.getElementById('ordersList').innerHTML = orders.map(o => `<div class="order-card"><div><b>${o.id}</b> ${new Date(o.slotTime).toLocaleString()}<br>Статус: ${o.status}</div><div class="order-items">${o.items.map(i => `<span>${STORAGE.products().find(p=>p.id===i.productId)?.photos?.[0]?`<img src="${STORAGE.products().find(p=>p.id===i.productId).photos[0]}" style="width:20px;height:20px;border-radius:4px;" onclick="openFullscreenPhoto('${STORAGE.products().find(p=>p.id===i.productId).photos[0]}')">`:''} ${i.status==='approved'?'✓':i.status==='rejected'?'✗':'⏳'}</span>`).join(' ')}</div></div>`).join('');
     }
     function renderUserReviews() {
-  const user = STORAGE.currentUser();
-  const allReviews = STORAGE.reviews();
-  const issuedOrders = STORAGE.orders().filter(o => o.userId === user.id && o.issued && !o.archived);
-  const itemsForReview = [];
-  issuedOrders.forEach(order => {
-    order.items.forEach(item => {
-      if (item.status !== 'issued') return;
-      const existingReview = allReviews.find(r => r.orderId === order.id && r.productId === item.productId);
-      if (!existingReview || existingReview.status === 'rejected') {
-        itemsForReview.push({ order, item, review: existingReview });
-      }
-    });
-  });
-  const pendingCount = allReviews.filter(r => r.userId === user.id && r.status === 'pending').length;
-  document.getElementById('reviewBadge').textContent = itemsForReview.length;
-  let html = itemsForReview.map(({ order, item, review }) => {
-    const product = STORAGE.products().find(p => p.id === item.productId);
-    const status = review?.status === 'pending' ? 'pending' : (review?.status === 'rejected' ? 'rejected' : '');
-    return `<div class="review-item">
-      <img src="${product?.photos?.[0] || ''}" style="width:40px;height:40px;border-radius:8px;">
-      <div><b>${item.name}</b><br>Заказ ${order.id} от ${new Date(order.slotTime).toLocaleDateString()}</div>
-      ${status === 'pending' ? '<span>⏳ На модерации</span>' : 
-        `<input type="text" id="reviewLink-${order.id}-${item.productId}" placeholder="Ссылка ВК" style="flex:1;">
-         <button class="btn primary small" onclick="submitReview('${order.id}', '${item.productId}')">Отправить</button>`}
-    </div>`;
-  }).join('');
-  if (pendingCount) html += `<p style="margin-top:16px;">⏳ Отзывов на модерации: ${pendingCount}</p>`;
-  document.getElementById('pendingReviewsList').innerHTML = html || '<p>Нет товаров для отзыва</p>';
-}
+      const user = STORAGE.currentUser();
+      const allReviews = STORAGE.reviews();
+      const issuedOrders = STORAGE.orders().filter(o => o.userId === user.id && o.issued && !o.archived);
+      const itemsForReview = [];
+      issuedOrders.forEach(order => {
+        order.items.forEach(item => {
+          if (item.status !== 'issued') return;
+          const existingReview = allReviews.find(r => r.orderId === order.id && r.productId === item.productId);
+          if (!existingReview || existingReview.status === 'rejected') {
+            itemsForReview.push({ order, item, review: existingReview });
           }
         });
       });
-      const pendingCount = STORAGE.reviews().filter(r => r.userId === user.id && r.status === 'pending').length;
+      const pendingCount = allReviews.filter(r => r.userId === user.id && r.status === 'pending').length;
       document.getElementById('reviewBadge').textContent = itemsForReview.length;
       let html = itemsForReview.map(({ order, item, review }) => {
         const product = STORAGE.products().find(p => p.id === item.productId);
@@ -553,60 +534,36 @@
     window.openIssueModal = (orderId) => {
       currentIssueOrderId = orderId; const order = STORAGE.orders().find(o => o.id === orderId);
       const items = order.items.filter(i => i.status === 'approved');
-      document.getElementById('issueOrderItems').innerHTML = items.map((i, idx) => `<div class="checkbox-label"><input type="checkbox" id="issueItem-${idx}" checked> ${i.name}</div>`).join('');
+      document.getElementById('issueOrderItems').innerHTML = items.map((i, idx) => {
+        const photo = STORAGE.products().find(p => p.id === i.productId)?.photos?.[0] || '';
+        return `<div class="checkbox-label"><input type="checkbox" id="issueItem-${idx}" checked> <img src="${photo}" style="width:30px;height:30px;border-radius:15px;margin-right:8px;" onclick="openFullscreenPhoto('${photo}')"> ${i.name}</div>`;
+      }).join('');
       document.getElementById('issueOrderModal').style.display = 'flex';
     };
-    window.confirmIssueOrder = () => window.confirmIssueOrder = () => {
-  const order = STORAGE.orders().find(o => o.id === currentIssueOrderId);
-  if (!order) return;
-  const checkboxes = document.querySelectorAll('#issueOrderItems input[type="checkbox"]');
-  const issuedItems = [];
-  checkboxes.forEach((cb, idx) => {
-    if (cb.checked) issuedItems.push(order.items.filter(i => i.status === 'approved')[idx]);
-  });
-  order.items.forEach(i => {
-    if (issuedItems.includes(i)) i.status = 'issued';
-  });
-  order.issued = true;
-  order.archived = true;
-  STORAGE.saveOrders(STORAGE.orders());
-
-  // === НОВЫЙ БЛОК: создание отзывов для выданных товаров ===
-  const user = STORAGE.users().find(u => u.id === order.userId);
-  const allReviews = STORAGE.reviews();
-  issuedItems.forEach(item => {
-    const alreadyExists = allReviews.some(r =>
-      r.orderId === order.id &&
-      r.productId === item.productId &&
-      (r.status === 'pending' || r.status === 'rejected')
-    );
-    if (!alreadyExists) {
-      const review = {
-        id: 'rev-' + Date.now() + '-' + Math.random().toString(36),
-        userId: order.userId,
-        orderId: order.id,
-        productId: item.productId,
-        userName: `${order.recipient.firstName} ${order.recipient.lastName}`,
-        userAvatar: user?.avatar || '',
-        productName: item.name,
-        productPhoto: STORAGE.products().find(p => p.id === item.productId)?.photos?.[0] || '',
-        link: '',
-        status: 'pending'
-      };
-      allReviews.push(review);
-    }
-  });
-  STORAGE.saveReviews(allReviews);
-  // === КОНЕЦ НОВОГО БЛОКА ===
-
-  if (user) {
-    user.blocked = true;
-    STORAGE.saveUsers(STORAGE.users());
-  }
-  closeModal('issueOrderModal');
-  renderAllOrders();
-  alert('Заказ выдан и перемещён в архив');
-};
+    window.confirmIssueOrder = () => {
+      const order = STORAGE.orders().find(o => o.id === currentIssueOrderId); if (!order) return;
+      const checkboxes = document.querySelectorAll('#issueOrderItems input[type="checkbox"]');
+      const issuedItems = [];
+      checkboxes.forEach((cb, idx) => { if (cb.checked) issuedItems.push(order.items.filter(i => i.status === 'approved')[idx]); });
+      order.items.forEach(i => { if (issuedItems.includes(i)) i.status = 'issued'; });
+      order.issued = true; order.archived = true;
+      STORAGE.saveOrders(STORAGE.orders());
+      const user = STORAGE.users().find(u => u.id === order.userId);
+      const allReviews = STORAGE.reviews();
+      issuedItems.forEach(item => {
+        const alreadyExists = allReviews.some(r => r.orderId === order.id && r.productId === item.productId && (r.status === 'pending' || r.status === 'rejected'));
+        if (!alreadyExists) {
+          allReviews.push({
+            id: 'rev-' + Date.now() + '-' + Math.random().toString(36), userId: order.userId, orderId: order.id, productId: item.productId,
+            userName: `${order.recipient.firstName} ${order.recipient.lastName}`, userAvatar: user?.avatar || '',
+            productName: item.name, productPhoto: STORAGE.products().find(p => p.id === item.productId)?.photos?.[0] || '', link: '', status: 'pending'
+          });
+        }
+      });
+      STORAGE.saveReviews(allReviews);
+      if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users()); }
+      closeModal('issueOrderModal'); renderAllOrders(); alert('Заказ выдан и перемещён в архив');
+    };
     window.cancelOrder = (orderId) => {
       const order = STORAGE.orders().find(o => o.id === orderId); if (!order) return;
       order.items.forEach(i => { const prod = STORAGE.products().find(p => p.id === i.productId); if (prod) prod.availableQuantity++; });
