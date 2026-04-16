@@ -61,7 +61,7 @@
     .admin-product-card { background: white; border-radius: 20px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-content { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
-    .order-card { background: white; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+    .order-card { background: #e8f4ff; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
     .order-avatar { width: 50px; height: 50px; border-radius: 25px; object-fit: cover; background: #f2f2f7; }
     .order-info { flex: 1; }
     .order-items { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
@@ -94,7 +94,7 @@
 </head>
 <body>
 <div id="app">
-  <!-- АВТОРИЗАЦИЯ -->
+  <!-- АВТОРИЗАЦИЯ (без изменений) -->
   <div id="authScreen" class="screen active">
     <div class="auth-container">
       <div class="logo"><i class="fas fa-church" style="font-size:48px;color:#007aff;"></i><h1>Благотворительный фонд</h1><h2>«Три сестры»</h2></div>
@@ -195,9 +195,13 @@
         <div id="calendarDayDetails" style="margin-top: 20px;"></div>
       </div>
       <div id="adminHistory" class="admin-pane">
+        <div class="filter-bar">
+          <input type="text" id="orderSearchInput" placeholder="Поиск по номеру/ФИО/телефону" style="flex:2;">
+        </div>
         <div class="filter-bar" style="margin-bottom:8px;">
           <button class="btn secondary small" onclick="switchOrderView('today')">Заказы сегодня</button>
           <button class="btn secondary small" onclick="switchOrderView('all')">Все заказы</button>
+          <button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button>
         </div>
         <select id="adminOrderDateFilter" style="display:none;"><option value="">Все даты</option></select>
         <div id="allOrdersList"></div>
@@ -243,7 +247,7 @@
       if (STORAGE.users().length === 0) STORAGE.saveUsers([{ id: '1', firstName: 'Иван', lastName: 'Иванов', email: 'user@test.com', password: '123456', phone: '+79161234567', role: 'user', avatar: '' }, { id: 'adm', firstName: 'Админ', email: 'admin@fond.ru', password: 'admin123', role: 'admin', phone: '', avatar: '' }]);
       if (STORAGE.products().length === 0) STORAGE.saveProducts([{ id: 'p1', article: 'GR001', name: 'Гречка 1кг', category: 'Продукты', photos: [], quantity: 10, availableQuantity: 10, isPlaced: true }, { id: 'p2', article: 'RS002', name: 'Рис 1кг', category: 'Продукты', photos: [], quantity: 5, availableQuantity: 5, isPlaced: true }]);
       if (STORAGE.slots().length === 0) { let d = new Date(); d.setDate(d.getDate() + 1); STORAGE.saveSlots([{ id: 's1', datetime: d.toISOString().slice(0, 16), capacity: 5, used: 0 }]); }
-      if (STORAGE.orders().length === 0) STORAGE.saveOrders([{ id: 'ORD-demo', userId: '1', items: [{ productId: 'p1', article: 'GR001', name: 'Гречка 1кг', status: 'approved' }], slotId: 's1', slotTime: new Date().toISOString(), address: 'Южное Бутово, Остафьевская ул, 44', status: 'approved', createdAt: new Date().toISOString(), recipient: { firstName: 'Иван', lastName: 'Иванов', phone: '+79161234567', email: 'user@test.com' }, issued: false }]);
+      if (STORAGE.orders().length === 0) STORAGE.saveOrders([{ id: 'ORD-1001', userId: '1', items: [{ productId: 'p1', article: 'GR001', name: 'Гречка 1кг', status: 'approved' }], slotId: 's1', slotTime: new Date().toISOString(), address: 'Южное Бутово, Остафьевская ул, 44', status: 'approved', createdAt: new Date().toISOString(), recipient: { firstName: 'Иван', lastName: 'Иванов', phone: '+79161234567', email: 'user@test.com' }, issued: false, archived: false }]);
     }
     initData();
 
@@ -296,7 +300,7 @@
 
     function checkUserBlock() {
       const user = STORAGE.currentUser(); if (!user) return;
-      const pendingReviews = STORAGE.reviews().filter(r => r.userId === user.id && r.status === 'pending');
+      const pendingReviews = STORAGE.reviews().filter(r => r.userId === user.id && (r.status === 'pending' || r.status === 'rejected'));
       user.blocked = pendingReviews.length > 0;
       STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u));
     }
@@ -320,7 +324,7 @@
       document.getElementById('productsContainer').innerHTML = prods.map(p => `<div class="product-card"><div class="product-photo" onclick="openFullscreenPhoto('${p.photos?.[0]||''}')">${p.photos?.length?`<img src="${p.photos[0]}">`:'<i class="fas fa-image"></i>'}</div><h4>${p.name}</h4><small>${p.article}</small><div class="product-stats">В наличии: ${p.availableQuantity}</div><div class="product-stats">👥 Запросов: ${getProductRequestCount(p.id)}</div><button class="btn primary small" onclick="addToCart('${p.id}')">В корзину</button></div>`).join('');
     }
     window.addToCart = (prodId) => {
-      const user = STORAGE.currentUser(); if (user.blocked) return alert('Вы заблокированы до отправки отзывов');
+      const user = STORAGE.currentUser(); if (user.blocked) return alert('Вы заблокированы до отправки всех отзывов');
       const limit = STORAGE.maxItemsLimit(), cart = STORAGE.cart();
       if (cart.length >= limit) return alert(`Лимит ${limit}`);
       const p = STORAGE.products().find(p => p.id === prodId);
@@ -344,12 +348,12 @@
       L.marker([55.531570, 37.498393]).addTo(leafletMap).bindPopup('Южное Бутово, Остафьевская ул, 44').openPopup();
     }
     window.createOrder = () => {
-      const user = STORAGE.currentUser(); if (user.blocked) return alert('Вы заблокированы');
+      const user = STORAGE.currentUser(); if (user.blocked) return alert('Сначала оставьте отзывы на все полученные товары');
       const cart = STORAGE.cart(); if (!cart.length) return alert('Корзина пуста');
       const slotId = document.getElementById('timeSlotSelect').value; if (!slotId) return alert('Выберите время');
       const slots = STORAGE.slots(); const slot = slots.find(s => s.id === slotId); if (slot.used >= slot.capacity) return alert('Слот заполнен');
       const items = cart.map(p => ({ productId: p.id, article: p.article, name: p.name, status: 'pending' }));
-      const order = { id: 'ORD-' + Date.now(), userId: user.id, items, slotId: slot.id, slotTime: slot.datetime, address: 'Южное Бутово, Остафьевская ул, 44', status: 'pending', createdAt: new Date().toISOString(), recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email }, issued: false };
+      const order = { id: 'ORD-' + Date.now(), userId: user.id, items, slotId: slot.id, slotTime: slot.datetime, address: 'Южное Бутово, Остафьевская ул, 44', status: 'pending', createdAt: new Date().toISOString(), recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email }, issued: false, archived: false };
       STORAGE.saveOrders([...STORAGE.orders(), order]); slot.used++; STORAGE.saveSlots(slots); STORAGE.saveCart([]); updateCartBadge();
       alert('Заказ отправлен'); switchTab('orders');
     };
@@ -375,20 +379,43 @@
       document.getElementById('ordersList').innerHTML = orders.map(o => `<div class="order-card"><div><b>${o.id}</b> ${new Date(o.slotTime).toLocaleString()}<br>Статус: ${o.status}</div><div class="order-items">${o.items.map(i => `<span>${STORAGE.products().find(p=>p.id===i.productId)?.photos?.[0]?`<img src="${STORAGE.products().find(p=>p.id===i.productId).photos[0]}" style="width:20px;height:20px;border-radius:4px;" onclick="openFullscreenPhoto('${STORAGE.products().find(p=>p.id===i.productId).photos[0]}')">`:''} ${i.status==='approved'?'✓':i.status==='rejected'?'✗':'⏳'}</span>`).join(' ')}</div></div>`).join('');
     }
     function renderUserReviews() {
-      const user = STORAGE.currentUser(); const orders = STORAGE.orders().filter(o => o.userId === user.id && o.status === 'approved' && !o.issued);
-      const pending = STORAGE.reviews().filter(r => r.userId === user.id && r.status === 'pending');
-      document.getElementById('reviewBadge').textContent = orders.length;
-      let html = orders.map(o => `<div class="review-item"><img src="${STORAGE.products().find(p=>p.id===o.items[0].productId)?.photos?.[0]}" style="width:40px;height:40px;border-radius:8px;"><div><b>Заказ ${o.id}</b><br>${new Date(o.slotTime).toLocaleDateString()}</div><input type="text" id="reviewLink-${o.id}" placeholder="Ссылка ВК" style="flex:1;"><button class="btn primary small" onclick="submitReview('${o.id}')">Отправить</button></div>`).join('');
-      if (pending.length) html += '<p style="margin-top:16px;">⏳ Ожидает модерации: ' + pending.length + '</p>';
-      document.getElementById('pendingReviewsList').innerHTML = html || '<p>Нет заказов для отзыва</p>';
+      const user = STORAGE.currentUser(); 
+      const issuedOrders = STORAGE.orders().filter(o => o.userId === user.id && o.issued && !o.archived);
+      const itemsForReview = [];
+      issuedOrders.forEach(order => {
+        order.items.forEach(item => {
+          if (item.status === 'issued' || item.status === 'approved') {
+            const existingReview = STORAGE.reviews().find(r => r.orderId === order.id && r.productId === item.productId);
+            if (!existingReview || existingReview.status === 'rejected') {
+              itemsForReview.push({ order, item, review: existingReview });
+            }
+          }
+        });
+      });
+      const pendingCount = STORAGE.reviews().filter(r => r.userId === user.id && r.status === 'pending').length;
+      document.getElementById('reviewBadge').textContent = itemsForReview.length;
+      let html = itemsForReview.map(({ order, item, review }) => {
+        const product = STORAGE.products().find(p => p.id === item.productId);
+        const status = review?.status === 'pending' ? 'pending' : (review?.status === 'rejected' ? 'rejected' : '');
+        return `<div class="review-item">
+          <img src="${product?.photos?.[0] || ''}" style="width:40px;height:40px;border-radius:8px;">
+          <div><b>${item.name}</b><br>Заказ ${order.id} от ${new Date(order.slotTime).toLocaleDateString()}</div>
+          ${status === 'pending' ? '<span>⏳ На модерации</span>' : 
+            `<input type="text" id="reviewLink-${order.id}-${item.productId}" placeholder="Ссылка ВК" style="flex:1;">
+             <button class="btn primary small" onclick="submitReview('${order.id}', '${item.productId}')">Отправить</button>`}
+        </div>`;
+      }).join('');
+      if (pendingCount) html += `<p style="margin-top:16px;">⏳ Отзывов на модерации: ${pendingCount}</p>`;
+      document.getElementById('pendingReviewsList').innerHTML = html || '<p>Нет товаров для отзыва</p>';
     }
-    window.submitReview = (orderId) => {
-      const link = document.getElementById(`reviewLink-${orderId}`).value; if (!link) return alert('Введите ссылку');
+    window.submitReview = (orderId, productId) => {
+      const link = document.getElementById(`reviewLink-${orderId}-${productId}`).value; if (!link) return alert('Введите ссылку');
       const user = STORAGE.currentUser(); const order = STORAGE.orders().find(o => o.id === orderId);
-      const review = { id: 'rev-'+Date.now(), userId: user.id, orderId, userName: `${user.firstName} ${user.lastName}`, userAvatar: user.avatar, productName: order.items[0].name, productPhoto: STORAGE.products().find(p=>p.id===order.items[0].productId)?.photos?.[0], link, status: 'pending' };
+      const item = order.items.find(i => i.productId === productId);
+      const review = { id: 'rev-'+Date.now(), userId: user.id, orderId, productId, userName: `${user.firstName} ${user.lastName}`, userAvatar: user.avatar, productName: item.name, productPhoto: STORAGE.products().find(p=>p.id===productId)?.photos?.[0], link, status: 'pending' };
       STORAGE.saveReviews([...STORAGE.reviews(), review]);
       user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u));
-      alert('Отзыв отправлен на модерацию'); switchTab('reviews');
+      alert('Отзыв отправлен на модерацию'); renderUserReviews();
     };
 
     function updateUIForUser() { updateCartBadge(); renderProducts(); populateCategoryFilter(); switchTab('home'); updateHeaderAvatar(); checkUserBlock(); }
@@ -404,6 +431,7 @@
         if (btn.dataset.adminTab === 'calendar') renderCalendar();
         if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
       }));
+      document.getElementById('orderSearchInput').addEventListener('input', renderAllOrders);
     }
     function renderAdminProducts() {
       document.getElementById('adminProductsList').innerHTML = STORAGE.products().map(p => `<div class="admin-product-card"><div class="product-photo" onclick="openFullscreenPhoto('${p.photos?.[0]||''}')">${p.photos?.length?`<img src="${p.photos[0]}">`:'<i class="fas fa-image"></i>'}</div><h4>${p.name}</h4><small>${p.article}</small><div class="product-stats">В наличии: ${p.availableQuantity}/${p.quantity}</div><div>${p.isPlaced ? '✅ Размещён' : `⏳ Ожидает <button class="btn primary small" onclick="placeProduct('${p.id}')">Разместить</button>`}</div><i class="fas fa-trash text-danger" style="float:right;" onclick="deleteProduct('${p.id}')"></i></div>`).join('');
@@ -490,13 +518,17 @@
     function populateAdminOrderDateFilter() { const slots = STORAGE.slots(); const sel = document.getElementById('adminOrderDateFilter'); sel.innerHTML = '<option value="">Все даты</option>' + slots.map(s => `<option value="${s.datetime}">${new Date(s.datetime).toLocaleString()}</option>`).join(''); }
     function renderAllOrders() {
       let orders = STORAGE.orders();
-      if (currentOrderView === 'today') { const today = new Date().toISOString().slice(0,10); orders = orders.filter(o => o.slotTime?.startsWith(today) && o.status === 'approved' && !o.issued); }
-      else { const filter = document.getElementById('adminOrderDateFilter')?.value; if (filter) orders = orders.filter(o => o.slotTime === filter); }
+      if (currentOrderView === 'today') { const today = new Date().toISOString().slice(0,10); orders = orders.filter(o => !o.archived && o.slotTime?.startsWith(today) && o.status === 'approved' && !o.issued); }
+      else if (currentOrderView === 'all') { orders = orders.filter(o => !o.archived && !o.issued); const filter = document.getElementById('adminOrderDateFilter')?.value; if (filter) orders = orders.filter(o => o.slotTime === filter); }
+      else if (currentOrderView === 'archive') { orders = orders.filter(o => o.archived); }
+      const search = document.getElementById('orderSearchInput')?.value.toLowerCase() || '';
+      if (search) orders = orders.filter(o => o.id.toLowerCase().includes(search) || `${o.recipient?.firstName} ${o.recipient?.lastName}`.toLowerCase().includes(search) || o.recipient?.phone.includes(search));
       const users = STORAGE.users();
       document.getElementById('allOrdersList').innerHTML = orders.map(o => {
         const user = users.find(u => u.id === o.userId) || {};
         const distance = '~2.3 км';
-        return `<div class="order-card"><img src="${user.avatar || ''}" class="order-avatar" onerror="this.style.display='none'"><i class="fas fa-user-circle" style="font-size:40px;color:#007aff;${user.avatar?'display:none':''}"></i><div class="order-info"><b>${user.firstName} ${user.lastName}</b> 📞${user.phone}<br>${new Date(o.slotTime).toLocaleString()}<div class="order-items">${o.items.map(i => `<span>${STORAGE.products().find(p=>p.id===i.productId)?.photos?.[0]?`<img src="${STORAGE.products().find(p=>p.id===i.productId).photos[0]}" class="mini-photo" onclick="openFullscreenPhoto('${STORAGE.products().find(p=>p.id===i.productId).photos[0]}')">`:''} ${i.status==='approved'?'✓':i.status==='rejected'?'✗':'⏳'}</span>`).join(' ')}</div></div><div style="text-align:right;"><small>${distance}</small><br>${!o.issued ? `<button class="btn primary small" onclick="openIssueModal('${o.id}')">Выдать</button>` : ''}<button class="btn danger small" onclick="cancelOrder('${o.id}')">Отменить</button></div></div>`;
+        const statusText = o.archived ? (o.status === 'cancelled' ? 'Отменён' : 'Выдан') : '';
+        return `<div class="order-card"><img src="${user.avatar || ''}" class="order-avatar" onerror="this.style.display='none'"><i class="fas fa-user-circle" style="font-size:40px;color:#007aff;${user.avatar?'display:none':''}"></i><div class="order-info"><b>${o.id}</b> · ${user.firstName} ${user.lastName} 📞${user.phone}<br>${new Date(o.slotTime).toLocaleString()} ${statusText ? `· ${statusText}` : ''}<div class="order-items">${o.items.map(i => `<span>${STORAGE.products().find(p=>p.id===i.productId)?.photos?.[0]?`<img src="${STORAGE.products().find(p=>p.id===i.productId).photos[0]}" class="mini-photo" onclick="openFullscreenPhoto('${STORAGE.products().find(p=>p.id===i.productId).photos[0]}')">`:''} ${i.status==='approved'||i.status==='issued'?'✓':i.status==='rejected'?'✗':'⏳'}</span>`).join(' ')}</div></div><div style="text-align:right;"><small>${distance}</small><br>${!o.archived && currentOrderView === 'today' ? `<button class="btn primary small" onclick="openIssueModal('${o.id}')">Выдать</button>` : ''}${!o.archived ? `<button class="btn danger small" onclick="cancelOrder('${o.id}')">Отменить</button>` : ''}</div></div>`;
       }).join('') || '<p>Нет заказов</p>';
     }
     window.openIssueModal = (orderId) => {
@@ -510,20 +542,16 @@
       const checkboxes = document.querySelectorAll('#issueOrderItems input[type="checkbox"]');
       const issuedItems = []; checkboxes.forEach((cb, idx) => { if (cb.checked) issuedItems.push(order.items.filter(i => i.status === 'approved')[idx]); });
       order.items.forEach(i => { if (issuedItems.includes(i)) i.status = 'issued'; });
-      order.issued = true;
+      order.issued = true; order.archived = true;
       STORAGE.saveOrders(STORAGE.orders());
-      // Создаём задание на отзыв
-      const review = { id: 'rev-'+Date.now(), userId: order.userId, orderId: order.id, userName: order.recipient.firstName + ' ' + order.recipient.lastName, userAvatar: STORAGE.users().find(u=>u.id===order.userId)?.avatar, productName: issuedItems[0]?.name, productPhoto: STORAGE.products().find(p=>p.id===issuedItems[0]?.productId)?.photos?.[0], link: '', status: 'pending' };
-      STORAGE.saveReviews([...STORAGE.reviews(), review]);
-      const user = STORAGE.users().find(u => u.id === order.userId); if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users()); }
-      closeModal('issueOrderModal'); renderAllOrders(); alert('Заказ выдан, ожидается отзыв');
+      closeModal('issueOrderModal'); renderAllOrders(); alert('Заказ выдан и перемещён в архив');
     };
     window.cancelOrder = (orderId) => {
       const order = STORAGE.orders().find(o => o.id === orderId); if (!order) return;
       order.items.forEach(i => { const prod = STORAGE.products().find(p => p.id === i.productId); if (prod) prod.availableQuantity++; });
-      order.status = 'cancelled';
+      order.status = 'cancelled'; order.archived = true;
       STORAGE.saveProducts(STORAGE.products()); STORAGE.saveOrders(STORAGE.orders());
-      renderAllOrders(); alert('Заказ отменён, товары возвращены');
+      renderAllOrders(); alert('Заказ отменён и перемещён в архив');
     };
 
     // Отзывы (админ)
@@ -534,7 +562,8 @@
     window.approveReview = (reviewId) => {
       const reviews = STORAGE.reviews(); const review = reviews.find(r => r.id === reviewId); if (!review) return;
       review.status = 'approved';
-      const user = STORAGE.users().find(u => u.id === review.userId); if (user) { user.blocked = false; STORAGE.saveUsers(STORAGE.users()); }
+      const user = STORAGE.users().find(u => u.id === review.userId); 
+      if (user) { const pending = STORAGE.reviews().filter(r => r.userId === user.id && (r.status === 'pending' || r.status === 'rejected')); user.blocked = pending.length > 0; STORAGE.saveUsers(STORAGE.users()); }
       STORAGE.saveReviews(reviews); renderAdminReviews(); alert('Отзыв одобрен');
     };
     window.rejectReview = (reviewId) => {
