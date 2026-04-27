@@ -694,7 +694,8 @@
       order.items.forEach(item => {
         if (item.status !== 'issued') return;
         const exists = STORAGE.reviews().find(r => r.orderId === order.id && r.productId === item.productId);
-        if (!exists || exists.status === 'rejected') itemsForReview.push({ order, item, review: exists || null });
+        if (exists && exists.status === 'approved') return;
+itemsForReview.push({ order, item, review: exists || null });
       });
     });
     const badge = document.getElementById('reviewBadge');
