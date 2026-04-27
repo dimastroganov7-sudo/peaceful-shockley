@@ -27,7 +27,6 @@
     .btn.primary:active { background: #0051d5; }
     .btn.secondary { background: #f2f2f6; color: #007aff; }
     .btn.danger { background: #ff3b30; color: white; }
-    
     .btn.small { padding: 10px 16px; font-size: 14px; width: auto; }
     .link { color: #007aff; text-decoration: none; font-size: 14px; cursor: pointer; margin-top: 16px; display: inline-block; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: white; border-bottom: 1px solid rgba(0,0,0,0.05); }
@@ -55,7 +54,7 @@
     .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 11px; cursor: pointer; position: relative; font-weight: 500; }
     .nav-item i { font-size: 24px; margin-bottom: 4px; }
     .nav-item.active { color: #007aff; }
-    .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+    .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: none; align-items: center; justify-content: center; padding: 0 5px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
     .filter-bar select, .filter-bar input { flex: 1; padding: 12px 14px; border-radius: 16px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
     .admin-tabs { display: flex; border-bottom: 1px solid #e5e5ea; flex-wrap: wrap; }
@@ -64,7 +63,7 @@
     .admin-pane { display: none; padding: 20px; background: #f2f2f6; min-height: 100%; }
     .admin-pane.active { display: block; }
     .admin-products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
-    .admin-product-card { background: white; border-radius: 20px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+    .admin-product-card { background: white; border-radius: 20px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); position: relative; }
     .admin-product-card .product-photo { height: 100px; margin-bottom: 8px; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-content { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
@@ -91,6 +90,7 @@
     .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
+    .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; color: #007aff; padding: 8px; }
   </style>
 </head>
 <body>
@@ -170,9 +170,9 @@
     </div>
     <nav class="bottom-nav">
       <div class="nav-item active" data-tab="home"><i class="far fa-compass"></i><span>Главная</span></div>
-      <div class="nav-item" data-tab="cart"><i class="far fa-shopping-basket"></i><span>Корзина</span><span id="navCartBadge" class="badge" style="display:none;">0</span></div>
+      <div class="nav-item" data-tab="cart"><i class="far fa-shopping-basket"></i><span>Корзина</span><span id="navCartBadge" class="badge">0</span></div>
       <div class="nav-item" data-tab="orders"><i class="far fa-list-alt"></i><span>Заказы</span></div>
-      <div class="nav-item" data-tab="reviews"><i class="far fa-star"></i><span>Отзывы</span><span id="reviewBadge" class="badge" style="display:none;">0</span></div>
+      <div class="nav-item" data-tab="reviews"><i class="far fa-star"></i><span>Отзывы</span><span id="reviewBadge" class="badge">0</span></div>
     </nav>
   </div>
 
@@ -199,7 +199,7 @@
         <div id="petitionStats" class="text-center mt-2" style="color:#8e8e93;"></div>
       </div>
       <div id="adminCalendar" class="admin-pane">
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span id="calendarMonthYear" style="font-size:18px;font-weight:600;"></span><div><button class="btn small" onclick="changeCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button><button class="btn small" onclick="changeCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button></div></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span id="calendarMonthYear" style="font-size:18px;font-weight:600;"></span><div><button class="btn-icon" onclick="changeCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button><button class="btn-icon" onclick="changeCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button></div></div>
         <div class="calendar-grid" id="calendarGrid"></div>
         <button class="btn primary" style="margin-top:18px;" onclick="openAddSlotModal()">+ Добавить слот</button>
         <div id="slotsList" class="mt-2"></div>
@@ -273,34 +273,35 @@
   'use strict';
   function escapeHtml(str) { return String(str).replace(/[&<>"'/]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;'})[m]); }
 
-  function STORAGE() { /* инициализация при первом вызове */ }
-  STORAGE.users = () => JSON.parse(localStorage.getItem('f_users')||'[]');
-  STORAGE.saveUsers = u => localStorage.setItem('f_users',JSON.stringify(u));
-  STORAGE.products = () => JSON.parse(localStorage.getItem('f_products')||'[]');
-  STORAGE.saveProducts = p => localStorage.setItem('f_products',JSON.stringify(p));
-  STORAGE.slots = () => JSON.parse(localStorage.getItem('f_slots')||'[]');
-  STORAGE.saveSlots = s => localStorage.setItem('f_slots',JSON.stringify(s));
-  STORAGE.orders = () => JSON.parse(localStorage.getItem('f_orders')||'[]');
-  STORAGE.saveOrders = o => localStorage.setItem('f_orders',JSON.stringify(o));
-  STORAGE.reviews = () => JSON.parse(localStorage.getItem('f_reviews')||'[]');
-  STORAGE.saveReviews = r => localStorage.setItem('f_reviews',JSON.stringify(r));
-  STORAGE.currentUser = () => JSON.parse(sessionStorage.getItem('f_curUser')||'null');
-  STORAGE.setCurrentUser = u => sessionStorage.setItem('f_curUser',JSON.stringify(u));
-  STORAGE.cart = () => JSON.parse(localStorage.getItem('f_cart')||'[]');
-  STORAGE.saveCart = c => localStorage.setItem('f_cart',JSON.stringify(c));
-  STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
-  STORAGE.saveMaxLimit = v => localStorage.setItem('f_maxLimit',v);
+  const STORAGE = {
+    users: () => JSON.parse(localStorage.getItem('f_users')||'[]'),
+    saveUsers: u => localStorage.setItem('f_users',JSON.stringify(u)),
+    products: () => JSON.parse(localStorage.getItem('f_products')||'[]'),
+    saveProducts: p => localStorage.setItem('f_products',JSON.stringify(p)),
+    slots: () => JSON.parse(localStorage.getItem('f_slots')||'[]'),
+    saveSlots: s => localStorage.setItem('f_slots',JSON.stringify(s)),
+    orders: () => JSON.parse(localStorage.getItem('f_orders')||'[]'),
+    saveOrders: o => localStorage.setItem('f_orders',JSON.stringify(o)),
+    reviews: () => JSON.parse(localStorage.getItem('f_reviews')||'[]'),
+    saveReviews: r => localStorage.setItem('f_reviews',JSON.stringify(r)),
+    currentUser: () => JSON.parse(sessionStorage.getItem('f_curUser')||'null'),
+    setCurrentUser: u => sessionStorage.setItem('f_curUser',JSON.stringify(u)),
+    cart: () => JSON.parse(localStorage.getItem('f_cart')||'[]'),
+    saveCart: c => localStorage.setItem('f_cart',JSON.stringify(c)),
+    maxLimit: () => parseInt(localStorage.getItem('f_maxLimit')||'10'),
+    saveMaxLimit: v => localStorage.setItem('f_maxLimit',v)
+  };
 
-  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
+  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null,
+    currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
+    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
 
-  // Хеширование
   async function hashPassword(pwd) {
     const enc = new TextEncoder().encode(pwd);
     const hash = await crypto.subtle.digest('SHA-256', enc);
     return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  // Инициализация данных
   async function initData() {
     if (!STORAGE.users().length) {
       STORAGE.saveUsers([
@@ -331,7 +332,6 @@
     }
   }
 
-  // Глобальные функции
   window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
   window.closeModal = (id) => {
@@ -372,7 +372,6 @@
     document.getElementById(id).classList.add('active');
   }
 
-  // Навигация
   document.querySelectorAll('.bottom-nav .nav-item').forEach(el => {
     el.addEventListener('click', () => switchTab(el.dataset.tab));
   });
@@ -386,10 +385,10 @@
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
     if (tabId === 'cart') { renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
     if (tabId === 'profile') renderProfile();
-    if (tabId === 'orders') { 
-      document.getElementById('ordersListView').style.display = 'block'; 
-      document.getElementById('orderDetailsView').style.display = 'none'; 
-      renderUserOrders(); 
+    if (tabId === 'orders') {
+      document.getElementById('ordersListView').style.display = 'block';
+      document.getElementById('orderDetailsView').style.display = 'none';
+      renderUserOrders();
     }
     if (tabId === 'reviews') renderUserReviews();
   };
@@ -416,7 +415,7 @@
     else if (sort === 'old') prods.sort((a,b) => a.id.localeCompare(b.id));
     document.getElementById('productsContainer').innerHTML = prods.map(p => `
       <div class="product-card" onclick="openProductDetail('${p.id}','home')">
-        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="">` : '<i class="far fa-image"></i>'}</div>
+        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image"></i>'}</div>
         <h4 style="font-weight:600;">${escapeHtml(p.name)}</h4>
         <small style="color:#8e8e93;">${escapeHtml(p.article)}</small>
         <div class="product-stats">В наличии: ${p.availableQuantity}</div>
@@ -562,7 +561,7 @@
     reader.readAsDataURL(file);
   };
 
-  // Заказы пользователя - АКТИВНЫЕ, с фото сразу
+  // Заказы пользователя
   window.renderUserOrders = () => {
     const user = STORAGE.currentUser();
     if (!user) return;
@@ -618,7 +617,7 @@
       <div style="display:flex;gap:14px;padding:18px 16px;overflow-x:auto;">
         ${order.items.map(i => {
           const prod = STORAGE.products().find(p => p.id === i.productId);
-          return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'">`;
+          return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'" style="width:72px;height:72px;border-radius:18px;object-fit:cover;border:3px solid ${i.productId === selectedDetailItemId ? '#007aff' : 'transparent'};cursor:pointer;flex-shrink:0;background:#f2f2f6;">`;
         }).join('')}
       </div>
       <div style="padding:0 18px;">
@@ -635,10 +634,7 @@
         <div class="text-center" style="color:#8e8e93;">${escapeHtml(order.address)}<br>Плановая дата: ${new Date(order.slotTime).toLocaleDateString('ru-RU')}</div>
       </div>`;
   }
-  window.selectDetailItem = (productId) => {
-    selectedDetailItemId = productId;
-    renderOrderDetail();
-  };
+  window.selectDetailItem = (productId) => { selectedDetailItemId = productId; renderOrderDetail(); };
   window.closeOrderDetails = () => {
     document.getElementById('ordersListView').style.display = 'block';
     document.getElementById('orderDetailsView').style.display = 'none';
@@ -663,10 +659,11 @@
         <p style="color:#8e8e93;">${escapeHtml(prod.article)}</p>
         <p>${escapeHtml(prod.description || 'Описание отсутствует')}</p>
       </div>
-      <button class="btn primary" style="margin:0 18px 18px;width:calc(100%-36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
+      <button class="btn primary" style="margin:0 18px 18px;width:calc(100% - 36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
   };
   window.switchDetailPhoto = (src, el) => {
-    document.getElementById('detailMainPhoto').src = src;
+    const main = document.getElementById('detailMainPhoto');
+    if (main) main.src = src;
     document.querySelectorAll('#productDetailContent img').forEach(i => i.style.borderColor = 'transparent');
     el.style.borderColor = '#007aff';
   };
@@ -680,21 +677,12 @@
     updateCartBadge();
     closeModal('productDetailModal');
   };
-  window.addToCartFromDetail = (prodId) => {
-    const p = STORAGE.products().find(p => p.id === prodId);
-    if (!p) return;
-    if (p.sizes && p.sizes.length) { /* размеры уже показаны */ return; }
-    addToCart(prodId);
-    closeModal('productDetailModal');
-  };
+  window.addToCartFromDetail = (prodId) => { addToCart(prodId); closeModal('productDetailModal'); };
   window.closeProductDetail = () => {
     document.getElementById('productDetailModal').style.display = 'none';
     if (returnToScreen === 'cart') switchTab('cart');
   };
-  window.shareProduct = () => {
-    if (navigator.share) navigator.share({ title: 'Товар', url: window.location.href });
-    else alert('Поделиться');
-  };
+  window.shareProduct = () => { if (navigator.share) navigator.share({ title: 'Товар', url: window.location.href }); else alert('Поделиться'); };
 
   // Отзывы
   window.renderUserReviews = () => {
@@ -706,9 +694,7 @@
       order.items.forEach(item => {
         if (item.status !== 'issued') return;
         const exists = STORAGE.reviews().find(r => r.orderId === order.id && r.productId === item.productId);
-        if (!exists || exists.status === 'rejected') {
-          itemsForReview.push({ order, item, review: exists || null });
-        }
+        if (!exists || exists.status === 'rejected') itemsForReview.push({ order, item, review: exists || null });
       });
     });
     const badge = document.getElementById('reviewBadge');
@@ -741,7 +727,6 @@
     alert('Отзыв отправлен на модерацию');
     renderUserReviews();
   };
-
   function checkUserBlock() {
     const user = STORAGE.currentUser();
     if (!user) return;
@@ -760,7 +745,7 @@
     renderPetitions();
     renderAdminReviews();
     document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.onclick = () => {
         document.querySelectorAll('.admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
@@ -769,19 +754,18 @@
         if (btn.dataset.adminTab === 'petitions') renderPetitions();
         if (btn.dataset.adminTab === 'calendar') renderCalendar();
         if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
-      });
+      };
     });
-    document.getElementById('orderSearchInput').addEventListener('input', renderAllOrders);
+    document.getElementById('orderSearchInput').oninput = renderAllOrders;
   }
-
   function renderAdminProducts() {
     document.getElementById('adminProductsList').innerHTML = STORAGE.products().map(p => `
       <div class="admin-product-card">
-        <div class="product-photo" onclick="openFullscreenPhoto('${p.photos?.[0]||''}')">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="">` : '<i class="far fa-image"></i>'}</div>
+        <div class="product-photo" onclick="openFullscreenPhoto('${p.photos?.[0]||''}')">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image"></i>'}</div>
         <h4>${escapeHtml(p.name)}</h4><small>${escapeHtml(p.article)}</small>
-        <div>В наличии: ${p.availableQuantity}/${p.quantity}</div>
-        <div>${p.isPlaced ? '✅ Размещён' : `<button class="btn primary small" onclick="placeProduct('${p.id}')">Разместить</button>`}</div>
-        <i class="fas fa-trash" style="float:right;cursor:pointer;color:#ff3b30;" onclick="deleteProduct('${p.id}')"></i>
+        <div style="font-size:13px;color:#8e8e93;">В наличии: ${p.availableQuantity}/${p.quantity}</div>
+        <div style="margin:6px 0;">${p.isPlaced ? '✅ Размещён' : `<button class="btn primary small" onclick="placeProduct('${p.id}')">Разместить</button>`}</div>
+        <i class="fas fa-trash" style="position:absolute;top:10px;right:10px;cursor:pointer;color:#ff3b30;" onclick="event.stopPropagation();deleteProduct('${p.id}')"></i>
       </div>`).join('');
   }
   window.placeProduct = (id) => {
@@ -797,8 +781,14 @@
     document.getElementById('addProductModal').style.display = 'flex';
     tempProductPhotos = [];
     document.getElementById('photoPreviewContainer').innerHTML = '';
+    document.getElementById('prodName').value = '';
+    document.getElementById('prodArticle').value = '';
+    document.getElementById('prodSizes').value = '';
+    document.getElementById('prodDescription').value = '';
+    document.getElementById('prodQuantity').value = 1;
+    document.getElementById('prodPlaceImmediately').checked = true;
   };
-  document.getElementById('productPhotosInput').addEventListener('change', function() {
+  document.getElementById('productPhotosInput').onchange = function() {
     const files = Array.from(this.files).slice(0, 3);
     const preview = document.getElementById('photoPreviewContainer');
     preview.innerHTML = '';
@@ -814,7 +804,7 @@
       };
       reader.readAsDataURL(f);
     });
-  });
+  };
   window.addProduct = () => {
     const name = document.getElementById('prodName').value.trim();
     const article = document.getElementById('prodArticle').value.trim();
@@ -834,7 +824,6 @@
     renderProducts();
     populateCategoryFilter();
   };
-
   function renderAdminSlots() {
     document.getElementById('slotsList').innerHTML = STORAGE.slots().map(s => `
       <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:16px;padding:12px;margin-bottom:8px;">
@@ -842,22 +831,15 @@
         <i class="fas fa-trash" style="color:#ff3b30;cursor:pointer;" onclick="deleteSlot('${s.id}')"></i>
       </div>`).join('');
   }
-  window.deleteSlot = (id) => {
-    STORAGE.saveSlots(STORAGE.slots().filter(s => s.id !== id));
-    renderAdminSlots();
-    renderCalendar();
-  };
+  window.deleteSlot = (id) => { STORAGE.saveSlots(STORAGE.slots().filter(s => s.id !== id)); renderAdminSlots(); renderCalendar(); };
   window.openAddSlotModal = () => { document.getElementById('addSlotModal').style.display = 'flex'; };
   window.addSlot = () => {
     const dt = document.getElementById('slotDateTime').value;
     const cap = parseInt(document.getElementById('slotCapacity').value);
     if (!dt || !cap) { alert('Заполните все поля'); return; }
     STORAGE.saveSlots([...STORAGE.slots(), { id: 's_'+Date.now(), datetime: dt, capacity: cap, used: 0 }]);
-    closeModal('addSlotModal');
-    renderAdminSlots();
-    renderCalendar();
+    closeModal('addSlotModal'); renderAdminSlots(); renderCalendar();
   };
-
   function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
@@ -869,26 +851,19 @@
     for (let i = 1; i < firstDay; i++) html += '<div></div>';
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const isSel = selectedCalendarDate === dateStr;
-      html += `<div class="calendar-day ${slotDates.includes(dateStr) ? 'has-slot' : ''} ${isSel ? 'selected' : ''}" onclick="selectCalendarDate('${dateStr}')">${d}</div>`;
+      html += `<div class="calendar-day ${slotDates.includes(dateStr) ? 'has-slot' : ''} ${selectedCalendarDate === dateStr ? 'selected' : ''}" onclick="selectCalendarDate('${dateStr}')">${d}</div>`;
     }
     document.getElementById('calendarGrid').innerHTML = html;
   }
-  window.changeCalendarMonth = (d) => {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + d);
-    renderCalendar();
-  };
+  window.changeCalendarMonth = (d) => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + d); renderCalendar(); };
   window.selectCalendarDate = (dateStr) => {
-    selectedCalendarDate = dateStr;
-    renderCalendar();
+    selectedCalendarDate = dateStr; renderCalendar();
     const orders = STORAGE.orders().filter(o => o.slotTime?.startsWith(dateStr) && o.status === 'approved');
     const aggregated = {};
     orders.forEach(o => {
       o.items.forEach(item => {
         if (item.status !== 'approved') return;
-        if (!aggregated[item.productId]) {
-          aggregated[item.productId] = { product: STORAGE.products().find(p => p.id === item.productId), count: 0 };
-        }
+        if (!aggregated[item.productId]) aggregated[item.productId] = { product: STORAGE.products().find(p => p.id === item.productId), count: 0 };
         aggregated[item.productId].count++;
       });
     });
@@ -896,7 +871,7 @@
       <div style="display:flex;align-items:center;gap:12px;padding:12px;background:white;border-radius:16px;margin-bottom:8px;">
         <img src="${a.product?.photos?.[0]||''}" style="width:40px;height:40px;border-radius:12px;object-fit:cover;" onerror="this.style.display='none'">
         <div><b>${escapeHtml(a.product?.name||'')}</b><br>Одобрено: ${a.count} шт.</div>
-      </div>`).join('') || '<p>Нет одобренных товаров на эту дату</p>';
+      </div>`).join('') || '<p class="text-center">Нет одобренных товаров на эту дату</p>';
   };
 
   // Прошения
@@ -938,24 +913,10 @@
     const available = STORAGE.products().filter(p => petitions.some(pt => pt.productId === p.id)).reduce((s,p) => s + p.availableQuantity, 0);
     document.getElementById('petitionStats').textContent = `🔍 Найдено позиций: ${petitions.length} | Остаток выбранных товаров: ${available}`;
   };
-  window.togglePhotoFilter = (pid) => {
-    selectedPhotoFilters.has(pid) ? selectedPhotoFilters.delete(pid) : selectedPhotoFilters.add(pid);
-    renderPetitions();
-  };
-  window.togglePetitionSelectMode = () => {
-    petitionSelectMode = !petitionSelectMode;
-    selectedPetitionKeys.clear();
-    document.getElementById('toggleSelectModeBtn').textContent = petitionSelectMode ? 'Готово' : 'Выбрать';
-    renderPetitions();
-  };
-  window.togglePetitionSelection = (key) => {
-    selectedPetitionKeys.has(key) ? selectedPetitionKeys.delete(key) : selectedPetitionKeys.add(key);
-    renderPetitions();
-  };
-  window.selectAllPetitions = () => {
-    getPetitionItems().forEach(p => selectedPetitionKeys.add(p.key));
-    renderPetitions();
-  };
+  window.togglePhotoFilter = (pid) => { selectedPhotoFilters.has(pid) ? selectedPhotoFilters.delete(pid) : selectedPhotoFilters.add(pid); renderPetitions(); };
+  window.togglePetitionSelectMode = () => { petitionSelectMode = !petitionSelectMode; selectedPetitionKeys.clear(); document.getElementById('toggleSelectModeBtn').textContent = petitionSelectMode ? 'Готово' : 'Выбрать'; renderPetitions(); };
+  window.togglePetitionSelection = (key) => { selectedPetitionKeys.has(key) ? selectedPetitionKeys.delete(key) : selectedPetitionKeys.add(key); renderPetitions(); };
+  window.selectAllPetitions = () => { getPetitionItems().forEach(p => selectedPetitionKeys.add(p.key)); renderPetitions(); };
   function processPetitionItem(orderId, itemIndex, approve) {
     const orders = STORAGE.orders();
     const order = orders.find(o => o.id === orderId);
@@ -968,9 +929,7 @@
       prod.availableQuantity--;
       STORAGE.saveProducts(STORAGE.products());
       item.status = 'approved';
-    } else {
-      item.status = 'rejected';
-    }
+    } else item.status = 'rejected';
     const statuses = order.items.map(i => i.status);
     order.status = statuses.every(s => s === 'approved') ? 'approved' : statuses.every(s => s === 'rejected') ? 'rejected' : 'partially_approved';
     STORAGE.saveOrders(orders);
@@ -979,52 +938,35 @@
   window.approvePetitionItem = (oid, idx) => { processPetitionItem(oid, idx, true); selectedPetitionKeys.clear(); renderPetitions(); renderAdminProducts(); };
   window.rejectPetitionItem = (oid, idx) => { processPetitionItem(oid, idx, false); selectedPetitionKeys.clear(); renderPetitions(); };
   window.bulkApprovePetitions = () => {
-    for (const key of selectedPetitionKeys) {
-      const [oid, idx] = key.split('|');
-      if (!processPetitionItem(oid, parseInt(idx), true)) break;
-    }
-    selectedPetitionKeys.clear();
-    renderPetitions();
-    renderAdminProducts();
+    for (const key of selectedPetitionKeys) { const [oid, idx] = key.split('|'); if (!processPetitionItem(oid, parseInt(idx), true)) break; }
+    selectedPetitionKeys.clear(); renderPetitions(); renderAdminProducts();
   };
   window.bulkRejectPetitions = () => {
-    for (const key of selectedPetitionKeys) {
-      const [oid, idx] = key.split('|');
-      processPetitionItem(oid, parseInt(idx), false);
-    }
-    selectedPetitionKeys.clear();
-    renderPetitions();
+    for (const key of selectedPetitionKeys) { const [oid, idx] = key.split('|'); processPetitionItem(oid, parseInt(idx), false); }
+    selectedPetitionKeys.clear(); renderPetitions();
   };
 
   // Заказы (админ)
-  window.switchOrderView = (view) => {
-    currentOrderView = view;
-    document.getElementById('adminOrderDateFilter').style.display = view === 'all' ? 'block' : 'none';
-    renderAllOrders();
-  };
+  window.switchOrderView = (view) => { currentOrderView = view; document.getElementById('adminOrderDateFilter').style.display = view === 'all' ? 'block' : 'none'; renderAllOrders(); };
   function populateAdminOrderDateFilter() {
     const dates = [...new Set(STORAGE.orders().map(o => o.slotTime?.split('T')[0]).filter(Boolean))].sort();
     document.getElementById('adminOrderDateFilter').innerHTML = '<option value="">Все даты</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
   }
   window.renderAllOrders = () => {
     let orders = STORAGE.orders();
-    if (currentOrderView === 'today') {
-      const today = new Date().toISOString().slice(0, 10);
-      orders = orders.filter(o => !o.archived && o.slotTime?.startsWith(today) && o.status === 'approved' && !o.issued);
-    } else if (currentOrderView === 'all') {
+    if (currentOrderView === 'today') orders = orders.filter(o => !o.archived && o.slotTime?.startsWith(new Date().toISOString().slice(0,10)) && o.status === 'approved' && !o.issued);
+    else if (currentOrderView === 'all') {
       orders = orders.filter(o => !o.archived && !o.issued);
       const filter = document.getElementById('adminOrderDateFilter')?.value;
       if (filter) orders = orders.filter(o => o.slotTime?.startsWith(filter));
-    } else {
-      orders = orders.filter(o => o.archived);
-    }
+    } else orders = orders.filter(o => o.archived);
     const search = document.getElementById('orderSearchInput')?.value.toLowerCase() || '';
     if (search) orders = orders.filter(o => o.id.toLowerCase().includes(search) || `${o.recipient.firstName} ${o.recipient.lastName}`.toLowerCase().includes(search) || o.recipient.phone.includes(search));
     document.getElementById('allOrdersList').innerHTML = orders.map(o => `
       <div class="order-card">
         <div><b>${o.id}</b> · ${escapeHtml(o.recipient.firstName)} ${escapeHtml(o.recipient.lastName)} 📞${escapeHtml(o.recipient.phone)}<br>${new Date(o.slotTime).toLocaleString('ru-RU')}</div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">${o.items.map(i => `<span style="font-size:13px;">${escapeHtml(i.name)} (${i.status==='approved'||i.status==='issued'?'✅':i.status==='rejected'?'❌':'⏳'})</span>`).join(' ')}</div>
-        ${!o.archived ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
+        ${!o.archived ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="event.stopPropagation();openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="event.stopPropagation();cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
       </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
   };
   window.openIssueModal = (orderId) => {
@@ -1046,8 +988,7 @@
     const issuedIds = new Set();
     checkboxes.forEach((cb, idx) => { if (cb.checked) issuedIds.add(approvedItems[idx].productId); });
     order.items.forEach(i => { if (i.status === 'approved' && issuedIds.has(i.productId)) i.status = 'issued'; });
-    order.issued = true;
-    order.archived = true;
+    order.issued = true; order.archived = true;
     STORAGE.saveOrders(STORAGE.orders());
     const user = STORAGE.users().find(u => u.id === order.userId);
     const allReviews = STORAGE.reviews();
@@ -1058,8 +999,7 @@
           id: 'rev-'+Date.now()+'-'+Math.random().toString(36).slice(2),
           userId: order.userId, orderId: order.id, productId,
           userName: `${order.recipient.firstName} ${order.recipient.lastName}`,
-          userAvatar: user?.avatar || '',
-          productName: item.name,
+          userAvatar: user?.avatar || '', productName: item.name,
           productPhoto: STORAGE.products().find(p => p.id === productId)?.photos?.[0] || '',
           link: '', status: 'pending'
         });
@@ -1067,25 +1007,16 @@
     });
     STORAGE.saveReviews(allReviews);
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    closeModal('issueOrderModal');
-    renderAllOrders();
+    closeModal('issueOrderModal'); renderAllOrders();
     alert('Заказ выдан и перемещён в архив');
   };
   window.cancelOrder = (orderId) => {
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
-    order.items.forEach(i => {
-      if (i.status === 'approved') {
-        const prod = STORAGE.products().find(p => p.id === i.productId);
-        if (prod) prod.availableQuantity++;
-      }
-    });
-    order.status = 'cancelled';
-    order.archived = true;
-    STORAGE.saveProducts(STORAGE.products());
-    STORAGE.saveOrders(STORAGE.orders());
-    renderAllOrders();
-    alert('Заказ отменён и перемещён в архив');
+    order.items.forEach(i => { if (i.status === 'approved') { const prod = STORAGE.products().find(p => p.id === i.productId); if (prod) prod.availableQuantity++; } });
+    order.status = 'cancelled'; order.archived = true;
+    STORAGE.saveProducts(STORAGE.products()); STORAGE.saveOrders(STORAGE.orders());
+    renderAllOrders(); alert('Заказ отменён и перемещён в архив');
   };
 
   // Отзывы (админ)
@@ -1100,49 +1031,34 @@
       </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет отзывов на модерации</p>';
   }
   window.approveReview = (reviewId) => {
-    const reviews = STORAGE.reviews();
-    const review = reviews.find(r => r.id === reviewId);
-    if (!review) return;
-    review.status = 'approved';
-    STORAGE.saveReviews(reviews);
+    const reviews = STORAGE.reviews(); const review = reviews.find(r => r.id === reviewId);
+    if (!review) return; review.status = 'approved'; STORAGE.saveReviews(reviews);
     const user = STORAGE.users().find(u => u.id === review.userId);
     if (user) { user.blocked = STORAGE.reviews().filter(r => r.userId === user.id && (r.status === 'pending' || r.status === 'rejected')).length > 0; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    renderAdminReviews();
-    alert('Отзыв одобрен');
+    renderAdminReviews(); alert('Отзыв одобрен');
   };
   window.rejectReview = (reviewId) => {
-    const reviews = STORAGE.reviews();
-    const review = reviews.find(r => r.id === reviewId);
-    if (!review) return;
-    review.status = 'rejected';
-    STORAGE.saveReviews(reviews);
+    const reviews = STORAGE.reviews(); const review = reviews.find(r => r.id === reviewId);
+    if (!review) return; review.status = 'rejected'; STORAGE.saveReviews(reviews);
     const user = STORAGE.users().find(u => u.id === review.userId);
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    renderAdminReviews();
-    alert('Отзыв отклонён');
+    renderAdminReviews(); alert('Отзыв отклонён');
   };
 
-  function renderRecipientsTab() {
-    document.getElementById('maxItemsLimit').value = STORAGE.maxLimit();
-  }
+  function renderRecipientsTab() { document.getElementById('maxItemsLimit').value = STORAGE.maxLimit(); }
   window.saveMaxItemsLimit = () => {
     const v = parseInt(document.getElementById('maxItemsLimit').value);
-    if (v > 0) { STORAGE.saveMaxLimit(v); renderRecipientsTab(); }
-    else alert('Лимит должен быть больше 0');
+    if (v > 0) { STORAGE.saveMaxLimit(v); renderRecipientsTab(); } else alert('Лимит должен быть больше 0');
   };
-  window.openFullscreenPhoto = (src) => {
-    if (!src) return;
-    document.getElementById('fullscreenImage').src = src;
-    document.getElementById('fullscreenPhotoModal').style.display = 'flex';
-  };
+  window.openFullscreenPhoto = (src) => { if (!src) return; document.getElementById('fullscreenImage').src = src; document.getElementById('fullscreenPhotoModal').style.display = 'flex'; };
 
-  // Вспомогательные функции
   function updateHeaderAvatar() {
     const u = STORAGE.currentUser();
     const icon = document.getElementById('headerProfileIcon');
     if (u?.avatar) icon.innerHTML = `<img src="${u.avatar}" alt="">`;
     else icon.innerHTML = '<i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i>';
   }
+
   function updateUIForUser() {
     updateCartBadge();
     renderProducts();
@@ -1158,7 +1074,7 @@
   });
   document.getElementById('sizeSelectModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSizeModal(); });
 
-  // Синхронизация между вкладами
+  // Синхронизация
   window.addEventListener('storage', e => {
     if (e.key?.startsWith('f_')) {
       const cur = STORAGE.currentUser();
@@ -1173,13 +1089,10 @@
     if (cur) {
       if (cur.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
       else { showScreen('mainScreen'); updateUIForUser(); }
-    } else {
-      showScreen('authScreen');
-    }
+    } else showScreen('authScreen');
     updateCartBadge();
   });
 })();
 </script>
 </body>
 </html>
-`
