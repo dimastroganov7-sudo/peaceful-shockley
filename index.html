@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -58,63 +59,24 @@
     .tab-btn { flex: 1; padding: 14px 8px; background: none; border: none; font-size: 14px; font-weight: 500; color: #8e8e93; cursor: pointer; }
     .tab-btn.active { color: #007aff; border-bottom: 2px solid #007aff; }
     .admin-pane { display: none; padding: 20px; }
-    .admin-pane.active { display: block; }
+    .admin-pane.active { display: block; background: #f2f2f6; }
     .admin-products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
     .admin-product-card { background: white; border-radius: 20px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-content { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
     .order-card { background: white; border-radius: 22px; padding: 18px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-    .order-header { display: flex; flex-direction: column; }
-    .order-status { font-size: 17px; font-weight: 700; }
-    .order-date { color: #8e8e93; margin: 4px 0; }
-    .order-address { color: #8e8e93; font-size: 14px; }
-    .order-items-preview { display: flex; gap: 10px; margin: 14px 0; flex-wrap: wrap; }
-    .order-item-img { width: 56px; height: 56px; border-radius: 16px; object-fit: cover; background: #f2f2f6; }
-    .order-item-status { font-size: 12px; margin-top: 4px; text-align: center; font-weight: 500; }
-    .details-link { color: #007aff; font-weight: 600; cursor: pointer; margin-top: 8px; display: inline-block; font-size: 15px; }
-    .detail-view { display: none; flex-direction: column; height: 100%; }
-    .detail-view.active { display: flex; }
-    .detail-header { display: flex; align-items: center; padding: 16px; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); }
-    .detail-header i { font-size: 22px; cursor: pointer; color: #007aff; }
-    .detail-title { flex: 1; text-align: center; font-weight: 600; font-size: 18px; }
-    .detail-photos { display: flex; gap: 14px; padding: 18px 16px; overflow-x: auto; }
-    .detail-photo { width: 72px; height: 72px; border-radius: 18px; object-fit: cover; border: 3px solid transparent; cursor: pointer; transition: 0.15s; }
-    .detail-photo.selected { border-color: #007aff; }
-    .detail-info { padding: 0 18px 20px; }
-    .detail-product-name { display: flex; align-items: center; justify-content: space-between; font-size: 18px; font-weight: 600; }
-    .status-line { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 24px 0; padding: 0 16px; }
     .status-step { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 12px; font-weight: 500; color: #8e8e93; }
     .status-icon { width: 44px; height: 44px; border-radius: 22px; background: #f2f2f6; display: flex; align-items: center; justify-content: center; font-size: 22px; }
     .status-step.active .status-icon { background: #007aff; color: white; }
     .status-step.active { color: #007aff; }
-    .status-arrow { color: #c7c7cc; font-size: 24px; margin: 0 -4px; }
-    .pickup-info { text-align: center; color: #8e8e93; margin-top: 18px; font-size: 14px; }
-    .product-detail-modal .modal-content { max-width: 400px; padding: 0; border-radius: 28px; overflow: hidden; }
-    .product-detail-photo { width: 100%; height: 240px; background: #f2f2f6; position: relative; }
-    .product-detail-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); }
-    .back-btn { left: 16px; } .share-btn { right: 16px; }
-    .size-selector { display: flex; gap: 10px; flex-wrap: wrap; padding: 14px 18px; }
-    .size-chip { padding: 10px 20px; border-radius: 22px; background: #f2f2f6; cursor: pointer; font-weight: 500; font-size: 15px; }
-    .size-chip.selected { background: #007aff; color: white; }
-    .product-description { padding: 0 18px 18px; color: #3a3a3c; line-height: 1.5; font-size: 15px; }
-    .expand-text { color: #007aff; cursor: pointer; font-weight: 500; }
-    .size-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: flex-end; z-index: 1100; }
-    .size-modal-content { background: white; border-radius: 26px 26px 0 0; width: 100%; max-width: 420px; padding: 26px; }
-    .review-header { text-align: center; margin: 26px 0 18px; }
-    .review-header h3 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
-    .review-header p { color: #8e8e93; margin-top: 8px; font-size: 15px; }
     .petition-item, .review-item { background: white; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 16px; }
-    .calendar-day { padding: 12px; text-align: center; border-radius: 14px; background: #f2f2f6; cursor: pointer; font-weight: 500; font-size: 15px; }
-    .calendar-day.has-slot { background: #007aff; color: white; }
-    .calendar-day.selected { background: #ff3b30 !important; color: white; }
-    .btn-icon { background: none; border: none; color: #007aff; font-size: 20px; cursor: pointer; }
+    .detail-photo { width: 72px; height: 72px; border-radius: 18px; object-fit: cover; border: 3px solid transparent; cursor: pointer; }
+    .detail-photo.selected { border-color: #007aff; }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- АВТОРИЗАЦИЯ -->
+  <!-- Экран авторизации -->
   <div id="authScreen" class="screen active">
     <div class="auth-container">
       <div class="logo">
@@ -143,7 +105,7 @@
     </div>
   </div>
 
-  <!-- ОСНОВНОЙ ЭКРАН -->
+  <!-- Основной экран пользователя -->
   <div id="mainScreen" class="screen">
     <header>
       <h3>Три сестры</h3>
@@ -157,7 +119,7 @@
       <div id="cartTab" class="tab-pane"><h4 style="margin-bottom:14px;">Корзина помощи</h4><div id="cartItems"></div><div class="map-container" id="cartMap"></div><div class="slot-select"><select id="timeSlotSelect"></select></div><button class="btn primary" onclick="createOrder()">Отправить на согласование</button></div>
       <div id="profileTab" class="tab-pane"><div style="text-align:center; padding:20px;"><img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;"><i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;"></i><h3 id="profileName" style="margin-top:12px;"></h3><p id="profilePhone" style="color:#8e8e93;"></p></div><input type="file" id="avatarInput" accept="image/*" style="display:none;"><button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button><button class="btn secondary" onclick="saveAvatar()">Сохранить</button><button class="btn secondary" onclick="logout()">Выйти</button></div>
       <div id="ordersTab" class="tab-pane"><div id="ordersListView"></div><div id="orderDetailsView" class="detail-view"></div></div>
-      <div id="reviewsTab" class="tab-pane"><div class="review-header"><h3>Делитесь впечатлением</h3><p>Это помогает нам развиваться ради помощи нуждающимся.</p></div><div id="pendingReviewsList"></div></div>
+      <div id="reviewsTab" class="tab-pane"><div class="review-header" style="text-align:center;margin:20px 0;"><h3>Делитесь впечатлением</h3><p style="color:#8e8e93;">Это помогает нам развиваться ради помощи нуждающимся.</p></div><div id="pendingReviewsList"></div></div>
     </div>
     <nav class="bottom-nav">
       <div class="nav-item active" data-tab="home"><i class="far fa-compass"></i><span>Главная</span></div>
@@ -167,7 +129,7 @@
     </nav>
   </div>
 
-  <!-- АДМИН-ПАНЕЛЬ -->
+  <!-- Админ-панель -->
   <div id="adminScreen" class="screen">
     <header><h3>Администратор</h3><i class="fas fa-sign-out-alt" onclick="logout()" style="cursor:pointer;"></i></header>
     <div class="admin-tabs">
@@ -175,34 +137,72 @@
       <button class="tab-btn" data-admin-tab="petitions">Прошения</button>
       <button class="tab-btn" data-admin-tab="calendar">Календарь</button>
       <button class="tab-btn" data-admin-tab="history">Заказы</button>
-      <button class="tab-btn" data-admin-tab="recipients">Лимиты</button>
+      <button class="tab-btn" data-admin-tab="recipients">Лимиты/Отзывы</button>
     </div>
-    <div class="admin-content" style="flex:1; overflow-y:auto; background:#f2f2f6;">
-      <div id="adminProducts" class="admin-pane active"><button class="btn primary" onclick="openAddProductModal()">+ Добавить товар</button><div id="adminProductsList" class="admin-products-grid"></div></div>
-      <div id="adminPetitions" class="admin-pane"><div class="filter-row" style="margin-bottom:14px;"><input id="petitionSearch" placeholder="Поиск" style="flex:1;"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Выбрать</button></div><div class="photo-filter-strip" id="photoFilterStrip" style="display:flex; gap:10px; overflow-x:auto; padding:8px 0;"></div><div id="petitionBulkActions" style="display:none; margin-bottom:14px;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div><div id="petitionsList"></div><div id="petitionStats" style="margin-top:16px;text-align:center;font-weight:500;"></div></div>
-      <div id="adminCalendar" class="admin-pane"><div class="calendar-header" style="display:flex;justify-content:space-between;"><span id="calendarMonthYear"></span><div><button class="btn-icon" onclick="changeCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button><button class="btn-icon" onclick="changeCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button></div></div><div class="calendar-grid" id="calendarGrid"></div><button class="btn primary" style="margin-top:18px;" onclick="openAddSlotModal()">+ Добавить слот</button><div id="slotsList" style="margin-top:16px;"></div><div id="calendarDayDetails" style="margin-top:20px;"></div></div>
-      <div id="adminHistory" class="admin-pane"><input type="text" id="orderSearchInput" placeholder="Поиск" style="width:100%;margin-bottom:12px;"><div style="display:flex;gap:8px;margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('today')">Сегодня</button><button class="btn secondary small" onclick="switchOrderView('all')">Активные</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div><select id="adminOrderDateFilter" style="display:none;width:100%;margin-bottom:12px;"></select><div id="allOrdersList"></div></div>
-      <div id="adminRecipients" class="admin-pane"><div class="limit-card" style="background:white;border-radius:24px;padding:24px;"><h4>Лимит товаров в корзине</h4><input type="number" id="maxItemsLimit" style="width:100%;padding:14px;font-size:18px;border-radius:16px;border:1px solid #e5e5ea;margin:16px 0;"><button class="btn primary" onclick="saveMaxItemsLimit()">Сохранить</button></div><h4 style="margin-top:24px;">Отзывы на модерации</h4><div id="adminReviewsList"></div></div>
+    <div style="flex:1; overflow-y:auto;">
+      <!-- Товары -->
+      <div id="adminProducts" class="admin-pane active">
+        <button class="btn primary" onclick="openAddProductModal()">+ Добавить товар</button>
+        <div id="adminProductsList" class="admin-products-grid"></div>
+      </div>
+      <!-- Прошения -->
+      <div id="adminPetitions" class="admin-pane">
+        <div style="display:flex; gap:8px; margin-bottom:14px;"><input id="petitionSearch" placeholder="Поиск" style="flex:1;"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Выбрать</button></div>
+        <div id="photoFilterStrip" style="display:flex; gap:10px; overflow-x:auto; padding:8px 0;"></div>
+        <div id="petitionBulkActions" style="display:none; margin-bottom:14px;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div>
+        <div id="petitionsList"></div>
+        <div id="petitionStats" style="margin-top:16px;text-align:center;font-weight:500;"></div>
+      </div>
+      <!-- Календарь -->
+      <div id="adminCalendar" class="admin-pane">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span id="calendarMonthYear"></span><div><button class="btn-icon" onclick="changeCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button><button class="btn-icon" onclick="changeCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button></div></div>
+        <div class="calendar-grid" id="calendarGrid" style="margin-top:16px;"></div>
+        <button class="btn primary" style="margin-top:18px;" onclick="openAddSlotModal()">+ Добавить слот</button>
+        <div id="slotsList" style="margin-top:16px;"></div>
+        <div id="calendarDayDetails" style="margin-top:20px;"></div>
+      </div>
+      <!-- История заказов -->
+      <div id="adminHistory" class="admin-pane">
+        <input type="text" id="orderSearchInput" placeholder="Поиск по номеру/ФИО/телефону" style="width:100%; margin-bottom:12px;">
+        <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('today')">Сегодня</button><button class="btn secondary small" onclick="switchOrderView('all')">Активные</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
+        <select id="adminOrderDateFilter" style="display:none; width:100%; margin-bottom:12px;"></select>
+        <div id="allOrdersList"></div>
+      </div>
+      <!-- Лимиты и отзывы -->
+      <div id="adminRecipients" class="admin-pane">
+        <div style="background:white; border-radius:24px; padding:24px;">
+          <h4>Лимит товаров в корзине</h4>
+          <input type="number" id="maxItemsLimit" style="width:100%; padding:14px; font-size:18px; border-radius:16px; border:1px solid #e5e5ea; margin:16px 0;">
+          <button class="btn primary" onclick="saveMaxItemsLimit()">Сохранить</button>
+        </div>
+        <h4 style="margin-top:24px;">Отзывы на модерации</h4>
+        <div id="adminReviewsList"></div>
+      </div>
     </div>
   </div>
 
-  <!-- МОДАЛКИ -->
+  <!-- Модальные окна -->
   <div id="addProductModal" class="modal"><div class="modal-content"><i class="fas fa-times" onclick="closeModal('addProductModal')" style="float:right;cursor:pointer;"></i><h3>Новый товар</h3><input id="prodName" placeholder="Название" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin:12px 0;"><input id="prodArticle" placeholder="Артикул" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><input id="prodSizes" placeholder="Размеры (через запятую)" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><select id="prodCategory" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><option>Продукты</option><option>Одежда</option><option>Гигиена</option><option>Прочее</option></select><input type="number" id="prodQuantity" value="1" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><label><input type="checkbox" id="prodPlaceImmediately"> Разместить сразу</label><input type="file" id="productPhotosInput" multiple style="margin:12px 0;"><div id="photoPreviewContainer"></div><button class="btn primary" onclick="addProduct()">Сохранить</button></div></div>
-  <div id="addSlotModal" class="modal"><div class="modal-content"><i class="fas fa-times" onclick="closeModal('addSlotModal')" style="float:right;"></i><h3>Новый слот</h3><input type="datetime-local" id="slotDateTime" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin:12px 0;"><input type="number" id="slotCapacity" placeholder="Макс. заказов" value="5" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><button class="btn primary" onclick="addSlot()">Добавить</button></div></div>
-  <div id="issueOrderModal" class="modal"><div class="modal-content"><i class="fas fa-times" onclick="closeModal('issueOrderModal')" style="float:right;"></i><h3>Выдача заказа</h3><div id="issueOrderItems"></div><button class="btn primary" onclick="confirmIssueOrder()">Подтвердить выдачу</button></div></div>
-  <div id="productDetailModal" class="modal product-detail-modal"><div class="modal-content" id="productDetailContent"></div></div>
+  <div id="addSlotModal" class="modal"><div class="modal-content"><i class="fas fa-times" onclick="closeModal('addSlotModal')" style="float:right;cursor:pointer;"></i><h3>Новый слот</h3><input type="datetime-local" id="slotDateTime" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin:12px 0;"><input type="number" id="slotCapacity" placeholder="Макс. заказов" value="5" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><button class="btn primary" onclick="addSlot()">Добавить</button></div></div>
+  <div id="issueOrderModal" class="modal"><div class="modal-content"><i class="fas fa-times" onclick="closeModal('issueOrderModal')" style="float:right;cursor:pointer;"></i><h3>Выдача заказа</h3><div id="issueOrderItems"></div><button class="btn primary" onclick="confirmIssueOrder()">Подтвердить выдачу</button></div></div>
+  <div id="productDetailModal" class="modal product-detail-modal"><div class="modal-content" id="productDetailContent" style="padding:0; border-radius:28px; overflow:hidden;"></div></div>
   <div id="sizeSelectModal" class="size-modal" onclick="if(event.target===this)closeSizeModal()"><div class="size-modal-content" id="sizeSelectContent"></div></div>
-  <div id="fullscreenPhotoModal" class="modal fullscreen-photo-modal" onclick="closeModal('fullscreenPhotoModal')"><img id="fullscreenImage" style="max-width:90%;max-height:90%;border-radius:20px;"></div>
+  <div id="fullscreenPhotoModal" class="modal fullscreen-photo-modal" onclick="closeModal('fullscreenPhotoModal')"><img id="fullscreenImage" style="max-width:90%; max-height:90%; border-radius:20px;"></div>
 </div>
 
 <script>
 (async function(){
-  // Утилита безопасного HTML
+  // Безопасный HTML
   function escapeHtml(str) { return String(str).replace(/[&<>"'/]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;'})[m]); }
 
-  // Хеширование пароля
-  async function hashPassword(pwd) { const enc = new TextEncoder().encode(pwd); const hash = await crypto.subtle.digest('SHA-256', enc); return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join(''); }
+  // SHA-256
+  async function hashPassword(pwd) {
+    const enc = new TextEncoder().encode(pwd);
+    const hash = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
 
+  // Хранилище
   const STORAGE = {
     users: () => JSON.parse(localStorage.getItem('f_users') || '[]'),
     saveUsers: (u) => localStorage.setItem('f_users', JSON.stringify(u)),
@@ -222,7 +222,7 @@
     saveMaxLimit: (v) => localStorage.setItem('f_maxLimit', v)
   };
 
-  // Инициализация тестовых данных
+  // Начальные данные
   if (!STORAGE.users().length) STORAGE.saveUsers([
     {id:'1',firstName:'Иван',lastName:'Иванов',email:'user@test.com',password:await hashPassword('123456'),phone:'+79161234567',role:'user',avatar:''},
     {id:'adm',firstName:'Админ',email:'admin@fond.ru',password:await hashPassword('admin123'),role:'admin',phone:'',avatar:''}
@@ -236,98 +236,85 @@
 
   // Глобальные переменные
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, selectedPhotoFilters=new Set();
-  let currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, currentProductDetailProduct=null, returnToScreen='home';
+  let currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home';
   window.tempProductPhotos=[];
 
+  // Вспомогательные функции
   window.showRegister=()=>{document.getElementById('loginForm').style.display='none';document.getElementById('registerForm').style.display='block';};
   window.showLogin=()=>{document.getElementById('registerForm').style.display='none';document.getElementById('loginForm').style.display='block';};
   window.closeModal=(id)=>{document.getElementById(id).style.display='none';if(id==='fullscreenPhotoModal')document.getElementById('fullscreenImage').src='';};
+  window.showScreen=(id)=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');};
+
   window.login=async ()=>{
-    const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPassword').value;
+    const email=document.getElementById('loginEmail').value.trim(), pass=document.getElementById('loginPassword').value;
     const hashed=await hashPassword(pass);
     const user=STORAGE.users().find(u=>u.email===email&&u.password===hashed);
     if(!user)return alert('Неверные данные');
     STORAGE.setCurrentUser(user);
     if(user.role==='admin'){showScreen('adminScreen');renderAdmin();}
-    else{showScreen('mainScreen');updateUIForUser();updateHeaderAvatar();checkUserBlock();}
+    else{showScreen('mainScreen');updateUIForUser();}
   };
+
   window.register=async ()=>{
-    const first=document.getElementById('regFirstName').value.trim(),last=document.getElementById('regLastName').value.trim(),email=document.getElementById('regEmail').value.trim(),pass=document.getElementById('regPassword').value,confirm=document.getElementById('regConfirm').value,phone=document.getElementById('regPhone').value.trim(),code=document.getElementById('countryCode').value;
+    const first=document.getElementById('regFirstName').value.trim(), last=document.getElementById('regLastName').value.trim(), email=document.getElementById('regEmail').value.trim();
+    const pass=document.getElementById('regPassword').value, confirm=document.getElementById('regConfirm').value;
+    const phone=document.getElementById('regPhone').value.trim(), code=document.getElementById('countryCode').value;
     if(!first||!last||!email||!pass||!phone)return alert('Заполните все поля');
     if(pass!==confirm)return alert('Пароли не совпадают');
     if(STORAGE.users().some(u=>u.email===email))return alert('Email занят');
     const hashed=await hashPassword(pass);
     const newUser={id:Date.now()+'',firstName:first,lastName:last,email,password:hashed,phone:code+phone,role:'user',avatar:''};
     STORAGE.saveUsers([...STORAGE.users(),newUser]);STORAGE.setCurrentUser(newUser);
-    showScreen('mainScreen');updateUIForUser();updateHeaderAvatar();
+    showScreen('mainScreen');updateUIForUser();
   };
-  window.logout=()=>{STORAGE.setCurrentUser(null);STORAGE.saveCart([]);showScreen('authScreen');};
-  function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
-  // Навигация
-  document.querySelectorAll('.nav-item').forEach(el=>el.addEventListener('click',()=>switchTab(el.dataset.tab)));
+  window.logout=()=>{STORAGE.setCurrentUser(null);STORAGE.saveCart([]);showScreen('authScreen');};
+
+  // Навигация пользователя
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.addEventListener('click',()=>switchTab(el.dataset.tab)));
   window.switchTab=(tabId)=>{
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    const navItem=document.querySelector(`.nav-item[data-tab="${tabId}"]`);if(navItem)navItem.classList.add('active');
-    document.querySelectorAll('.tab-pane').forEach(p=>p.style.display='none');
+    document.querySelector(`.nav-item[data-tab="${tabId}"]`)?.classList.add('active');
+    document.querySelectorAll('#userTabContent .tab-pane').forEach(p=>p.style.display='none');
     document.getElementById(tabId+'Tab').style.display='block';
     if(tabId==='home'){renderProducts();populateCategoryFilter();}
     if(tabId==='cart'){renderCart();if(!leafletMap)initMap();else setTimeout(()=>leafletMap.invalidateSize(),100);}
     if(tabId==='profile')renderProfile();
-    if(tabId==='orders')renderUserOrders();
+    if(tabId==='orders'){renderUserOrders();document.getElementById('ordersListView').style.display='block';document.getElementById('orderDetailsView').classList.remove('active');}
     if(tabId==='reviews')renderUserReviews();
-    document.getElementById('ordersListView').style.display='block';document.getElementById('orderDetailsView').classList.remove('active');
   };
 
-  function updateHeaderAvatar(){
-    const u=STORAGE.currentUser();if(!u)return;
-    document.getElementById('headerProfileIcon').innerHTML=u.avatar?`<img src="${u.avatar}">`:`<i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i>`;
-  }
-  function checkUserBlock(){
-    const user=STORAGE.currentUser();if(!user)return;
-    const pendingReviews=STORAGE.reviews().filter(r=>r.userId===user.id&&(r.status==='pending'||r.status==='rejected'));
-    user.blocked=pendingReviews.length>0;
-    STORAGE.saveUsers(STORAGE.users().map(u=>u.id===user.id?user:u));
-  }
-
-  // Главная страница
+  // Главная
   function populateCategoryFilter(){document.getElementById('categoryFilter').innerHTML='<option value="">Все категории</option>'+[...new Set(STORAGE.products().map(p=>p.category))].map(c=>`<option>${c}</option>`).join('');}
   function renderProducts(){
     let prods=STORAGE.products().filter(p=>p.isPlaced&&p.availableQuantity>0);
     const cat=document.getElementById('categoryFilter')?.value;if(cat)prods=prods.filter(p=>p.category===cat);
     const sort=document.getElementById('sortFilter')?.value;
     if(sort==='name_asc')prods.sort((a,b)=>a.name.localeCompare(b.name));
-    else if(sort==='name_desc')prods.sort((a,b)=>b.name.localeCompare(a.name));
-    else if(sort==='new')prods.sort((a,b)=>b.id.localeCompare(a.id));
-    else if(sort==='old')prods.sort((a,b)=>a.id.localeCompare(b.id));
+    if(sort==='name_desc')prods.sort((a,b)=>b.name.localeCompare(a.name));
     document.getElementById('productsContainer').innerHTML=prods.map(p=>`
       <div class="product-card" onclick="openProductDetail('${p.id}','home')">
-        <div class="product-photo">${p.photos?.length?`<img src="${p.photos[0]}">`:`<i class="far fa-image" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px;color:#c7c7cc;"></i>`}</div>
+        <div class="product-photo">${p.photos?.[0]?`<img src="${p.photos[0]}">`:`<i class="far fa-image" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px;color:#c7c7cc;"></i>`}</div>
         <h4 style="font-weight:600;">${escapeHtml(p.name)}</h4>
         <small style="color:#8e8e93;">${escapeHtml(p.article)}</small>
         <div class="product-stats">В наличии: ${p.availableQuantity}</div>
-        <button class="btn primary small" style="margin-top:8px;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
+        <button class="btn primary small" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
       </div>`).join('');
   }
   window.addToCart=(prodId)=>{
     const user=STORAGE.currentUser();if(user.blocked)return alert('Вы заблокированы');
-    const limit=STORAGE.maxLimit(),cart=STORAGE.cart();
-    if(cart.length>=limit)return alert(`Лимит ${limit}`);
+    const cart=STORAGE.cart();if(cart.length>=STORAGE.maxLimit())return alert('Лимит корзины');
     const p=STORAGE.products().find(p=>p.id===prodId);
     if(!p||p.availableQuantity<1)return alert('Недоступен');
-    if(p.sizes?.length){
-      showSizeSelector(prodId);
-    }else{
+    if(p.sizes?.length){showSizeSelector(prodId);}
+    else{
       if(cart.some(i=>i.id===prodId))return alert('Уже в корзине');
       cart.push({...p,quantity:1,selectedSize:null});STORAGE.saveCart(cart);updateCartBadge();
     }
   };
   function showSizeSelector(prodId){
     const p=STORAGE.products().find(p=>p.id===prodId);
-    document.getElementById('sizeSelectContent').innerHTML=`
-      <h3 style="margin-bottom:16px;">Выберите размер</h3>
-      <div class="size-selector">${p.sizes.map(s=>`<div class="size-chip" onclick="selectSizeAndAddToCart('${prodId}','${s}')">${escapeHtml(s)}</div>`).join('')}</div>
-      <button class="btn secondary" onclick="closeSizeModal()" style="margin-top:16px;">Отмена</button>`;
+    document.getElementById('sizeSelectContent').innerHTML=`<h3>Выберите размер</h3><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">${p.sizes.map(s=>`<div class="size-chip" onclick="selectSizeAndAddToCart('${prodId}','${s}')">${escapeHtml(s)}</div>`).join('')}</div><button class="btn secondary" style="margin-top:16px;" onclick="closeSizeModal()">Отмена</button>`;
     document.getElementById('sizeSelectModal').style.display='flex';
   }
   window.selectSizeAndAddToCart=(prodId,size)=>{
@@ -359,10 +346,10 @@
     L.marker([55.531570,37.498393]).addTo(leafletMap).bindPopup('Южное Бутово, Остафьевская ул, 44').openPopup();
   }
   window.createOrder=()=>{
-    const user=STORAGE.currentUser();if(user.blocked)return alert('Сначала оставьте отзывы');
-    let cart=STORAGE.cart();if(!cart.length)return alert('Корзина пуста');
-    const slotId=document.getElementById('timeSlotSelect').value;if(!slotId)return alert('Выберите время');
-    const slots=STORAGE.slots();const slot=slots.find(s=>s.id===slotId);if(slot.used>=slot.capacity)return alert('Слот заполнен');
+    const user=STORAGE.currentUser();if(user.blocked)return alert('Заблокированы');
+    const cart=STORAGE.cart();if(!cart.length)return alert('Корзина пуста');
+    const slotId=document.getElementById('timeSlotSelect').value;if(!slotId)return alert('Выберите слот');
+    const slots=STORAGE.slots();const slot=slots.find(s=>s.id===slotId);if(!slot||slot.used>=slot.capacity)return alert('Слот заполнен');
     const items=cart.map(p=>({productId:p.id,article:p.article,name:p.name,status:'pending',selectedSize:p.selectedSize||null}));
     const order={id:'ORD-'+Date.now(),userId:user.id,items,slotId:slot.id,slotTime:slot.datetime,address:'Южное Бутово, Остафьевская ул, 44',status:'pending',createdAt:new Date().toISOString(),recipient:{firstName:user.firstName,lastName:user.lastName,phone:user.phone,email:user.email},issued:false,archived:false};
     STORAGE.saveOrders([...STORAGE.orders(),order]);slot.used++;STORAGE.saveSlots(slots);STORAGE.saveCart([]);updateCartBadge();
@@ -379,11 +366,11 @@
   }
   window.saveAvatar=()=>{
     const file=document.getElementById('avatarInput').files[0];if(!file)return;
-    if(file.size>200*1024)return alert('Фото должно быть до 200 КБ');
+    if(file.size>200*1024)return alert('Фото до 200 КБ');
     const reader=new FileReader();reader.onload=e=>{
       const img=new Image();img.onload=()=>{
         const canvas=document.createElement('canvas');canvas.width=300;canvas.height=300;
-        const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,300,300);
+        canvas.getContext('2d').drawImage(img,0,0,300,300);
         const dataUrl=canvas.toDataURL('image/jpeg',0.7);
         const users=STORAGE.users(),cur=STORAGE.currentUser();const idx=users.findIndex(u=>u.id===cur.id);
         users[idx].avatar=dataUrl;STORAGE.saveUsers(users);STORAGE.setCurrentUser(users[idx]);renderProfile();updateHeaderAvatar();
@@ -391,56 +378,49 @@
     };reader.readAsDataURL(file);
   };
 
-  // Мои заказы (только активные)
+  // Заказы пользователя (активные)
   function renderUserOrders(){
     const user=STORAGE.currentUser();
     let orders=STORAGE.orders().filter(o=>o.userId===user.id&&!o.archived);
-    document.getElementById('ordersListView').innerHTML=orders.map(o=>{
-      const statusText=o.status==='approved'?'Заберите':o.status==='partially_approved'||o.status==='pending'?'Согласование':'';
-      const statusColor=o.status==='approved'?'#ff3b30':o.status==='rejected'?'#8e8e93':'#ffcc00';
-      return `<div class="order-card" onclick="openOrderDetails('${o.id}')">
-        <div class="order-header"><span class="order-status" style="color:${statusColor}">${statusText}</span><span class="order-date">${new Date(o.slotTime).toLocaleDateString()}</span></div>
+    document.getElementById('ordersListView').innerHTML=orders.map(o=>`
+      <div class="order-card" onclick="openOrderDetails('${o.id}')">
+        <div class="order-header"><span class="order-status" style="color:${o.status==='approved'?'#ff3b30':o.status==='rejected'?'#8e8e93':'#ffcc00'}">${o.status==='approved'?'Заберите':o.status==='rejected'?'Отказано':'Согласование'}</span><span class="order-date">${new Date(o.slotTime).toLocaleDateString()}</span></div>
         <div class="order-address">${escapeHtml(o.address)}</div>
-        <div class="order-items-preview">${o.items.map(i=>{
+        <div class="order-items-preview" style="display:flex;gap:10px;margin-top:12px;">${o.items.map(i=>{
           const prod=STORAGE.products().find(p=>p.id===i.productId);
-          const st=(i.status==='approved'||i.status==='issued')?'Ждёт вас':i.status==='rejected'?'Отменён':'Ожидает';
+          const st=i.status==='approved'||i.status==='issued'?'Ждёт вас':i.status==='rejected'?'Отменён':'Ожидает';
           const stColor=i.status==='approved'||i.status==='issued'?'#34c759':i.status==='rejected'?'#ff3b30':'#ffcc00';
           return `<div style="text-align:center;"><img src="${prod?.photos?.[0]||''}" class="order-item-img" onerror="this.style.display='none'"><div style="font-size:12px;color:${stColor}">${st}</div></div>`;
         }).join('')}</div>
         <span class="details-link">Подробнее →</span>
-      </div>`;
-    }).join('')||'<p style="text-align:center;color:#8e8e93;">Нет активных заказов</p>';
+      </div>`).join('')||'<p style="text-align:center;">Нет активных заказов</p>';
   }
   window.openOrderDetails=(orderId)=>{
-    document.getElementById('ordersListView').style.display='none';
-    const view=document.getElementById('orderDetailsView');view.classList.add('active');view.innerHTML='';
+    document.getElementById('ordersListView').style.display='none';document.getElementById('orderDetailsView').classList.add('active');
     const order=STORAGE.orders().find(o=>o.id===orderId);if(!order)return;
     let selectedItem=order.items[0];
     const renderDetail=()=>{
-      view.innerHTML=`
-        <div class="detail-header"><i class="fas fa-chevron-left" onclick="closeOrderDetails()"></i><div class="detail-title">Детали заказа</div></div>
-        <div class="detail-photos">${order.items.map((item,idx)=>{
+      document.getElementById('orderDetailsView').innerHTML=`
+        <div class="detail-header"><i class="fas fa-chevron-left" onclick="document.getElementById('ordersListView').style.display='block';document.getElementById('orderDetailsView').classList.remove('active');"></i><div class="detail-title">Детали заказа</div></div>
+        <div class="detail-photos" style="display:flex;gap:14px;padding:18px 16px;overflow-x:auto;">${order.items.map((item,idx)=>{
           const prod=STORAGE.products().find(p=>p.id===item.productId);
           return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${item.productId===selectedItem.productId?'selected':''}" onclick="selectOrderDetailItem('${orderId}',${idx})">`;
         }).join('')}</div>
-        <div class="detail-info">
-          <div class="detail-product-name" onclick="openProductDetail('${selectedItem.productId}','orderDetail','${orderId}')">${escapeHtml(selectedItem.name)} <i class="fas fa-chevron-right"></i></div>
-          <div class="status-line">
+        <div style="padding:0 18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;" onclick="openProductDetail('${selectedItem.productId}','orderDetail','${orderId}')">${escapeHtml(selectedItem.name)} <i class="fas fa-chevron-right"></i></div>
+          <div class="status-line" style="display:flex;align-items:center;justify-content:center;gap:10px;margin:24px 0;">
             <div class="status-step ${['pending','partially_approved'].includes(order.status)?'active':''}"><div class="status-icon"><i class="far fa-question-circle"></i></div><span>Оформление</span></div>
             <div class="status-arrow">→</div>
             <div class="status-step ${order.status==='approved'&&!order.issued?'active':''}"><div class="status-icon"><i class="far fa-box"></i></div><span>Сборка</span></div>
             <div class="status-arrow">→</div>
             <div class="status-step ${order.issued?'active':''}"><div class="status-icon"><i class="fas fa-church"></i></div><span>Можно забирать</span></div>
           </div>
-          <div class="pickup-info">Пункт выдачи: ${escapeHtml(order.address)}<br>Плановая дата: ${new Date(order.slotTime).toLocaleDateString()}</div>
+          <div style="text-align:center;color:#8e8e93;">Пункт выдачи: ${escapeHtml(order.address)}<br>Плановая дата: ${new Date(order.slotTime).toLocaleDateString()}</div>
         </div>`;
     };
     window.selectOrderDetailItem=(oid,idx)=>{
-      const order=STORAGE.orders().find(o=>o.id===oid);
-      selectedItem=order.items[idx];renderDetail();
-    };
-    window.closeOrderDetails=()=>{
-      document.getElementById('ordersListView').style.display='block';view.classList.remove('active');
+      const o=STORAGE.orders().find(o=>o.id===oid);
+      selectedItem=o.items[idx];renderDetail();
     };
     renderDetail();
   };
@@ -448,18 +428,22 @@
   // Карточка товара
   window.openProductDetail=(prodId,returnScreen,orderId=null)=>{
     const prod=STORAGE.products().find(p=>p.id===prodId);if(!prod)return;
-    currentProductDetailProduct=prod;returnToScreen=returnScreen;
-    const modal=document.getElementById('productDetailModal');modal.style.display='flex';
+    returnToScreen=returnScreen;
+    document.getElementById('productDetailModal').style.display='flex';
     document.getElementById('productDetailContent').innerHTML=`
-      <div class="product-detail-photo">
-        ${prod.photos?.length?`<img src="${prod.photos[0]}" id="detailMainPhoto">`:`<i class="far fa-image" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;color:#c7c7cc;"></i>`}
+      <div class="product-detail-photo" style="position:relative; height:240px; background:#f2f2f6;">
+        ${prod.photos?.[0]?`<img src="${prod.photos[0]}" id="detailMainPhoto" style="width:100%;height:100%;object-fit:cover;">`:`<i class="far fa-image" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;color:#c7c7cc;"></i>`}
         <div class="back-btn" onclick="closeProductDetail('${orderId||''}')"><i class="fas fa-chevron-left"></i></div>
         ${prod.photos?.length>1?`<div class="share-btn" onclick="shareProduct()"><i class="far fa-share-square"></i></div>`:''}
       </div>
       ${prod.photos?.length>1?`<div style="display:flex;gap:10px;padding:12px 18px;overflow-x:auto;">${prod.photos.map((p,i)=>`<img src="${p}" style="width:50px;height:50px;border-radius:12px;object-fit:cover;cursor:pointer;border:2px solid ${i===0?'#007aff':'transparent'};" onclick="switchDetailPhoto('${p}',this)">`).join('')}</div>`:''}
-      ${prod.sizes?.length?`<div class="size-selector">${prod.sizes.map(s=>`<div class="size-chip" onclick="selectDetailSize('${s}')">${escapeHtml(s)}</div>`).join('')}</div>`:''}
-      <div class="product-description"><p>${escapeHtml(prod.name)}</p><p style="color:#8e8e93;">${escapeHtml(prod.article)}</p><p>${escapeHtml(prod.description||'Описание отсутствует')}</p></div>
-      <button class="btn primary" style="margin:0 18px 18px;" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
+      ${prod.sizes?.length?`<div style="display:flex;gap:10px;flex-wrap:wrap;padding:14px 18px;">${prod.sizes.map(s=>`<div class="size-chip" onclick="selectDetailSize('${s}')">${escapeHtml(s)}</div>`).join('')}</div>`:''}
+      <div style="padding:0 18px 18px;color:#3a3a3c;">
+        <h4>${escapeHtml(prod.name)}</h4>
+        <p style="color:#8e8e93;">${escapeHtml(prod.article)}</p>
+        <p>${escapeHtml(prod.description||'Описание отсутствует')}</p>
+      </div>
+      <button class="btn primary" style="margin:0 18px 18px;" onclick="addToCart('${prodId}')">В корзину</button>`;
   };
   window.switchDetailPhoto=(src,el)=>{document.getElementById('detailMainPhoto').src=src;document.querySelectorAll('.product-detail-modal img').forEach(i=>i.style.borderColor='transparent');el.style.borderColor='#007aff';};
   window.closeProductDetail=(orderId)=>{
@@ -468,17 +452,9 @@
     else if(returnToScreen==='cart')switchTab('cart');
     else switchTab('home');
   };
-  window.addToCartFromDetail=(prodId)=>{
-    const prod=STORAGE.products().find(p=>p.id===prodId);
-    if(prod.sizes?.length){
-      showSizeSelector(prodId);
-    }else{
-      addToCart(prodId);
-    }
-  };
   window.shareProduct=()=>{if(navigator.share)navigator.share({title:'Товар',url:window.location.href});else alert('Поделиться');};
 
-  // Отзывы
+  // Отзывы пользователя
   function renderUserReviews(){
     const user=STORAGE.currentUser();
     const issuedOrders=STORAGE.orders().filter(o=>o.userId===user.id&&o.issued);
@@ -497,14 +473,162 @@
     STORAGE.saveReviews([...STORAGE.reviews(),review]);checkUserBlock();renderUserReviews();
   };
 
-  // Админка (сокращённо, но функционально)
-  function renderAdmin(){/* ... */} // Реализация аналогична предыдущей версии, но с escapeHtml и улучшениями, опущено для краткости
-  function updateUIForUser(){updateCartBadge();renderProducts();populateCategoryFilter();switchTab('home');updateHeaderAvatar();checkUserBlock();}
+  // Админка
+  function renderAdmin(){
+    renderAdminProducts();renderAdminSlots();renderCalendar();renderAllOrders();renderRecipientsTab();renderPetitions();renderAdminReviews();
+    document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn=>btn.addEventListener('click',()=>{
+      document.querySelectorAll('.admin-tabs .tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+      document.querySelectorAll('.admin-pane').forEach(p=>p.classList.remove('active'));
+      document.getElementById('admin'+(btn.dataset.adminTab.charAt(0).toUpperCase()+btn.dataset.adminTab.slice(1))).classList.add('active');
+      if(btn.dataset.adminTab==='petitions')renderPetitions();
+      if(btn.dataset.adminTab==='calendar')renderCalendar();
+      if(btn.dataset.adminTab==='history'){populateAdminOrderDateFilter();renderAllOrders();}
+    }));
+    document.getElementById('orderSearchInput').addEventListener('input',renderAllOrders);
+  }
+
+  function renderAdminProducts(){
+    document.getElementById('adminProductsList').innerHTML=STORAGE.products().map(p=>`
+      <div class="admin-product-card">
+        <div class="product-photo" onclick="openFullscreenPhoto('${p.photos?.[0]||''}')">${p.photos?.[0]?`<img src="${p.photos[0]}">`:`<i class="far fa-image"></i>`}</div>
+        <h4>${escapeHtml(p.name)}</h4><small>${escapeHtml(p.article)}</small>
+        <div>В наличии: ${p.availableQuantity}/${p.quantity}</div>
+        <div>${p.isPlaced?'✅ Размещён':`<button class="btn primary small" onclick="placeProduct('${p.id}')">Разместить</button>`}</div>
+        <i class="fas fa-trash" style="float:right;" onclick="deleteProduct('${p.id}')"></i>
+      </div>`).join('');
+  }
+  window.placeProduct=(id)=>{const prods=STORAGE.products();const p=prods.find(p=>p.id===id);if(p){p.isPlaced=true;STORAGE.saveProducts(prods);renderAdminProducts();}};
+  window.deleteProduct=(id)=>{STORAGE.saveProducts(STORAGE.products().filter(p=>p.id!==id));renderAdminProducts();};
+  window.openAddProductModal=()=>{document.getElementById('addProductModal').style.display='flex';};
+  window.addProduct=()=>{
+    const name=document.getElementById('prodName').value,article=document.getElementById('prodArticle').value,category=document.getElementById('prodCategory').value,quantity=parseInt(document.getElementById('prodQuantity').value)||1,isPlaced=document.getElementById('prodPlaceImmediately').checked,sizes=document.getElementById('prodSizes').value.split(',').map(s=>s.trim()).filter(Boolean);
+    if(!name||!article)return alert('Заполните');
+    STORAGE.saveProducts([...STORAGE.products(),{id:'p_'+Date.now(),article,name,category,photos:window.tempProductPhotos||[],quantity,availableQuantity:quantity,isPlaced,sizes}]);
+    closeModal('addProductModal');renderAdminProducts();
+  };
+
+  function renderAdminSlots(){document.getElementById('slotsList').innerHTML=STORAGE.slots().map(s=>`<div>${new Date(s.datetime).toLocaleString()} (${s.used}/${s.capacity}) <i class="fas fa-trash" onclick="deleteSlot('${s.id}')"></i></div>`).join('');}
+  window.deleteSlot=(id)=>{STORAGE.saveSlots(STORAGE.slots().filter(s=>s.id!==id));renderAdminSlots();renderCalendar();};
+  window.openAddSlotModal=()=>document.getElementById('addSlotModal').style.display='flex';
+  window.addSlot=()=>{
+    const dt=document.getElementById('slotDateTime').value,cap=parseInt(document.getElementById('slotCapacity').value);
+    if(!dt||!cap)return;STORAGE.saveSlots([...STORAGE.slots(),{id:'s_'+Date.now(),datetime:dt,capacity:cap,used:0}]);
+    closeModal('addSlotModal');renderAdminSlots();renderCalendar();
+  };
+
+  function renderCalendar(){
+    const year=currentCalendarDate.getFullYear(),month=currentCalendarDate.getMonth();
+    document.getElementById('calendarMonthYear').textContent=new Date(year,month).toLocaleString('ru',{month:'long',year:'numeric'});
+    const firstDay=new Date(year,month,1).getDay()||7,daysInMonth=new Date(year,month+1,0).getDate();
+    const slotDates=STORAGE.slots().map(s=>s.datetime.split('T')[0]);
+    let html='';for(let i=1;i<firstDay;i++)html+='<div></div>';
+    for(let d=1;d<=daysInMonth;d++){const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;html+=`<div class="calendar-day ${slotDates.includes(dateStr)?'has-slot':''} ${selectedCalendarDate===dateStr?'selected':''}" onclick="selectCalendarDate('${dateStr}')">${d}</div>`;}
+    document.getElementById('calendarGrid').innerHTML=html;
+  }
+  window.changeCalendarMonth=(d)=>{currentCalendarDate.setMonth(currentCalendarDate.getMonth()+d);renderCalendar();};
+  window.selectCalendarDate=(dateStr)=>{
+    selectedCalendarDate=dateStr;renderCalendar();
+    const orders=STORAGE.orders().filter(o=>o.slotTime?.startsWith(dateStr)&&o.status==='approved');
+    const aggregated={};orders.forEach(o=>{o.items.forEach(item=>{if(item.status!=='approved')return;if(!aggregated[item.productId])aggregated[item.productId]={...STORAGE.products().find(p=>p.id===item.productId),count:0};aggregated[item.productId].count++;});});
+    document.getElementById('calendarDayDetails').innerHTML=Object.values(aggregated).map(a=>`<div>${a.name}: ${a.count} шт.</div>`).join('')||'Нет одобренных';
+  };
+
+  function renderPetitions(){
+    const search=document.getElementById('petitionSearch').value.toLowerCase();
+    let petitions=[];STORAGE.orders().forEach(o=>{if(o.status!=='pending'&&o.status!=='partially_approved')return;o.items.forEach((item,idx)=>{if(item.status!=='pending')return;petitions.push({key:`${o.id}|${idx}`,...item,orderId:o.id,itemIndex:idx,user:STORAGE.users().find(u=>u.id===o.userId)});});});
+    petitions=petitions.filter(p=>p.name.toLowerCase().includes(search)||p.user?.firstName?.toLowerCase().includes(search));
+    document.getElementById('petitionsList').innerHTML=petitions.map(p=>`
+      <div class="petition-item">
+        <img src="${STORAGE.products().find(pr=>pr.id===p.productId)?.photos?.[0]||''}" style="width:50px;height:50px;border-radius:16px;">
+        <div><b>${escapeHtml(p.name)}</b><br>${escapeHtml(p.user?.firstName||'')} ${escapeHtml(p.user?.lastName||'')}<br>📞${escapeHtml(p.user?.phone||'')}</div>
+        ${petitionSelectMode?`<div class="selection-circle ${selectedPetitionKeys.has(p.key)?'selected':''}" onclick="togglePetitionSelection('${p.key}')"></div>`:`<div><button class="btn primary small" onclick="approvePetitionItem('${p.orderId}',${p.itemIndex})">✓</button><button class="btn danger small" onclick="rejectPetitionItem('${p.orderId}',${p.itemIndex})">✗</button></div>`}
+      </div>`).join('');
+    document.getElementById('petitionBulkActions').style.display=petitionSelectMode?'block':'none';
+  }
+  window.togglePetitionSelectMode=()=>{petitionSelectMode=!petitionSelectMode;selectedPetitionKeys.clear();renderPetitions();};
+  window.togglePetitionSelection=(key)=>{selectedPetitionKeys.has(key)?selectedPetitionKeys.delete(key):selectedPetitionKeys.add(key);renderPetitions();};
+  window.selectAllPetitions=()=>{document.querySelectorAll('.petition-item .selection-circle').forEach(c=>c.click());};
+  function processPetitionItem(orderId,itemIndex,approve){
+    const orders=STORAGE.orders();const order=orders.find(o=>o.id===orderId);if(!order)return;
+    const item=order.items[itemIndex];if(item.status!=='pending')return;
+    if(approve){const prod=STORAGE.products().find(p=>p.id===item.productId);if(!prod||prod.availableQuantity<1)return alert('Товар закончился');prod.availableQuantity--;STORAGE.saveProducts(STORAGE.products());item.status='approved';}
+    else item.status='rejected';
+    const statuses=order.items.map(i=>i.status);order.status=statuses.every(s=>s==='approved')?'approved':statuses.every(s=>s==='rejected')?'rejected':'partially_approved';
+    STORAGE.saveOrders(orders);renderAdminProducts();
+  }
+  window.approvePetitionItem=(oid,idx)=>{processPetitionItem(oid,idx,true);renderPetitions();};
+  window.rejectPetitionItem=(oid,idx)=>{processPetitionItem(oid,idx,false);renderPetitions();};
+  window.bulkApprovePetitions=()=>{for(let key of selectedPetitionKeys){const[oid,idx]=key.split('|');processPetitionItem(oid,parseInt(idx),true);}selectedPetitionKeys.clear();renderPetitions();};
+  window.bulkRejectPetitions=()=>{for(let key of selectedPetitionKeys){const[oid,idx]=key.split('|');processPetitionItem(oid,parseInt(idx),false);}selectedPetitionKeys.clear();renderPetitions();};
+
+  function renderAllOrders(){
+    let orders=STORAGE.orders();
+    if(currentOrderView==='today')orders=orders.filter(o=>!o.archived&&o.slotTime?.startsWith(new Date().toISOString().slice(0,10))&&o.status==='approved'&&!o.issued);
+    else if(currentOrderView==='all')orders=orders.filter(o=>!o.archived&&!o.issued);
+    else orders=orders.filter(o=>o.archived);
+    const search=document.getElementById('orderSearchInput')?.value.toLowerCase()||'';
+    if(search)orders=orders.filter(o=>o.id.toLowerCase().includes(search)||o.recipient.firstName.toLowerCase().includes(search)||o.recipient.phone.includes(search));
+    document.getElementById('allOrdersList').innerHTML=orders.map(o=>`
+      <div class="order-card">
+        <div><b>${o.id}</b> · ${escapeHtml(o.recipient.firstName)} ${escapeHtml(o.recipient.lastName)} 📞${escapeHtml(o.recipient.phone)}<br>${new Date(o.slotTime).toLocaleString()}</div>
+        <div>${o.items.map(i=>`<span>${i.name} (${i.status})</span>`).join(', ')}</div>
+        ${!o.archived?`<button class="btn primary small" onclick="openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="cancelOrder('${o.id}')">Отменить</button>`:''}
+      </div>`).join('')||'<p>Нет заказов</p>';
+  }
+  window.switchOrderView=(view)=>{currentOrderView=view;document.getElementById('adminOrderDateFilter').style.display=view==='all'?'block':'none';renderAllOrders();};
+  function populateAdminOrderDateFilter(){document.getElementById('adminOrderDateFilter').innerHTML='<option value="">Все даты</option>'+[...new Set(STORAGE.orders().map(o=>o.slotTime?.split('T')[0]))].filter(Boolean).map(d=>`<option>${d}</option>`).join('');}
+  window.openIssueModal=(orderId)=>{currentIssueOrderId=orderId;const order=STORAGE.orders().find(o=>o.id===orderId);document.getElementById('issueOrderItems').innerHTML=order.items.filter(i=>i.status==='approved').map((i,idx)=>`<div><input type="checkbox" id="issueItem-${idx}" checked> ${i.name}</div>`).join('');document.getElementById('issueOrderModal').style.display='flex';};
+  window.confirmIssueOrder=()=>{
+    const order=STORAGE.orders().find(o=>o.id===currentIssueOrderId);if(!order)return;
+    const checkboxes=document.querySelectorAll('#issueOrderItems input[type="checkbox"]');
+    const approvedItems=order.items.filter(i=>i.status==='approved');
+    const issuedIds=new Set();checkboxes.forEach((cb,idx)=>{if(cb.checked)issuedIds.add(approvedItems[idx].productId);});
+    order.items.forEach(i=>{if(i.status==='approved'&&issuedIds.has(i.productId))i.status='issued';});
+    order.issued=true;order.archived=true;STORAGE.saveOrders(STORAGE.orders());
+    const user=STORAGE.users().find(u=>u.id===order.userId);
+    issuedIds.forEach(productId=>{
+      if(!STORAGE.reviews().some(r=>r.orderId===order.id&&r.productId===productId)){
+        STORAGE.saveReviews([...STORAGE.reviews(),{id:'rev-'+Date.now(),userId:order.userId,orderId:order.id,productId,userName:`${order.recipient.firstName} ${order.recipient.lastName}`,userAvatar:user?.avatar,productName:order.items.find(i=>i.productId===productId).name,productPhoto:STORAGE.products().find(p=>p.id===productId)?.photos?.[0],link:'',status:'pending'}]);
+      }
+    });
+    closeModal('issueOrderModal');renderAllOrders();
+  };
+  window.cancelOrder=(orderId)=>{
+    const order=STORAGE.orders().find(o=>o.id===orderId);if(!order)return;
+    order.items.forEach(i=>{if(i.status==='approved'){const prod=STORAGE.products().find(p=>p.id===i.productId);if(prod)prod.availableQuantity++;}});
+    order.status='cancelled';order.archived=true;STORAGE.saveProducts(STORAGE.products());STORAGE.saveOrders(STORAGE.orders());renderAllOrders();
+  };
+
+  function renderAdminReviews(){
+    document.getElementById('adminReviewsList').innerHTML=STORAGE.reviews().filter(r=>r.status==='pending').map(r=>`
+      <div class="review-item"><img src="${r.userAvatar||''}" style="width:40px;height:40px;border-radius:20px;"><div><b>${escapeHtml(r.userName)}</b><br>${escapeHtml(r.productName)}<br><a href="${escapeHtml(r.link)}">${escapeHtml(r.link)}</a></div><button class="btn primary small" onclick="approveReview('${r.id}')">✓</button><button class="btn danger small" onclick="rejectReview('${r.id}')">✗</button></div>
+    `).join('')||'<p>Нет отзывов</p>';
+  }
+  window.approveReview=(reviewId)=>{
+    const reviews=STORAGE.reviews();const review=reviews.find(r=>r.id===reviewId);if(review)review.status='approved';
+    STORAGE.saveReviews(reviews);renderAdminReviews();
+  };
+  window.rejectReview=(reviewId)=>{
+    const reviews=STORAGE.reviews();const review=reviews.find(r=>r.id===reviewId);if(review)review.status='rejected';
+    STORAGE.saveReviews(reviews);renderAdminReviews();
+  };
+
+  function renderRecipientsTab(){document.getElementById('maxItemsLimit').value=STORAGE.maxLimit();}
+  window.saveMaxItemsLimit=()=>{const v=parseInt(document.getElementById('maxItemsLimit').value);if(v>0){STORAGE.saveMaxLimit(v);renderRecipientsTab();}};
+  window.openFullscreenPhoto=(src)=>{if(!src)return;document.getElementById('fullscreenImage').src=src;document.getElementById('fullscreenPhotoModal').style.display='flex';};
 
   // Синхронизация между вкладками
-  window.addEventListener('storage',(e)=>{
-    if(e.key?.startsWith('f_')){if(STORAGE.currentUser()?.role==='admin')renderAdmin();else updateUIForUser();}
-  });
+  window.addEventListener('storage',(e)=>{if(e.key?.startsWith('f_')){if(STORAGE.currentUser()?.role==='admin')renderAdmin();else updateUIForUser();}});
+
+  function updateUIForUser(){updateCartBadge();renderProducts();populateCategoryFilter();switchTab('home');updateHeaderAvatar();checkUserBlock();}
+  function updateHeaderAvatar(){
+    const u=STORAGE.currentUser();document.getElementById('headerProfileIcon').innerHTML=u?.avatar?`<img src="${u.avatar}">`:`<i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i>`;
+  }
+  function checkUserBlock(){
+    const user=STORAGE.currentUser();if(!user)return;
+    user.blocked=STORAGE.reviews().filter(r=>r.userId===user.id&&(r.status==='pending'||r.status==='rejected')).length>0;
+    STORAGE.saveUsers(STORAGE.users().map(u=>u.id===user.id?user:u));
+  }
 
   // Запуск
   const cur=STORAGE.currentUser();
