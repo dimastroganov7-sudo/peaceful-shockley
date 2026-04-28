@@ -212,8 +212,7 @@
         <div id="adminProductsList" class="admin-products-grid"></div>
       </div>
       <div id="adminPetitions" class="admin-pane">
-        <div style="display:flex; gap:8px; margin-bottom:14px;"><input id="petitionSearch" placeholder="Поиск" style="flex:1;" oninput="renderPetitions()"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Выбрать</button></div>
-        <div id="photoFilterStrip" style="display:flex; gap:10px; overflow-x:auto; padding:8px 0;"></div>
+               <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('active')">Сборка</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
         <div id="petitionBulkActions" style="display:none; margin-bottom:14px;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div>
         <div id="petitionsList"></div>
         <div id="petitionStats" class="text-center mt-2" style="color:#8e8e93;"></div>
@@ -308,7 +307,7 @@
   };
 
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), selectedPhotoFilters=new Set(), currentCalendarDate=new Date(), leafletMap=null,
-    currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
+    currentOrderView='active', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
     currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[], swipedCartItemIndex=null,
         cartSelectedItems = new Set();
 
@@ -1074,27 +1073,43 @@ itemsForReview.push({ order, item, review: exists || null });
   };
 
   // Заказы (админ)
-  window.switchOrderView = (view) => { currentOrderView = view; document.getElementById('adminOrderDateFilter').style.display = view === 'all' ? 'block' : 'none'; renderAllOrders(); };
+    window.switchOrderView = (view) => { currentOrderView = view; document.getElementById('adminOrderDateFilter').style.display = 'block'; renderAllOrders(); };
   function populateAdminOrderDateFilter() {
     const dates = [...new Set(STORAGE.orders().map(o => o.slotTime?.split('T')[0]).filter(Boolean))].sort();
     document.getElementById('adminOrderDateFilter').innerHTML = '<option value="">Все даты</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
   }
-  window.renderAllOrders = () => {
+   window.renderAllOrders = () => {
     let orders = STORAGE.orders();
-    if (currentOrderView === 'today') orders = orders.filter(o => !o.archived && o.slotTime?.startsWith(new Date().toISOString().slice(0,10)) && o.status === 'approved' && !o.issued);
-    else if (currentOrderView === 'all') {
-      orders = orders.filter(o => !o.archived && !o.issued);
-      const filter = document.getElementById('adminOrderDateFilter')?.value;
-      if (filter) orders = orders.filter(o => o.slotTime?.startsWith(filter));
-    } else orders = orders.filter(o => o.archived);
+    if (currentOrderView === 'active') {
+      orders = orders.filter(o => !o.archived && o.status === 'approved' && !o.issued);
+    } else { // archive
+      orders = orders.filter(o => o.archived);
+    }
+    const filter = document.getElementById('adminOrderDateFilter')?.value;
+    if (filter) orders = orders.filter(o => o.slotTime?.startsWith(filter));
     const search = document.getElementById('orderSearchInput')?.value.toLowerCase() || '';
     if (search) orders = orders.filter(o => o.id.toLowerCase().includes(search) || `${o.recipient.firstName} ${o.recipient.lastName}`.toLowerCase().includes(search) || o.recipient.phone.includes(search));
-    document.getElementById('allOrdersList').innerHTML = orders.map(o => `
-      <div class="order-card">
-        <div><b>${o.id}</b> · ${escapeHtml(o.recipient.firstName)} ${escapeHtml(o.recipient.lastName)} 📞${escapeHtml(o.recipient.phone)}<br>${new Date(o.slotTime).toLocaleString('ru-RU')}</div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">${o.items.map(i => `<span style="font-size:13px;">${escapeHtml(i.name)} (${i.status==='approved'||i.status==='issued'?'✅':i.status==='rejected'?'❌':'⏳'})</span>`).join(' ')}</div>
-        ${!o.archived ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="event.stopPropagation();openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="event.stopPropagation();cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
-      </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
+    
+    document.getElementById('allOrdersList').innerHTML = orders.map(o => {
+      const itemsHtml = o.items.map(i => {
+        const prod = STORAGE.products().find(p => p.id === i.productId);
+        const photoUrl = prod?.photos?.[0] || '';
+        return `<div style="text-align:center;flex-shrink:0;">
+          ${photoUrl ? `<img src="${photoUrl}" style="width:80px;height:106px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">` : `<div style="width:80px;height:106px;border-radius:16px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;"><i class="far fa-image" style="color:#c7c7cc;font-size:20px;"></i></div>`}
+        </div>`;
+      }).join('');
+      return `<div class="order-card" onclick="openCollectionModal('${o.id}')">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span style="font-size:17px;font-weight:700;color:#ff9500;">Сборка</span>
+            <span style="color:#8e8e93;margin-left:8px;">${new Date(o.slotTime).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</span>
+          </div>
+          <span style="color:#8e8e93;font-size:14px;">${o.id}</span>
+        </div>
+        <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;">${itemsHtml}</div>
+        <span style="color:#007aff;font-weight:600;font-size:15px;">Подробнее →</span>
+      </div>`;
+    }).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
   };
   // Сборка заказа
   window.openCollectionModal = (orderId) => {
