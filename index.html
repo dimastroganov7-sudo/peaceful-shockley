@@ -213,6 +213,7 @@
       </div>
       <div id="adminPetitions" class="admin-pane">
                       <div style="display:flex; gap:8px; margin-bottom:14px;"><input id="petitionSearch" placeholder="Поиск" style="flex:1;" oninput="renderPetitions()"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Выбрать</button></div>
+        <div id="photoFilterStrip" style="display:flex; gap:10px; overflow-x:auto; padding:8px 0;"></div>
         <div id="petitionBulkActions" style="display:none; margin-bottom:14px;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div>
         <div id="petitionsList"></div>
         <div id="petitionStats" class="text-center mt-2" style="color:#8e8e93;"></div>
