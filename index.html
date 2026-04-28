@@ -575,22 +575,22 @@
       if (o.status === 'approved') { statusText = 'Заберите'; statusColor = '#ff3b30'; }
       else if (o.status === 'rejected') { statusText = 'Отменён'; statusColor = '#8e8e93'; }
       else { statusText = 'Согласование'; statusColor = '#ffcc00'; }
-      const itemsHtml = o.items.map(i => {
-        const prod = STORAGE.products().find(p => p.id === i.productId);
-        const photoUrl = prod?.photos?.[0] || '';
-        let ist, isc;
-        if (i.status === 'approved' || i.status === 'issued') { ist = 'Ждёт вас'; isc = '#34c759'; }
-        else if (i.status === 'rejected') { ist = 'Отменён'; isc = '#ff3b30'; }
-        else { ist = 'Ожидает'; isc = '#ffcc00'; }
-        return `<div style="text-align:center;flex-shrink:0;">
-          ${photoUrl ? `<img src="${photoUrl}" style="width:56px;height:56px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">` : `<div style="width:56px;height:56px;border-radius:16px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;"><i class="far fa-image" style="color:#c7c7cc;"></i></div>`}
-          <div style="font-size:11px;font-weight:500;color:${isc};margin-top:4px;">${ist}</div>
-        </div>`;
-      }).join('');
+const itemsHtml = o.items.map(i => {
+  const prod = STORAGE.products().find(p => p.id === i.productId);
+  const photoUrl = prod?.photos?.[0] || '';
+  let ist, isc;
+  if (i.status === 'approved' || i.status === 'issued') { ist = 'Ждёт вас'; isc = '#34c759'; }
+  else if (i.status === 'rejected') { ist = 'Отменён'; isc = '#ff3b30'; }
+  else { ist = 'Ожидает'; isc = '#ffcc00'; }
+  return `<div style="text-align:center;flex-shrink:0;">
+    ${photoUrl ? `<img src="${photoUrl}" style="width:80px;height:106px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">` : `<div style="width:80px;height:106px;border-radius:16px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;"><i class="far fa-image" style="color:#c7c7cc;font-size:20px;"></i></div>`}
+    <div style="font-size:12px;font-weight:500;color:${isc};margin-top:4px;">${ist}</div>
+  </div>`;
+}).join('');
       return `<div class="order-card" onclick="openOrderDetails('${o.id}')">
         <div><span style="font-size:17px;font-weight:700;color:${statusColor};">${statusText}</span><span style="color:#8e8e93;margin-left:8px;">${new Date(o.slotTime).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</span></div>
         <div style="color:#8e8e93;font-size:14px;margin:4px 0;">${escapeHtml(o.address)}</div>
-        <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:wrap;">${itemsHtml}</div>
+        <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;">${itemsHtml}</div>
         <span style="color:#007aff;font-weight:600;font-size:15px;">Подробнее →</span>
       </div>`;
     }).join('');
@@ -615,11 +615,11 @@
         <div style="width:20px;"></div>
       </div>
       <div style="display:flex;gap:14px;padding:18px 16px;overflow-x:auto;">
-        ${order.items.map(i => {
-          const prod = STORAGE.products().find(p => p.id === i.productId);
-          return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'" style="width:72px;height:72px;border-radius:18px;object-fit:cover;border:3px solid ${i.productId === selectedDetailItemId ? '#007aff' : 'transparent'};cursor:pointer;flex-shrink:0;background:#f2f2f6;">`;
-        }).join('')}
-      </div>
+  ${order.items.map(i => {
+    const prod = STORAGE.products().find(p => p.id === i.productId);
+    return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'" style="width:80px;height:106px;border-radius:16px;object-fit:cover;border:3px solid ${i.productId === selectedDetailItemId ? '#007aff' : 'transparent'};cursor:pointer;flex-shrink:0;background:#f2f2f6;">`;
+  }).join('')}
+</div>
       <div style="padding:0 18px;">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;cursor:pointer;" onclick="openProductDetail('${selectedItem.productId}','orderDetail')">
           ${escapeHtml(selectedItem.name)} <i class="fas fa-chevron-right" style="color:#007aff;"></i>
