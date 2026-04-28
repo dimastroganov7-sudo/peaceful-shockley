@@ -7,46 +7,7 @@
   <title>Три сестры · Благотворительный фонд</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-  </script>
-  .search-bar {
-  display: flex;
-  align-items: center;
-  background: #e0f0ff;
-  border-radius: 12px;
-  padding: 8px 12px;
-  transition: background 0.3s;
-}
-.search-bar i {
-  color: #007aff;
-  font-size: 16px;
-  margin-right: 8px;
-}
-.search-bar input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 16px;
-  color: #007aff;
-}
-#mainHeader.header-gradient .search-bar {
-  background: white;
-}
-
-#mainHeader {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: white;
-  transition: background 0.3s;
-}
-#mainHeader.header-gradient {
-  background: linear-gradient(to bottom, #007aff, #ffffff);
-  border-radius: 0 0 24px 24px;
-}
-#mainHeader.header-gradient h3 { color: white; }
-#mainHeader.header-gradient .profile-icon-header i { color: white; }
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, sans-serif; }
     body { background: #f2f2f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -149,14 +110,44 @@
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
     .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; color: #007aff; padding: 8px; }
-    /* Градиентная шапка только на главной */
-.header-gradient {
+    .search-bar {
+  display: flex;
+  align-items: center;
+  background: #e0f0ff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  transition: background 0.3s;
+}
+.search-bar i {
+  color: #007aff;
+  font-size: 16px;
+  margin-right: 8px;
+}
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+  color: #007aff;
+}
+#mainHeader.header-gradient .search-bar {
+  background: white;
+}
+
+#mainHeader {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: white;
+  transition: background 0.3s;
+}
+#mainHeader.header-gradient {
   background: linear-gradient(to bottom, #007aff, #ffffff);
   border-radius: 0 0 24px 24px;
-  border-bottom: none;
 }
-.header-gradient h3 { color: white; }
-.header-gradient .profile-icon-header i { color: white; }
+#mainHeader.header-gradient h3 { color: white; }
+#mainHeader.header-gradient .profile-icon-header i { color: white; }
   </style>
 </head>
 <body>
@@ -452,12 +443,7 @@
     if (ni) ni.classList.add('active');
     document.querySelectorAll('#userTabContent .tab-pane').forEach(p => p.style.display = 'none');
     const tabEl = document.getElementById(tabId+'Tab');
-      // Переключение градиентной шапки
-  const header = document.querySelector('#mainScreen header');
-  if (header) {
-    if (tabId === 'home') header.classList.add('header-gradient');
-    else header.classList.remove('header-gradient');
-  }
+    
         if (tabEl) tabEl.style.display = 'block';
     
     const header = document.getElementById('mainHeader');
