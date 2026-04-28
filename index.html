@@ -50,6 +50,23 @@
     .cart-item-main { flex: 1; display: flex; align-items: center; gap: 14px; background: white; border-radius: 20px 0 0 20px; padding: 14px; cursor: pointer; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
     .cart-item-delete { width: 80px; background: #ff3b30; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 0 20px 20px 0; cursor: pointer; font-size: 14px; font-weight: 500; }
     .cart-item-delete i { font-size: 22px; margin-bottom: 4px; }
+        .cart-select-all { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .cart-checkbox { width: 24px; height: 24px; border-radius: 6px; border: 2px solid #007aff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+    .cart-checkbox.checked { background: #007aff; }
+    .cart-checkbox.checked i { color: white; font-size: 14px; display: block; }
+    .cart-checkbox.unchecked { background: white; }
+    .cart-checkbox.unchecked i { display: none; }
+    .cart-actions { position: relative; margin-left: auto; }
+    .cart-actions-btn { color: #007aff; font-weight: 600; cursor: pointer; font-size: 15px; }
+    .cart-actions-dropdown { display: none; position: absolute; right: 0; top: 24px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; overflow: hidden; }
+    .cart-actions-dropdown.show { display: block; }
+    .cart-actions-dropdown div { padding: 12px 20px; white-space: nowrap; cursor: pointer; color: #ff3b30; font-weight: 500; }
+    .cart-item-photo-wrap { position: relative; width: 80px; height: 106px; flex-shrink: 0; }
+    .cart-item-checkbox { position: absolute; top: 4px; left: 4px; z-index: 5; width: 24px; height: 24px; border-radius: 6px; border: 2px solid #007aff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .cart-item-checkbox.checked { background: #007aff; }
+    .cart-item-checkbox.checked i { color: white; font-size: 14px; }
+    .cart-item-checkbox.unchecked { background: white; }
+    .cart-item-checkbox.unchecked i { display: none; }
     .map-container { height: 190px; border-radius: 20px; margin: 14px 0; overflow: hidden; }
     .slot-select { background: #f2f2f6; border-radius: 18px; padding: 16px; margin: 16px 0; }
     .slot-select select { width: 100%; border: none; background: transparent; font-size: 16px; font-weight: 500; color: #1c1c1e; outline: none; }
@@ -141,12 +158,10 @@
         </div>
         <div class="products-grid" id="productsContainer"></div>
       </div>
-      <div id="cartTab" class="tab-pane">
-        <h4 style="margin-bottom:14px;">Корзина помощи</h4>
+            <div id="cartTab" class="tab-pane">
+        <h4 style="margin-bottom:8px;">Корзина помощи</h4>
         <div id="cartItems"></div>
-        <div class="map-container" id="cartMap"></div>
-        <div class="slot-select"><select id="timeSlotSelect"></select></div>
-        <button class="btn primary" onclick="createOrder()">Отправить на согласование</button>
+        <button class="btn primary" style="margin-top:12px;" onclick="openCheckout()">К оформлению</button>
       </div>
       <div id="profileTab" class="tab-pane">
         <div style="text-align:center; padding:20px;">
@@ -266,10 +281,29 @@
   <div id="sizeSelectModal" class="size-modal">
     <div class="size-modal-content" id="sizeSelectContent"></div>
   </div>
-  <div id="fullscreenPhotoModal" class="modal" style="align-items:center; background:rgba(0,0,0,0.9);" onclick="closeModal('fullscreenPhotoModal')">
-    <img id="fullscreenImage" style="max-width:90%;max-height:90%;border-radius:20px;object-fit:contain;">
+  <div id="checkoutModal" class="modal" style="align-items:flex-start; padding:0;">
+    <div class="modal-content" style="padding:0; border-radius:0; max-width:100%; min-height:100%; overflow-y:auto; padding-bottom:100px; box-sizing:border-box;">
+      <i class="fas fa-times" onclick="closeModal('checkoutModal')" style="position:absolute; top:16px; right:16px; z-index:10; font-size:22px; color:#007aff; background:white; border-radius:20px; padding:4px; width:32px; height:32px; display:flex; align-items:center; justify-content:center;"></i>
+      <div style="display:flex; flex-direction:column; height:100%;">
+        <div style="background:#f2f2f6; padding:16px 16px 8px; text-align:center;">
+          <span style="background:white; padding:8px 24px; border-radius:20px; font-weight:600; font-size:16px;">Пункт выдачи</span>
+        </div>
+        <div style="padding:16px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <i class="fas fa-church" style="font-size:28px; color:#007aff;"></i>
+            <h4 style="font-weight:600; font-size:17px;">Южное Бутово, Остафьевская ул, 44</h4>
+          </div>
+        </div>
+        <div id="checkoutMap" class="map-container" style="margin:0 16px; height:200px;"></div>
+        <div class="slot-select" style="margin:16px;">
+          <select id="checkoutTimeSlotSelect" style="width:100%; border:none; background:transparent; font-size:16px; font-weight:500; color:#1c1c1e; outline:none;"></select>
+        </div>
+        <div style="padding:0 16px 8px; font-weight:500;">Выбранная дата доставки</div>
+        <div id="checkoutItemsPreview" style="display:flex; gap:10px; overflow-x:auto; padding:0 16px 16px; padding-bottom:4px;"></div>
+        <button class="btn primary" style="margin:0 16px 16px;" onclick="submitCheckoutOrder()">Отправить на согласование</button>
+      </div>
+    </div>
   </div>
-</div>
 
 <script>
 (function(){
@@ -297,7 +331,8 @@
 
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), selectedPhotoFilters=new Set(), currentCalendarDate=new Date(), leafletMap=null,
     currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
-    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[], swipedCartItemIndex=null;
+    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[], swipedCartItemIndex=null,
+    cartSelectedItems = new Set(), checkoutMap = null;
 
   async function hashPassword(pwd) {
     const enc = new TextEncoder().encode(pwd);
@@ -470,26 +505,54 @@
 
   // Корзина
    // Корзина
-  window.renderCart = () => {
+    window.renderCart = () => {
     const cart = STORAGE.cart();
-    resetSwipedCart();
-    document.getElementById('cartItems').innerHTML = cart.length ? cart.map((item, idx) => `
-      <div class="cart-item-wrapper">
-        <div class="cart-item-inner" id="cart-inner-${idx}" style="transform:translateX(0);">
-          <div class="cart-item-main" data-cart-index="${idx}"
-               ontouchstart="cartTouchStart(event, ${idx})" ontouchmove="cartTouchMove(event, ${idx})" ontouchend="cartTouchEnd(event, ${idx})"
-               onclick="if(!event.target.closest('.cart-item-delete')) openProductDetail('${item.id}','cart')">
-            <img src="${item.photos?.[0]||''}" style="width:80px;height:106px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">
-            <div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong>${item.selectedSize ? ` <span style="color:#8e8e93;">(${escapeHtml(item.selectedSize)})</span>` : ''}</div>
-          </div>
-          <div class="cart-item-delete" onclick="removeFromCart(${idx})">
-            <i class="far fa-trash-alt"></i> Удалить
+    swipedCartItemIndex = null;
+    cartSelectedItems = new Set(cart.map((_, i) => i));
+    const allSelected = cartSelectedItems.size === cart.length;
+    
+    document.getElementById('cartItems').innerHTML = '';
+    if (!cart.length) {
+      document.getElementById('cartItems').innerHTML = '<p class="text-center" style="color:#8e8e93;">Корзина пуста</p>';
+      return;
+    }
+
+    const selectAllHtml = `
+      <div class="cart-select-all">
+        <div class="cart-checkbox ${allSelected ? 'checked' : 'unchecked'}" id="selectAllCheckbox" onclick="toggleSelectAll()">
+          <i class="fas fa-check"></i>
+        </div>
+        <span style="font-weight:500;">Выбрать все</span>
+        <div class="cart-actions">
+          <span class="cart-actions-btn" id="actionsBtn" onclick="toggleActionsMenu(event)">Действия ▾</span>
+          <div class="cart-actions-dropdown" id="actionsDropdown">
+            <div onclick="removeSelectedItems()">Удалить</div>
           </div>
         </div>
-      </div>`).join('') : '<p class="text-center" style="color:#8e8e93;">Корзина пуста</p>';
-    const now = new Date();
-    const slots = STORAGE.slots().filter(s => new Date(s.datetime) > now && s.used < s.capacity);
-    document.getElementById('timeSlotSelect').innerHTML = slots.map(s => `<option value="${s.id}">${new Date(s.datetime).toLocaleString('ru-RU')}</option>`).join('');
+      </div>`;
+    const itemsHtml = cart.map((item, idx) => {
+      const checked = cartSelectedItems.has(idx);
+      return `
+        <div class="cart-item-wrapper">
+          <div class="cart-item-inner" id="cart-inner-${idx}" style="transform:translateX(0);">
+            <div class="cart-item-main" data-cart-index="${idx}"
+                 ontouchstart="cartTouchStart(event, ${idx})" ontouchmove="cartTouchMove(event, ${idx})" ontouchend="cartTouchEnd(event, ${idx})"
+                 onclick="if(!event.target.closest('.cart-item-delete')) openProductDetail('${item.id}','cart')">
+              <div class="cart-item-photo-wrap">
+                <img src="${item.photos?.[0]||''}" style="width:100%;height:100%;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">
+                <div class="cart-item-checkbox ${checked ? 'checked' : 'unchecked'}" onclick="event.stopPropagation(); toggleCartItem(${idx})">
+                  <i class="fas fa-check"></i>
+                </div>
+              </div>
+              <div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong>${item.selectedSize ? ` <span style="color:#8e8e93;">(${escapeHtml(item.selectedSize)})</span>` : ''}</div>
+            </div>
+            <div class="cart-item-delete" onclick="removeFromCart(${idx})">
+              <i class="far fa-trash-alt"></i> Удалить
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+    document.getElementById('cartItems').innerHTML = selectAllHtml + itemsHtml;
   };
     window.removeFromCart = (idx) => {
     let cart = STORAGE.cart();
@@ -683,6 +746,103 @@ const itemsHtml = o.items.map(i => {
   window.closeOrderDetails = () => {
     document.getElementById('ordersListView').style.display = 'block';
     document.getElementById('orderDetailsView').style.display = 'none';
+  };
+    window.toggleSelectAll = () => {
+    const cart = STORAGE.cart();
+    if (cartSelectedItems.size === cart.length) {
+      cartSelectedItems.clear();
+    } else {
+      cart.forEach((_, i) => cartSelectedItems.add(i));
+    }
+    renderCart();
+  };
+
+  window.toggleCartItem = (idx) => {
+    if (cartSelectedItems.has(idx)) cartSelectedItems.delete(idx);
+    else cartSelectedItems.add(idx);
+    renderCart();
+  };
+
+  window.toggleActionsMenu = (e) => {
+    e.stopPropagation();
+    const dd = document.getElementById('actionsDropdown');
+    dd.classList.toggle('show');
+    setTimeout(() => { dd.classList.remove('show'); }, 3000);
+  };
+
+  window.removeSelectedItems = () => {
+    let cart = STORAGE.cart();
+    cart = cart.filter((_, i) => !cartSelectedItems.has(i));
+    STORAGE.saveCart(cart);
+    cartSelectedItems.clear();
+    updateCartBadge();
+    renderCart();
+    document.getElementById('actionsDropdown').classList.remove('show');
+  };
+
+  window.openCheckout = () => {
+    if (!cartSelectedItems.size) { alert('Выберите товары'); return; }
+    document.getElementById('checkoutModal').style.display = 'flex';
+    populateCheckoutSlots();
+    renderCheckoutItemsPreview();
+    setTimeout(initCheckoutMap, 200);
+  };
+
+  function initCheckoutMap() {
+    if (checkoutMap) { checkoutMap.remove(); checkoutMap = null; }
+    const mapEl = document.getElementById('checkoutMap');
+    if (!mapEl || mapEl.offsetParent === null) return;
+    checkoutMap = L.map(mapEl).setView([55.531570, 37.498393], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(checkoutMap);
+    L.marker([55.531570, 37.498393]).addTo(checkoutMap).bindPopup('Южное Бутово, Остафьевская ул, 44').openPopup();
+  }
+
+  function populateCheckoutSlots() {
+    const now = new Date();
+    const slots = STORAGE.slots().filter(s => new Date(s.datetime) > now && s.used < s.capacity);
+    document.getElementById('checkoutTimeSlotSelect').innerHTML = slots.map(s => `<option value="${s.id}">${new Date(s.datetime).toLocaleString('ru-RU')}</option>`).join('');
+  }
+
+  function renderCheckoutItemsPreview() {
+    const cart = STORAGE.cart();
+    const selectedItems = cart.filter((_, i) => cartSelectedItems.has(i));
+    document.getElementById('checkoutItemsPreview').innerHTML = selectedItems.map(item => `
+      <div style="text-align:center;flex-shrink:0;">
+        <img src="${item.photos?.[0]||''}" style="width:80px;height:106px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">
+        <div style="font-size:12px;margin-top:4px;">${escapeHtml(item.name)}</div>
+      </div>`).join('');
+  }
+
+  window.submitCheckoutOrder = () => {
+    const user = STORAGE.currentUser();
+    if (user.blocked) { alert('Сначала оставьте отзывы на все полученные товары'); return; }
+    const cart = STORAGE.cart();
+    const selectedItems = cart.filter((_, i) => cartSelectedItems.has(i));
+    if (!selectedItems.length) { alert('Нет выбранных товаров'); return; }
+    const slotId = document.getElementById('checkoutTimeSlotSelect').value;
+    if (!slotId) { alert('Выберите время'); return; }
+    const slots = STORAGE.slots();
+    const slot = slots.find(s => s.id === slotId);
+    if (!slot || slot.used >= slot.capacity) { alert('Слот заполнен'); return; }
+    const items = selectedItems.map(p => ({ productId: p.id, article: p.article, name: p.name, status: 'pending', selectedSize: p.selectedSize || null }));
+    const order = {
+      id: 'ORD-'+Date.now(), userId: user.id, items,
+      slotId: slot.id, slotTime: slot.datetime,
+      address: 'Южное Бутово, Остафьевская ул, 44',
+      status: 'pending', createdAt: new Date().toISOString(),
+      recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email },
+      issued: false, archived: false
+    };
+    STORAGE.saveOrders([...STORAGE.orders(), order]);
+    slot.used++;
+    STORAGE.saveSlots(slots);
+    const newCart = cart.filter((_, i) => !cartSelectedItems.has(i));
+    STORAGE.saveCart(newCart);
+    cartSelectedItems.clear();
+    updateCartBadge();
+    closeModal('checkoutModal');
+    alert('Заказ отправлен на согласование');
+    switchTab('orders');
   };
 
   // Карточка товара
