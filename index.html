@@ -37,10 +37,10 @@
     .tab-content { flex: 1; overflow-y: auto; padding: 18px; padding-bottom: 110px; background: #f2f2f6; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
-    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .product-card { background: white; border-radius: 22px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); cursor: pointer; transition: 0.15s; }
+    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .product-card { background: white; border-radius: 16px; padding: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); cursor: pointer; transition: 0.15s; }
     .product-card:active { transform: scale(0.97); }
-    .product-photo { width: 100%; height: 130px; border-radius: 18px; margin-bottom: 10px; background: #f2f2f6; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+    .product-photo { width: 100%; height: 180px; border-radius: 14px; margin-bottom: 6px; background: #f2f2f6; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
     .product-photo img { width: 100%; height: 100%; object-fit: cover; }
     .product-photo i { font-size: 32px; color: #c7c7cc; }
     .product-stats { font-size: 13px; color: #8e8e93; margin: 4px 0; }
@@ -415,12 +415,11 @@
     else if (sort === 'old') prods.sort((a,b) => a.id.localeCompare(b.id));
     document.getElementById('productsContainer').innerHTML = prods.map(p => `
       <div class="product-card" onclick="openProductDetail('${p.id}','home')">
-        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image"></i>'}</div>
-        <h4 style="font-weight:600;">${escapeHtml(p.name)}</h4>
-        <small style="color:#8e8e93;">${escapeHtml(p.article)}</small>
-        <div class="product-stats">В наличии: ${p.availableQuantity}</div>
-        <div class="product-stats">👥 Запросов: ${getProductRequestCount(p.id)}</div>
-        <button class="btn primary small" style="margin-top:8px;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
+        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image" style="font-size:28px;"></i>'}</div>
+<h4 style="font-weight:600;font-size:14px;margin:4px 0 2px;">${escapeHtml(p.name)}</h4>
+<div class="product-stats" style="font-size:12px;">В наличии: ${p.availableQuantity}</div>
+<div class="product-stats" style="font-size:12px;margin-bottom:4px;">👥 Запросов: ${getProductRequestCount(p.id)}</div>
+<button class="btn primary small" style="margin-top:4px;padding:8px 12px;font-size:13px;width:100%;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
       </div>`).join('');
   };
   window.addToCart = (prodId) => {
