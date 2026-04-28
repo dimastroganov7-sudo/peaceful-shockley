@@ -460,9 +460,6 @@
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
        if (tabId === 'cart') { resetSwipedCart(); renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
     else { resetSwipedCart(); }
-        const header = document.getElementById('mainHeader');
-    const searchBlock = document.getElementById('headerSearch');
-    const searchContent = document.getElementById('headerSearchContent');
     if (tabId === 'profile') renderProfile();
     if (tabId === 'orders') {
       document.getElementById('ordersListView').style.display = 'block';
