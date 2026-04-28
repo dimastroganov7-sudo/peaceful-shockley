@@ -282,18 +282,7 @@
 </div>
   <div id="sizeSelectModal" class="size-modal">
     <div class="size-modal-content" id="sizeSelectContent"></div>
-  </div>
-        <div id="checkoutMap" class="map-container" style="margin:0 16px; height:200px;"></div>
-        <div class="slot-select" style="margin:16px;">
-          <select id="checkoutTimeSlotSelect" style="width:100%; border:none; background:transparent; font-size:16px; font-weight:500; color:#1c1c1e; outline:none;"></select>
-        </div>
-        <div style="padding:0 16px 8px; font-weight:500;">Выбранная дата доставки</div>
-        <div id="checkoutItemsPreview" style="display:flex; gap:10px; overflow-x:auto; padding:0 16px 16px; padding-bottom:4px;"></div>
-        <button class="btn primary" style="margin:0 16px 16px;" onclick="submitCheckoutOrder()">Отправить на согласование</button>
-      </div>
-    </div>
-  
-
+  </div> 
 <script>
 (function(){
   'use strict';
@@ -766,18 +755,7 @@ const itemsHtml = o.items.map(i => {
     renderCart();
     document.getElementById('actionsDropdown').classList.remove('show');
   };
-    STORAGE.saveOrders([...STORAGE.orders(), order]);
-    slot.used++;
-    STORAGE.saveSlots(slots);
-    const newCart = cart.filter((_, i) => !cartSelectedItems.has(i));
-    STORAGE.saveCart(newCart);
-    cartSelectedItems.clear();
-    updateCartBadge();
-    closeModal('checkoutModal');
-    alert('Заказ отправлен на согласование');
-    switchTab('orders');
-  };
-
+    
   // Карточка товара
   window.openProductDetail = (prodId, returnScreen) => {
     const prod = STORAGE.products().find(p => p.id === prodId);
