@@ -7,7 +7,8 @@
   <title>Три сестры · Благотворительный фонд</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, sans-serif; }
     body { background: #f2f2f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -110,49 +111,14 @@
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
     .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; color: #007aff; padding: 8px; }
-    .search-bar {
-  display: flex;
-  align-items: center;
-  background: #e0f0ff;
-  border-radius: 12px;
-  padding: 8px 12px;
-  transition: background 0.3s;
+    /* Градиентная шапка только на главной */
+.header-gradient {
+  background: linear-gradient(to bottom, #007aff, #ffffff);
+  border-radius: 0 0 24px 24px;
+  border-bottom: none;
 }
-.search-bar i {
-  color: #007aff;
-  font-size: 16px;
-  margin-right: 8px;
-}
-.search-bar input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 16px;
-  color: #007aff;
-}
-#mainHeader.header-gradient .search-bar {
-  background: white;
-}
-
-#mainHeader {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: white;
-  transition: background 0.3s;
-}
-#mainHeader.header-gradient {
-  background: linear-gradient(to bottom, #007aff, #f2f2f6);
-}
-#mainHeader.header-gradient h3 { color: white; }
-#mainHeader.header-gradient .profile-icon-header i { color: white; }
-    #bottomSearchBar {
-  transition: opacity 0.2s;
-}
-#bottomSearchBar .search-bar {
-  background: white;
-}
+.header-gradient h3 { color: white; }
+.header-gradient .profile-icon-header i { color: white; }
   </style>
 </head>
 <body>
@@ -188,19 +154,10 @@
 
   <!-- ОСНОВНОЙ ЭКРАН ПОЛЬЗОВАТЕЛЯ -->
   <div id="mainScreen" class="screen">
-    <header id="mainHeader">
-  <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px;">
-    <h3>Три сестры</h3>
-    <div class="header-icons"><div class="profile-icon-header" onclick="switchTab('profile')" id="headerProfileIcon"><i class="far fa-user-circle" style="font-size:28px;"></i></div></div>
-</div>
-</header>
-<!-- Нижняя панель поиска (только на главной) -->
-<div id="bottomSearchBar" style="display:none; position:fixed; bottom:90px; left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:380px; z-index:101; padding:8px 0;">
-  <div class="search-bar">
-    <i class="fas fa-search"></i>
-    <input type="text" id="productSearch" placeholder="Поиск товаров" oninput="renderProducts()">
-  </div>
-</div>
+    <header>
+      <h3>Три сестры</h3>
+      <div class="header-icons"><div class="profile-icon-header" onclick="switchTab('profile')" id="headerProfileIcon"><i class="far fa-user-circle" style="font-size:28px;"></i></div></div>
+    </header>
     <div class="tab-content" id="userTabContent">
       <div id="homeTab" class="tab-pane active">
         <div class="filter-bar">
@@ -449,14 +406,13 @@
     if (ni) ni.classList.add('active');
     document.querySelectorAll('#userTabContent .tab-pane').forEach(p => p.style.display = 'none');
     const tabEl = document.getElementById(tabId+'Tab');
-    
-        if (tabEl) tabEl.style.display = 'block';
-    // Показать/скрыть нижний поиск
-  const bottomSearch = document.getElementById('bottomSearchBar');
-  if (bottomSearch) {
-    bottomSearch.style.display = (tabId === 'home') ? 'block' : 'none';
+      // Переключение градиентной шапки
+  const header = document.querySelector('#mainScreen header');
+  if (header) {
+    if (tabId === 'home') header.classList.add('header-gradient');
+    else header.classList.remove('header-gradient');
   }
-
+    if (tabEl) tabEl.style.display = 'block';
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
        if (tabId === 'cart') { resetSwipedCart(); renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
     else { resetSwipedCart(); }
@@ -481,9 +437,7 @@
     document.getElementById('categoryFilter').innerHTML = '<option value="">Все категории</option>' + cats.map(c => `<option>${escapeHtml(c)}</option>`).join('');
   }
   window.renderProducts = () => {
-       let prods = STORAGE.products().filter(p => p.isPlaced && p.availableQuantity > 0);
-    const searchText = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
-    if (searchText) prods = prods.filter(p => p.name.toLowerCase().includes(searchText));
+    let prods = STORAGE.products().filter(p => p.isPlaced && p.availableQuantity > 0);
     const cat = document.getElementById('categoryFilter')?.value;
     if (cat) prods = prods.filter(p => p.category === cat);
     const sort = document.getElementById('sortFilter')?.value;
@@ -719,13 +673,6 @@
     const user = STORAGE.currentUser();
     if (!user) return;
     let orders = STORAGE.orders().filter(o => o.userId === user.id && !o.archived);
-        const orderSearchText = (document.getElementById('userOrderSearchInput')?.value || '').toLowerCase().trim();
-    if (orderSearchText) {
-      orders = orders.filter(o =>
-        o.id.toLowerCase().includes(orderSearchText) ||
-        o.items.some(i => i.name.toLowerCase().includes(orderSearchText))
-      );
-    }
     if (!orders.length) {
       document.getElementById('ordersListView').innerHTML = '<p class="text-center" style="color:#8e8e93;margin-top:40px;">Нет активных заказов</p>';
       return;
@@ -1372,21 +1319,6 @@ itemsForReview.push({ order, item, review: exists || null });
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.cart-item-wrapper')) resetSwipedCart();
   });
-    const userTabContent = document.getElementById('userTabContent');
-  if (userTabContent) {
-    userTabContent.addEventListener('scroll', () => {
-      const header = document.getElementById('mainHeader');
-      if (!header) return;
-      const homeTab = document.getElementById('homeTab');
-      if (homeTab && homeTab.style.display !== 'none') {
-        if (userTabContent.scrollTop > 0) {
-          header.classList.remove('header-gradient');
-        } else {
-          header.classList.add('header-gradient');
-        }
-      }
-    });
-  }
   // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
