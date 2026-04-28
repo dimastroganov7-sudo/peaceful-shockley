@@ -212,7 +212,7 @@
         <div id="adminProductsList" class="admin-products-grid"></div>
       </div>
       <div id="adminPetitions" class="admin-pane">
-               <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('active')">Сборка</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
+                      <div style="display:flex; gap:8px; margin-bottom:14px;"><input id="petitionSearch" placeholder="Поиск" style="flex:1;" oninput="renderPetitions()"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Выбрать</button></div>
         <div id="petitionBulkActions" style="display:none; margin-bottom:14px;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div>
         <div id="petitionsList"></div>
         <div id="petitionStats" class="text-center mt-2" style="color:#8e8e93;"></div>
@@ -226,7 +226,7 @@
       </div>
       <div id="adminHistory" class="admin-pane">
         <input type="text" id="orderSearchInput" placeholder="Поиск по номеру/ФИО/телефону" style="width:100%;margin-bottom:12px;padding:12px;border-radius:16px;border:1px solid #e5e5ea;" oninput="renderAllOrders()">
-        <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('today')">Сегодня</button><button class="btn secondary small" onclick="switchOrderView('all')">Активные</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
+                <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('active')">Сборка</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
         <select id="adminOrderDateFilter" style="display:none;width:100%;margin-bottom:12px;padding:12px;border-radius:16px;border:1px solid #e5e5ea;" onchange="renderAllOrders()"></select>
         <div id="allOrdersList"></div>
       </div>
@@ -281,7 +281,8 @@
 </div>
   <div id="sizeSelectModal" class="size-modal">
     <div class="size-modal-content" id="sizeSelectContent"></div>
-  </div> 
+  </div>
+  </div>
 <script>
 (function(){
   'use strict';
@@ -678,7 +679,7 @@ const itemsHtml = o.items.map(i => {
     <div style="font-size:12px;font-weight:500;color:${isc};margin-top:4px;">${ist}</div>
   </div>`;
 }).join('');
-          return `<div class="order-card" onclick="openCollectionModal('${o.id}')">
+                   return `<div class="order-card" onclick="openOrderDetails('${o.id}')">
         <div><span style="font-size:17px;font-weight:700;color:${statusColor};">${statusText}</span><span style="color:#8e8e93;margin-left:8px;">${new Date(o.slotTime).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</span></div>
         <div style="color:#8e8e93;font-size:14px;margin:4px 0;">${escapeHtml(o.address)}</div>
         <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;">${itemsHtml}</div>
