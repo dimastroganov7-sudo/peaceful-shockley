@@ -420,7 +420,7 @@
   <h4 style="font-weight:600;font-size:14px;margin:8px 0 4px;">${escapeHtml(p.name)}</h4>
   <div class="product-stats" style="font-size:12px;margin:0;">В наличии: ${p.availableQuantity}</div>
   <div class="product-stats" style="font-size:12px;margin:0 0 6px;">👥 Запросов: ${getProductRequestCount(p.id)}</div>
-  <button class="btn primary small" style="margin-top:0;padding:8px 12px;font-size:13px;width:100%;border-radius:8px;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
+  <button class="btn primary small" style="margin-top:0;padding:8px 12px;font-size:13px;width:100%;border-radius:12px;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
 </div>
       </div>`).join('');
   };
