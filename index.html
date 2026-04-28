@@ -197,7 +197,6 @@
   <div id="headerSearchContent"></div>
 </div>
 </header>
-    </header>
 <!-- Нижняя панель поиска (только на главной) -->
 <div id="bottomSearchBar" style="display:none; position:fixed; bottom:90px; left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:380px; z-index:101; padding:8px 0;">
   <div class="search-bar">
@@ -467,42 +466,6 @@
         const header = document.getElementById('mainHeader');
     const searchBlock = document.getElementById('headerSearch');
     const searchContent = document.getElementById('headerSearchContent');
-
-    if (header) {
-      if (tabId === 'home' || tabId === 'orders') {
-        header.classList.add('header-gradient');
-        if (searchBlock) searchBlock.style.display = 'block';
-
-        // Устанавливаем содержимое поиска в зависимости от вкладки
-        if (tabId === 'home') {
-          searchContent.innerHTML = `
-            <div class="search-bar">
-              <i class="fas fa-search"></i>
-              <input type="text" id="productSearch" placeholder="Поиск товаров" oninput="renderProducts()">
-            </div>`;
-          // Восстанавливаем значение поиска товаров, если было
-          const savedProductSearch = sessionStorage.getItem('productSearch') || '';
-          const prodInput = document.getElementById('productSearch');
-          if (prodInput) prodInput.value = savedProductSearch;
-        } else if (tabId === 'orders') {
-          searchContent.innerHTML = `
-            <div class="search-bar">
-              <i class="fas fa-search"></i>
-              <input type="text" id="userOrderSearchInput" placeholder="Поиск по заказам" oninput="renderUserOrders()">
-            </div>`;
-        }
-
-        const tabContent = document.getElementById('userTabContent');
-        if (tabContent) tabContent.scrollTop = 0;
-      } else {
-        header.classList.remove('header-gradient');
-        if (searchBlock) searchBlock.style.display = 'none';
-      }
-    }
-
-    if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
-       if (tabId === 'cart') { resetSwipedCart(); renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
-    else { resetSwipedCart(); }
     if (tabId === 'profile') renderProfile();
     if (tabId === 'orders') {
       document.getElementById('ordersListView').style.display = 'block';
