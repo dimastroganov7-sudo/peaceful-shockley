@@ -269,12 +269,12 @@
       <button class="btn primary" onclick="addSlot()">Добавить</button>
     </div>
   </div>
-  <div id="issueOrderModal" class="modal">
-    <div class="modal-content">
+   <div id="issueOrderModal" class="modal">
+    <div class="modal-content" id="issueOrderModalContent" style="max-width:400px; max-height:90vh; overflow-y:auto;">
       <i class="fas fa-times" onclick="closeModal('issueOrderModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
-      <h3 style="margin-bottom:16px;">Выдача заказа</h3>
-      <div id="issueOrderItems"></div>
-      <button class="btn primary" onclick="confirmIssueOrder()" style="margin-top:12px;">Подтвердить выдачу</button>
+      <h3 style="margin-bottom:16px;">Сборка заказа</h3>
+      <div id="collectionItems"></div>
+      <div id="collectionActions" style="margin-top:16px;"></div>
     </div>
   </div>
   <div id="productDetailModal" class="modal" style="align-items:stretch; padding:0;">
@@ -679,7 +679,7 @@ const itemsHtml = o.items.map(i => {
     <div style="font-size:12px;font-weight:500;color:${isc};margin-top:4px;">${ist}</div>
   </div>`;
 }).join('');
-      return `<div class="order-card" onclick="openOrderDetails('${o.id}')">
+          return `<div class="order-card" onclick="openCollectionModal('${o.id}')">
         <div><span style="font-size:17px;font-weight:700;color:${statusColor};">${statusText}</span><span style="color:#8e8e93;margin-left:8px;">${new Date(o.slotTime).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</span></div>
         <div style="color:#8e8e93;font-size:14px;margin:4px 0;">${escapeHtml(o.address)}</div>
         <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;">${itemsHtml}</div>
@@ -1096,56 +1096,132 @@ itemsForReview.push({ order, item, review: exists || null });
         ${!o.archived ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="event.stopPropagation();openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="event.stopPropagation();cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
       </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
   };
-  window.openIssueModal = (orderId) => {
+  // Сборка заказа
+  window.openCollectionModal = (orderId) => {
     currentIssueOrderId = orderId;
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
-    document.getElementById('issueOrderItems').innerHTML = order.items.filter(i => i.status === 'approved').map((i, idx) => `
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <input type="checkbox" id="issueItem-${idx}" checked>
-        <label for="issueItem-${idx}">${escapeHtml(i.name)}</label>
-      </div>`).join('');
+    renderCollectionModal(order);
     document.getElementById('issueOrderModal').style.display = 'flex';
   };
-  window.confirmIssueOrder = () => {
-    const order = STORAGE.orders().find(o => o.id === currentIssueOrderId);
+
+  function renderCollectionModal(order) {
+    const itemsHtml = order.items.map((item, idx) => {
+      const prod = STORAGE.products().find(p => p.id === item.productId);
+      const photoUrl = prod?.photos?.[0] || '';
+      const isCollected = item.status === 'collected';
+      const isRejected = item.status === 'rejected' || item.status === 'cancelled';
+      const disabled = isCollected || isRejected;
+      return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;background:white;border-radius:16px;padding:12px;">
+        <img src="${photoUrl}" style="width:60px;height:80px;border-radius:12px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">
+        <div style="flex:1;"><b>${escapeHtml(item.name)}</b></div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn small" style="padding:6px 12px;font-size:13px;border-radius:10px;background:${isCollected?'#34c759':'#f2f2f6'};color:${isCollected?'white':'#007aff'};" ${disabled ? 'disabled' : ''} onclick="collectItem('${order.id}','${item.productId}')">Собрать</button>
+          <button class="btn small" style="padding:6px 12px;font-size:13px;border-radius:10px;background:${isRejected?'#ff3b30':'#f2f2f6'};color:${isRejected?'white':'#ff3b30'};" ${disabled ? 'disabled' : ''} onclick="rejectCollectionItem('${order.id}','${item.productId}')">Отменить</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('collectionItems').innerHTML = itemsHtml;
+
+    const allCollected = order.items.every(i => i.status === 'collected');
+    const allRejected = order.items.every(i => i.status === 'rejected' || i.status === 'cancelled');
+    let actionsHtml = '';
+    if (allCollected) {
+      actionsHtml = `<button class="btn primary" onclick="issueReadyOrder('${order.id}')">Выдать</button>
+                     <button class="btn danger" onclick="cancelReadyOrder('${order.id}')">Отменить заказ</button>`;
+    } else if (allRejected) {
+      actionsHtml = `<p style="text-align:center;color:#8e8e93;">Все товары отменены. Заказ будет перемещён в архив.</p>`;
+      setTimeout(() => { archiveRejectedOrder(order.id); }, 800);
+    } else {
+      actionsHtml = `<p style="text-align:center;color:#8e8e93;">Примите решение по каждому товару</p>`;
+    }
+    document.getElementById('collectionActions').innerHTML = actionsHtml;
+  }
+
+  window.collectItem = (orderId, productId) => {
+    const orders = STORAGE.orders();
+    const order = orders.find(o => o.id === orderId);
     if (!order) return;
-    const checkboxes = document.querySelectorAll('#issueOrderItems input[type="checkbox"]');
-    const approvedItems = order.items.filter(i => i.status === 'approved');
-    const issuedIds = new Set();
-    checkboxes.forEach((cb, idx) => { if (cb.checked) issuedIds.add(approvedItems[idx].productId); });
-    order.items.forEach(i => { if (i.status === 'approved' && issuedIds.has(i.productId)) i.status = 'issued'; });
-    order.issued = true; order.archived = true;
+    const item = order.items.find(i => i.productId === productId && i.status === 'approved');
+    if (!item) return;
+    item.status = 'collected';
+    STORAGE.saveOrders(orders);
+    renderCollectionModal(order);
+    renderAllOrders();
+  };
+
+  window.rejectCollectionItem = (orderId, productId) => {
+    const orders = STORAGE.orders();
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    const item = order.items.find(i => i.productId === productId && i.status === 'approved');
+    if (!item) return;
+    const prod = STORAGE.products().find(p => p.id === productId);
+    if (prod) { prod.availableQuantity++; STORAGE.saveProducts(STORAGE.products()); }
+    item.status = 'rejected';
+    STORAGE.saveOrders(orders);
+    renderCollectionModal(order);
+    renderAllOrders();
+  };
+
+  function archiveRejectedOrder(orderId) {
+    const orders = STORAGE.orders();
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    order.status = 'rejected';
+    order.archived = true;
+    STORAGE.saveOrders(orders);
+    closeModal('issueOrderModal');
+    renderAllOrders();
+  }
+
+  window.issueReadyOrder = (orderId) => {
+    const order = STORAGE.orders().find(o => o.id === orderId);
+    if (!order) return;
+    order.items.forEach(i => { if (i.status === 'collected') i.status = 'issued'; });
+    order.issued = true;
+    order.archived = true;
     STORAGE.saveOrders(STORAGE.orders());
     const user = STORAGE.users().find(u => u.id === order.userId);
     const allReviews = STORAGE.reviews();
-    issuedIds.forEach(productId => {
-      if (!allReviews.some(r => r.orderId === order.id && r.productId === productId)) {
-        const item = order.items.find(i => i.productId === productId);
+    order.items.forEach(item => {
+      if (item.status === 'issued' && !allReviews.some(r => r.orderId === order.id && r.productId === item.productId)) {
         allReviews.push({
           id: 'rev-'+Date.now()+'-'+Math.random().toString(36).slice(2),
-          userId: order.userId, orderId: order.id, productId,
+          userId: order.userId, orderId: order.id, productId: item.productId,
           userName: `${order.recipient.firstName} ${order.recipient.lastName}`,
           userAvatar: user?.avatar || '', productName: item.name,
-          productPhoto: STORAGE.products().find(p => p.id === productId)?.photos?.[0] || '',
+          productPhoto: STORAGE.products().find(p => p.id === item.productId)?.photos?.[0] || '',
           link: '', status: 'pending'
         });
       }
     });
     STORAGE.saveReviews(allReviews);
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    closeModal('issueOrderModal'); renderAllOrders();
+    closeModal('issueOrderModal');
+    renderAllOrders();
     alert('Заказ выдан и перемещён в архив');
   };
-  window.cancelOrder = (orderId) => {
+
+  window.cancelReadyOrder = (orderId) => {
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
-    order.items.forEach(i => { if (i.status === 'approved') { const prod = STORAGE.products().find(p => p.id === i.productId); if (prod) prod.availableQuantity++; } });
-    order.status = 'cancelled'; order.archived = true;
-    STORAGE.saveProducts(STORAGE.products()); STORAGE.saveOrders(STORAGE.orders());
-    renderAllOrders(); alert('Заказ отменён и перемещён в архив');
+    order.items.forEach(i => {
+      if (i.status === 'collected') {
+        const prod = STORAGE.products().find(p => p.id === i.productId);
+        if (prod) prod.availableQuantity++;
+        i.status = 'rejected';
+      }
+    });
+    STORAGE.saveProducts(STORAGE.products());
+    order.status = 'cancelled';
+    order.archived = true;
+    STORAGE.saveOrders(STORAGE.orders());
+    closeModal('issueOrderModal');
+    renderAllOrders();
+    alert('Заказ отменён и перемещён в архив');
   };
-
   // Отзывы (админ)
   function renderAdminReviews() {
     document.getElementById('adminReviewsList').innerHTML = STORAGE.reviews().filter(r => r.status === 'pending').map(r => `
