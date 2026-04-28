@@ -147,6 +147,12 @@
 }
 #mainHeader.header-gradient h3 { color: white; }
 #mainHeader.header-gradient .profile-icon-header i { color: white; }
+    #bottomSearchBar {
+  transition: opacity 0.2s;
+}
+#bottomSearchBar .search-bar {
+  background: white;
+}
   </style>
 </head>
 <body>
@@ -191,6 +197,14 @@
   <div id="headerSearchContent"></div>
 </div>
 </header>
+    </header>
+<!-- Нижняя панель поиска (только на главной) -->
+<div id="bottomSearchBar" style="display:none; position:fixed; bottom:90px; left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:380px; z-index:101; padding:8px 0;">
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" id="productSearch" placeholder="Поиск товаров" oninput="renderProducts()">
+  </div>
+</div>
     <div class="tab-content" id="userTabContent">
       <div id="homeTab" class="tab-pane active">
         <div class="filter-bar">
@@ -441,7 +455,15 @@
     const tabEl = document.getElementById(tabId+'Tab');
     
         if (tabEl) tabEl.style.display = 'block';
-    
+    // Показать/скрыть нижний поиск
+  const bottomSearch = document.getElementById('bottomSearchBar');
+  if (bottomSearch) {
+    bottomSearch.style.display = (tabId === 'home') ? 'block' : 'none';
+  }
+
+    if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
+       if (tabId === 'cart') { resetSwipedCart(); renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
+    else { resetSwipedCart(); }
         const header = document.getElementById('mainHeader');
     const searchBlock = document.getElementById('headerSearch');
     const searchContent = document.getElementById('headerSearchContent');
