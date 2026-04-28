@@ -111,9 +111,14 @@
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
     .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; color: #007aff; padding: 8px; }
-    #mainScreen header { background: #007aff; border-bottom: none; }
-#mainScreen header h3 { color: white; }
-#mainScreen .profile-icon-header i { color: white; }
+    /* Градиентная шапка только на главной */
+.header-gradient {
+  background: linear-gradient(to bottom, #007aff, #ffffff);
+  border-radius: 0 0 24px 24px;
+  border-bottom: none;
+}
+.header-gradient h3 { color: white; }
+.header-gradient .profile-icon-header i { color: white; }
   </style>
 </head>
 <body>
@@ -401,6 +406,12 @@
     if (ni) ni.classList.add('active');
     document.querySelectorAll('#userTabContent .tab-pane').forEach(p => p.style.display = 'none');
     const tabEl = document.getElementById(tabId+'Tab');
+      // Переключение градиентной шапки
+  const header = document.querySelector('#mainScreen header');
+  if (header) {
+    if (tabId === 'home') header.classList.add('header-gradient');
+    else header.classList.remove('header-gradient');
+  }
     if (tabEl) tabEl.style.display = 'block';
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
        if (tabId === 'cart') { resetSwipedCart(); renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
