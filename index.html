@@ -44,9 +44,12 @@
     .product-photo img { width: 100%; height: 100%; object-fit: cover; }
     .product-photo i { font-size: 32px; color: #c7c7cc; }
     .product-stats { font-size: 13px; color: #8e8e93; margin: 4px 0; }
-    .cart-item { display: flex; align-items: center; gap: 14px; background: white; border-radius: 20px; padding: 14px; margin-bottom: 12px; cursor: pointer; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
-    .cart-item-photo { width: 56px; height: 56px; border-radius: 16px; object-fit: cover; background: #f2f2f6; }
     .cart-item-info { flex: 1; }
+        .cart-item-wrapper { overflow: hidden; border-radius: 20px; margin-bottom: 12px; }
+    .cart-item-inner { display: flex; align-items: stretch; transition: transform 0.2s ease; width: calc(100% + 80px); }
+    .cart-item-main { flex: 1; display: flex; align-items: center; gap: 14px; background: white; border-radius: 20px 0 0 20px; padding: 14px; cursor: pointer; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
+    .cart-item-delete { width: 80px; background: #ff3b30; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 0 20px 20px 0; cursor: pointer; font-size: 14px; font-weight: 500; }
+    .cart-item-delete i { font-size: 22px; margin-bottom: 4px; }
     .map-container { height: 190px; border-radius: 20px; margin: 14px 0; overflow: hidden; }
     .slot-select { background: #f2f2f6; border-radius: 18px; padding: 16px; margin: 16px 0; }
     .slot-select select { width: 100%; border: none; background: transparent; font-size: 16px; font-weight: 500; color: #1c1c1e; outline: none; }
@@ -294,7 +297,7 @@
 
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), selectedPhotoFilters=new Set(), currentCalendarDate=new Date(), leafletMap=null,
     currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
-    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
+    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[], swipedCartItemIndex=null;
 
   async function hashPassword(pwd) {
     const enc = new TextEncoder().encode(pwd);
@@ -383,7 +386,8 @@
     const tabEl = document.getElementById(tabId+'Tab');
     if (tabEl) tabEl.style.display = 'block';
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
-    if (tabId === 'cart') { renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
+       if (tabId === 'cart') { resetSwipedCart(); renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
+    else { resetSwipedCart(); }
     if (tabId === 'profile') renderProfile();
     if (tabId === 'orders') {
       document.getElementById('ordersListView').style.display = 'block';
@@ -465,25 +469,65 @@
   }
 
   // Корзина
+   // Корзина
   window.renderCart = () => {
     const cart = STORAGE.cart();
+    resetSwipedCart();
     document.getElementById('cartItems').innerHTML = cart.length ? cart.map((item, idx) => `
-      <div class="cart-item" onclick="openProductDetail('${item.id}','cart')">
-        <img class="cart-item-photo" src="${item.photos?.[0]||''}" onerror="this.style.display='none'">
-        <div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong>${item.selectedSize ? ` <span style="color:#8e8e93;">(${escapeHtml(item.selectedSize)})</span>` : ''}</div>
-        <i class="far fa-trash-alt" style="color:#ff3b30;cursor:pointer;" onclick="event.stopPropagation();removeFromCart(${idx})"></i>
+      <div class="cart-item-wrapper">
+        <div class="cart-item-inner" id="cart-inner-${idx}" style="transform:translateX(0);">
+          <div class="cart-item-main" data-cart-index="${idx}"
+               ontouchstart="cartTouchStart(event, ${idx})" ontouchmove="cartTouchMove(event, ${idx})" ontouchend="cartTouchEnd(event, ${idx})"
+               onclick="if(!event.target.closest('.cart-item-delete')) openProductDetail('${item.id}','cart')">
+            <img src="${item.photos?.[0]||''}" style="width:80px;height:106px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">
+            <div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong>${item.selectedSize ? ` <span style="color:#8e8e93;">(${escapeHtml(item.selectedSize)})</span>` : ''}</div>
+          </div>
+          <div class="cart-item-delete" onclick="removeFromCart(${idx})">
+            <i class="far fa-trash-alt"></i> Удалить
+          </div>
+        </div>
       </div>`).join('') : '<p class="text-center" style="color:#8e8e93;">Корзина пуста</p>';
     const now = new Date();
     const slots = STORAGE.slots().filter(s => new Date(s.datetime) > now && s.used < s.capacity);
     document.getElementById('timeSlotSelect').innerHTML = slots.map(s => `<option value="${s.id}">${new Date(s.datetime).toLocaleString('ru-RU')}</option>`).join('');
   };
-  window.removeFromCart = (idx) => {
+    window.removeFromCart = (idx) => {
     let cart = STORAGE.cart();
     cart.splice(idx, 1);
     STORAGE.saveCart(cart);
+    resetSwipedCart();
     renderCart();
     updateCartBadge();
   };
+    let cartTouchStartX = 0, cartTouchCurrentX = 0;
+  window.cartTouchStart = (e, idx) => { cartTouchStartX = e.touches[0].clientX; };
+  window.cartTouchMove = (e, idx) => {
+    cartTouchCurrentX = e.touches[0].clientX;
+    const diff = cartTouchStartX - cartTouchCurrentX;
+    const inner = document.getElementById(`cart-inner-${idx}`);
+    if (!inner) return;
+    if (diff > 0 && diff <= 80) inner.style.transform = `translateX(-${diff}px)`;
+    else if (diff > 80) inner.style.transform = 'translateX(-80px)';
+  };
+  window.cartTouchEnd = (e, idx) => {
+    const diff = cartTouchStartX - cartTouchCurrentX;
+    const inner = document.getElementById(`cart-inner-${idx}`);
+    if (!inner) return;
+    if (diff > 40) {
+      inner.style.transform = 'translateX(-80px)';
+      swipedCartItemIndex = idx;
+    } else {
+      inner.style.transform = 'translateX(0)';
+      swipedCartItemIndex = null;
+    }
+  };
+  function resetSwipedCart() {
+    if (swipedCartItemIndex !== null) {
+      const inner = document.getElementById(`cart-inner-${swipedCartItemIndex}`);
+      if (inner) inner.style.transform = 'translateX(0)';
+      swipedCartItemIndex = null;
+    }
+  }
   function initMap() {
     const mapEl = document.getElementById('cartMap');
     if (!mapEl || mapEl.offsetParent === null) return;
@@ -1084,7 +1128,9 @@ itemsForReview.push({ order, item, review: exists || null });
       else if (cur) updateUIForUser();
     }
   });
-
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.cart-item-wrapper')) resetSwipedCart();
+  });
   // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
