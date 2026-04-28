@@ -583,7 +583,7 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
     L.marker([55.531570, 37.498393]).addTo(leafletMap).bindPopup('Южное Бутово, Остафьевская ул, 44').openPopup();
   }
-  window.createOrder = () => {
+     window.createOrder = () => {
     const user = STORAGE.currentUser();
     if (user.blocked) { alert('Сначала оставьте отзывы на все полученные товары'); return; }
     const cart = STORAGE.cart();
@@ -602,7 +602,15 @@
       recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email },
       issued: false, archived: false
     };
-    
+    STORAGE.saveOrders([...STORAGE.orders(), order]);
+    slot.used++;
+    STORAGE.saveSlots(slots);
+    STORAGE.saveCart([]);
+    updateCartBadge();
+    alert('Заказ отправлен на согласование');
+    switchTab('orders');
+  };
+
   // Профиль
   function renderProfile() {
     const u = STORAGE.currentUser();
