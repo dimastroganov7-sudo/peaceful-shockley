@@ -144,7 +144,6 @@
 }
 #mainHeader.header-gradient {
   background: linear-gradient(to bottom, #007aff, #ffffff);
-  border-radius: 0 0 24px 24px;
 }
 #mainHeader.header-gradient h3 { color: white; }
 #mainHeader.header-gradient .profile-icon-header i { color: white; }
@@ -188,12 +187,9 @@
     <h3>Три сестры</h3>
     <div class="header-icons"><div class="profile-icon-header" onclick="switchTab('profile')" id="headerProfileIcon"><i class="far fa-user-circle" style="font-size:28px;"></i></div></div>
   </div>
-  <div id="headerSearch" style="display:none; padding:0 16px 12px;">
-    <div class="search-bar">
-      <i class="fas fa-search"></i>
-      <input type="text" id="productSearch" placeholder="Поиск" oninput="renderProducts()">
-    </div>
-  </div>
+ <div id="headerSearch" style="display:none; padding:0 16px 12px;">
+  <div id="headerSearchContent"></div>
+</div>
 </header>
     <div class="tab-content" id="userTabContent">
       <div id="homeTab" class="tab-pane active">
@@ -446,12 +442,34 @@
     
         if (tabEl) tabEl.style.display = 'block';
     
-    const header = document.getElementById('mainHeader');
+        const header = document.getElementById('mainHeader');
     const searchBlock = document.getElementById('headerSearch');
+    const searchContent = document.getElementById('headerSearchContent');
+
     if (header) {
-      if (tabId === 'home') {
+      if (tabId === 'home' || tabId === 'orders') {
         header.classList.add('header-gradient');
         if (searchBlock) searchBlock.style.display = 'block';
+
+        // Устанавливаем содержимое поиска в зависимости от вкладки
+        if (tabId === 'home') {
+          searchContent.innerHTML = `
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" id="productSearch" placeholder="Поиск товаров" oninput="renderProducts()">
+            </div>`;
+          // Восстанавливаем значение поиска товаров, если было
+          const savedProductSearch = sessionStorage.getItem('productSearch') || '';
+          const prodInput = document.getElementById('productSearch');
+          if (prodInput) prodInput.value = savedProductSearch;
+        } else if (tabId === 'orders') {
+          searchContent.innerHTML = `
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" id="userOrderSearchInput" placeholder="Поиск по заказам" oninput="renderUserOrders()">
+            </div>`;
+        }
+
         const tabContent = document.getElementById('userTabContent');
         if (tabContent) tabContent.scrollTop = 0;
       } else {
@@ -722,6 +740,13 @@
     const user = STORAGE.currentUser();
     if (!user) return;
     let orders = STORAGE.orders().filter(o => o.userId === user.id && !o.archived);
+        const orderSearchText = (document.getElementById('userOrderSearchInput')?.value || '').toLowerCase().trim();
+    if (orderSearchText) {
+      orders = orders.filter(o =>
+        o.id.toLowerCase().includes(orderSearchText) ||
+        o.items.some(i => i.name.toLowerCase().includes(orderSearchText))
+      );
+    }
     if (!orders.length) {
       document.getElementById('ordersListView').innerHTML = '<p class="text-center" style="color:#8e8e93;margin-top:40px;">Нет активных заказов</p>';
       return;
