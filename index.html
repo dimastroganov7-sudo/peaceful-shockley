@@ -123,16 +123,47 @@
 #mainHeader .header-icons {
   margin-right: -8px;
 }
+
+/* Запрещаем горизонтальную прокрутку везде */
+html, body {
+  overflow-x: hidden;
+}
+#app {
+  overflow-x: hidden;
+}
+.screen {
+  overflow-x: hidden;
+  width: 100%;
+}
+.tab-content,
+.admin-pane {
+  overflow-x: hidden;
+}
+/* Глобальный запрет горизонтальной прокрутки */
+html, body {
+  overflow-x: hidden;
+}
+#app {
+  overflow-x: hidden;
+}
+.screen {
+  overflow-x: hidden;
+  width: 100%;
+}
+.tab-content,
+.admin-pane {
+  overflow-x: hidden;
+}
+
 /* Адаптация под десктоп */
 @media (min-width: 768px) {
   #app {
     max-width: 700px;
     margin: 20px auto;
     border-radius: 24px;
-    overflow-x: hidden;          /* ← запрещаем горизонтальную прокрутку */
+    overflow-x: hidden;
   }
 
-  /* Основной контент */
   .screen {
     width: 100%;
     overflow-x: hidden;
@@ -159,9 +190,8 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Исправляем отступы, которые могли вызывать горизонтальное расширение */
   header {
-    padding-left: 20px;    /* оставляем как на мобильных */
+    padding-left: 20px;
     padding-right: 20px;
   }
 
@@ -175,40 +205,21 @@
     padding: 28px 24px;
   }
 
-  /* Убираем возможную лишнюю ширину у админ-панелей */
   .admin-pane {
     overflow-x: hidden;
   }
-}
 
-  /* Формы и поля ввода — делаем компактными, центрируем */
-  .auth-container {
-    padding: 50px 24px;        /* отступы как на мобильном */
-    max-width: 500px;          /* ограничиваем ширину блока */
-    margin: 0 auto;            /* центрируем */
-  }
-
-  .input-group {
-    max-width: 500px;
-    margin: 0 auto 14px;       /* центрируем каждое поле */
-  }
-
-  .btn {
-    max-width: 500px;          /* кнопки тоже не растягиваются */
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .link {
-    text-align: center;
-  }
-
-  /* Поправляем отступы в модальных окнах */
-  .modal-content {
-    padding-left: 30px;
-    padding-right: 30px;
+  /* Чтобы фильтры и поисковые строки не вылезали */
+  .filter-bar select,
+  .filter-bar input,
+  #petitionSearch,
+  #orderSearchInput,
+  #verificationSearch {
+    width: auto;
+    max-width: 100%;
   }
 }
+
   </style>
 </head>
 <body>
