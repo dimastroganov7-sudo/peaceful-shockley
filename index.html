@@ -129,10 +129,18 @@
     max-width: 700px;
     margin: 20px auto;
     border-radius: 24px;
+    overflow-x: hidden;          /* ← запрещаем горизонтальную прокрутку */
+  }
+
+  /* Основной контент */
+  .screen {
+    width: 100%;
+    overflow-x: hidden;
   }
 
   .tab-content {
     padding-bottom: 40px;
+    overflow-x: hidden;
   }
 
   .bottom-nav {
@@ -151,11 +159,27 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Убираем лишние отступы, оставляем только для header */
+  /* Исправляем отступы, которые могли вызывать горизонтальное расширение */
   header {
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 20px;    /* оставляем как на мобильных */
+    padding-right: 20px;
   }
+
+  .auth-container {
+    padding: 50px 24px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .modal-content {
+    padding: 28px 24px;
+  }
+
+  /* Убираем возможную лишнюю ширину у админ-панелей */
+  .admin-pane {
+    overflow-x: hidden;
+  }
+}
 
   /* Формы и поля ввода — делаем компактными, центрируем */
   .auth-container {
