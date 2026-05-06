@@ -123,27 +123,27 @@
 #mainHeader .header-icons {
   margin-right: -8px;
 }
- /* Адаптация под десктоп */
+/* Адаптация под десктоп */
 @media (min-width: 768px) {
   #app {
-    max-width: 700px;       /* шире, чем на телефоне, но не на весь экран */
+    max-width: 700px;
     margin: 20px auto;
     border-radius: 24px;
   }
 
   .tab-content {
-    padding-bottom: 40px;   /* на десктопе убираем большой отступ под нижнее меню */
+    padding-bottom: 40px;
   }
 
   .bottom-nav {
-    max-width: 700px;       /* растягиваем навигацию на всю ширину приложения */
+    max-width: 700px;
     left: 50%;
     transform: translateX(-50%);
     bottom: 10px;
   }
 
   .products-grid {
-    grid-template-columns: repeat(3, 1fr);  /* три товара в ряд вместо двух */
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
 
@@ -151,8 +151,36 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Общие отступы можно немного увеличить */
-  header, .auth-container, .modal-content {
+  /* Убираем лишние отступы, оставляем только для header */
+  header {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  /* Формы и поля ввода — делаем компактными, центрируем */
+  .auth-container {
+    padding: 50px 24px;        /* отступы как на мобильном */
+    max-width: 500px;          /* ограничиваем ширину блока */
+    margin: 0 auto;            /* центрируем */
+  }
+
+  .input-group {
+    max-width: 500px;
+    margin: 0 auto 14px;       /* центрируем каждое поле */
+  }
+
+  .btn {
+    max-width: 500px;          /* кнопки тоже не растягиваются */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .link {
+    text-align: center;
+  }
+
+  /* Поправляем отступы в модальных окнах */
+  .modal-content {
     padding-left: 30px;
     padding-right: 30px;
   }
