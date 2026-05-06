@@ -3,7 +3,9 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Три сестры · Благотворительный фонд</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -11,10 +13,38 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; }
 html, body { width: 100%; overflow-x: hidden; }
+  html {
+  font-size: 16px;
+}
+
+body {
+  min-width: 320px;
+}
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, sans-serif; }
-    body { background: #f2f2f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    #app { width: 100%; max-width: 420px; margin: 0 auto; background: white; min-height: 100vh; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; position: relative; }
-    .screen { display: none; flex: 1; flex-direction: column; height: 100%; background: white; }
+    body {
+  background: #f2f2f6;
+  margin: 0;
+  min-height: 100vh;
+}
+#app {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  background: white;
+  min-height: 100vh;
+  min-height: 100dvh; /* фикс iPhone */
+  border-radius: 30px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  /* ВАЖНО для iPhone */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+  .screen { display: none; flex: 1; flex-direction: column; height: 100%; background: white; }
     .screen.active { display: flex; }
     .auth-container { padding: 50px 24px; text-align: center; background: white; flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .logo-img { width: 80px; height: 80px; border-radius: 40px; object-fit: cover; background: #f2f2f6; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -86,6 +116,13 @@ html, body { width: 100%; overflow-x: hidden; }
   transform: none; background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 34px; padding: 10px 20px; display: flex; justify-content: space-around; box-shadow: 0 8px 32px rgba(0,0,0,0.08); z-index: 100; border: 1px solid rgba(255,255,255,0.6); }
     .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 11px; cursor: pointer; position: relative; font-weight: 500; }
     .nav-item i { font-size: 24px; margin-bottom: 4px; }
+  .product-photo {
+  height: 200px;
+}
+
+.product-card {
+  min-height: 260px;
+}
     .nav-item.active { color: #007aff; }
     .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: none; align-items: center; justify-content: center; padding: 0 5px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
@@ -171,8 +208,13 @@ html, body {
 
 /* Адаптация под десктоп */
 @media (min-width: 768px) {
+  body {
+    display: block; /* убираем flex на ПК */
+  }
+
   #app {
     max-width: 700px;
+    width: 100%;
     margin: 20px auto;
     border-radius: 24px;
     overflow-x: hidden;
