@@ -144,15 +144,53 @@
         <p class="link" onclick="showRegister()">Зарегистрироваться</p>
         <p class="link" style="font-size:12px; color:#8e8e93;">Админ: admin@fond.ru / admin123</p>
       </div>
-      <div id="registerForm" style="display:none;">
-        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
-        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
-        <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
-        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
-        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
-        <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
-        <button class="btn primary" onclick="appRegister()">Зарегистрироваться</button>
-        <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
+<div id="registerSteps" style="display:none;">
+  <!-- Шаг 1: Основные данные -->
+  <div class="step" id="step1">
+    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
+    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
+    <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
+    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
+    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
+    <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
+    <button class="btn primary" onclick="nextStep(2)">Далее</button>
+  </div>
+
+  <!-- Шаг 2: Категория и состав семьи -->
+  <div class="step" id="step2" style="display:none;">
+    <select id="regCategory" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:16px;">
+      <option value="">Выберите категорию</option>
+      <option>Многодетная семья</option>
+      <option>Малоимущие</option>
+      <option>Беженцы</option>
+      <option>Временные трудности</option>
+      <option>Пенсионер</option>
+      <option>Инвалидность</option>
+    </select>
+    <h4 style="margin-bottom:8px;">Члены семьи</h4>
+    <div id="familyMembersList"></div>
+    <button class="btn secondary small" onclick="addFamilyMember()">+ Добавить члена семьи</button>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn secondary" onclick="nextStep(1)">Назад</button>
+      <button class="btn primary" onclick="nextStep(3)">Далее</button>
+    </div>
+  </div>
+
+  <!-- Шаг 3: Документы -->
+  <div class="step" id="step3" style="display:none;">
+    <h4 style="margin-bottom:10px;">Обязательные документы <span style="color:red;">*</span></h4>
+    <div id="mandatoryDocs"></div>
+    <h4 style="margin:16px 0 10px;">Дополнительные документы</h4>
+    <div id="optionalDocs"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn secondary" onclick="nextStep(2)">Назад</button>
+      <button class="btn primary" onclick="finishRegistration()">Завершить регистрацию</button>
+    </div>
+  </div>
+</div>
+
+<button class="btn primary" id="startRegBtn" onclick="startRegistration()">Зарегистрироваться</button>
+<p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
       </div>
     </div>
   </div>
@@ -187,6 +225,12 @@
         </div>
         <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
         <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
+        <div style="background:#f2f2f6;border-radius:20px;padding:16px;margin:16px 0;">
+  <p style="margin:0;"><strong>Категория:</strong> <span id="profileCategory"></span></p>
+  <p style="margin:8px 0 0;"><strong>Статус:</strong> <span id="profileVerificationStatus"></span></p>
+  <h4 style="margin:12px 0 4px;">Состав семьи</h4>
+  <ul id="profileFamilyList" style="list-style:none;padding:0;margin:0;"></ul>
+</div>
         <button class="btn secondary" onclick="logout()">Выйти</button>
       </div>
       <div id="ordersTab" class="tab-pane">
@@ -218,6 +262,7 @@
       <button class="tab-btn" data-admin-tab="calendar">Календарь</button>
       <button class="tab-btn" data-admin-tab="history">Заказы</button>
       <button class="tab-btn" data-admin-tab="recipients">Лимиты/Отзывы</button>
+      <button class="tab-btn" data-admin-tab="verification">Верификация</button>
     </div>
     <div style="flex:1; overflow-y:auto;">
       <div id="adminProducts" class="admin-pane active">
@@ -249,10 +294,20 @@
           <h4>Лимит товаров в корзине</h4>
           <input type="number" id="maxItemsLimit" style="width:100%;padding:14px;font-size:18px;border-radius:16px;border:1px solid #e5e5ea;margin:16px 0;" min="1">
           <button class="btn primary" onclick="saveMaxItemsLimit()">Сохранить</button>
+          <div style="background:white;border-radius:24px;padding:24px;margin-top:16px;">
+  <h4>Индивидуальный лимит</h4>
+  <select id="userSelectForLimit" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin:12px 0;"></select>
+  <input type="number" id="individualLimitInput" placeholder="Лимит (пусто — глобальный)" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
+  <button class="btn primary" onclick="saveIndividualLimit()">Сохранить</button>
+</div>
         </div>
         <h4 style="margin-top:24px;">Отзывы на модерации</h4>
         <div id="adminReviewsList"></div>
       </div>
+      <div id="adminVerification" class="admin-pane">
+  <input type="text" id="verificationSearch" placeholder="Поиск по имени" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:16px;" oninput="renderVerificationList()">
+  <div id="verificationList"></div>
+</div>
     </div>
   </div>
 
@@ -296,6 +351,8 @@
   <div id="sizeSelectModal" class="size-modal">
     <div class="size-modal-content" id="sizeSelectContent"></div>
   </div>
+    <div id="fullscreenPhotoModal" class="modal" onclick="closeModal('fullscreenPhotoModal')">
+    <img id="fullscreenImage" style="max-width:90%; max-height:90%; border-radius:16px;">
   </div>
 <script>
 (function(){
@@ -320,11 +377,21 @@
     maxLimit: () => parseInt(localStorage.getItem('f_maxLimit')||'10'),
     saveMaxLimit: v => localStorage.setItem('f_maxLimit',v)
   };
+  function getUserLimit(user) {
+  return (user.individualLimit && user.individualLimit > 0) ? user.individualLimit : STORAGE.maxLimit();
+}
+
+function getTypeLabel(type) {
+  const map = { adult:'Взрослый', child:'Ребёнок', elderly:'Пожилой', disabled:'Инвалид' };
+  return map[type] || type;
+}
 
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), selectedPhotoFilters=new Set(), currentCalendarDate=new Date(), leafletMap=null,
     currentOrderView='active', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
     currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[], swipedCartItemIndex=null,
         cartSelectedItems = new Set();
+  let regFamilyMembers = [];
+let tempDocuments = {};
 
   async function hashPassword(pwd) {
     const enc = new TextEncoder().encode(pwd);
@@ -339,6 +406,16 @@
         {id:'adm',firstName:'Админ',email:'admin@fond.ru',password:await hashPassword('admin123'),role:'admin',phone:'',avatar:''}
       ]);
     }
+    // Сразу после загрузки пользователей (перед if (!STORAGE.products().length)...)
+const users = STORAGE.users().map(u => ({
+  ...u,
+  familyMembers: u.familyMembers || [],
+  category: u.category || '',
+  documents: u.documents || [],
+  verified: u.verified ?? false,
+  individualLimit: u.individualLimit || null
+}));
+STORAGE.saveUsers(users);
     if (!STORAGE.products().length) {
       STORAGE.saveProducts([
         {id:'p1',article:'GR001',name:'Гречка 1кг',category:'Продукты',photos:[],quantity:10,availableQuantity:10,isPlaced:true,sizes:[],description:'Качественная гречка'},
@@ -362,8 +439,20 @@
     }
   }
 
-  window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
-  window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
+ window.showRegister = () => {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('registerSteps').style.display = 'none'; // шаги пока не видны
+  document.getElementById('startRegBtn').style.display = 'block';   // кнопка запуска видна
+  // ссылка "Уже есть аккаунт?" тоже должна быть видна (она уже есть в родителе)
+  // при необходимости показать форму регистрации как целое (внешний контейнер) – он и так виден,
+  // поэтому просто скрываем шаги и показываем кнопку.
+};
+
+window.showLogin = () => {
+  document.getElementById('registerSteps').style.display = 'none';
+  document.getElementById('startRegBtn').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
+};
   window.closeModal = (id) => {
     document.getElementById(id).style.display = 'none';
     if (id === 'fullscreenPhotoModal') document.getElementById('fullscreenImage').src = '';
@@ -378,23 +467,172 @@
     if (user.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
     else { showScreen('mainScreen'); updateUIForUser(); }
   };
-  window.appRegister = async () => {
+  // ─── Многошаговая регистрация ─────────────────
+
+window.startRegistration = () => {
+  // минимум один член семьи — сам заявитель
+  regFamilyMembers = [{ name: '', age: 0, type: 'adult' }];
+  tempDocuments = {};
+  document.getElementById('registerSteps').style.display = 'block';
+  document.getElementById('step1').style.display = 'block';
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('startRegBtn').style.display = 'none';
+};
+
+window.nextStep = (step) => {
+  // простая валидация
+  if (step !== 1) {
+    if (!validateStep(step - 1)) return;
+  }
+  document.querySelectorAll('#registerSteps .step').forEach(el => el.style.display = 'none');
+  document.getElementById('step' + step).style.display = 'block';
+  if (step === 2) updateFamilyMembersUI();
+  if (step === 3) updateDocumentsUI();
+};
+
+function validateStep(s) {
+  if (s === 1) {
     const fn = document.getElementById('regFirstName').value.trim();
     const ln = document.getElementById('regLastName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const pass = document.getElementById('regPassword').value;
     const conf = document.getElementById('regConfirm').value;
     const phone = document.getElementById('regPhone').value.trim();
-    const code = document.getElementById('countryCode').value;
-    if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return; }
-    if (pass !== conf) { alert('Пароли не совпадают'); return; }
-    if (STORAGE.users().some(u => u.email === email)) { alert('Email занят'); return; }
-    const hashed = await hashPassword(pass);
-    const user = { id: Date.now()+'', firstName:fn, lastName:ln, email, password:hashed, phone:code+phone, role:'user', avatar:'' };
-    STORAGE.saveUsers([...STORAGE.users(), user]);
-    STORAGE.setCurrentUser(user);
-    showScreen('mainScreen'); updateUIForUser();
+    if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return false; }
+    if (pass !== conf) { alert('Пароли не совпадают'); return false; }
+    return true;
+  }
+  if (s === 2) {
+    if (!document.getElementById('regCategory').value) { alert('Выберите категорию'); return false; }
+    if (regFamilyMembers.length === 0) { alert('Добавьте хотя бы одного члена семьи'); return false; }
+    return true;
+  }
+  if (s === 3) {
+    // проверка, что все обязательные документы загружены (по типам)
+    const mandatoryTypes = ['passport']; // базово паспорт
+    regFamilyMembers.forEach(m => {
+      if (m.type === 'child' && m.age < 18) mandatoryTypes.push('birth_cert');
+    });
+    for (const t of mandatoryTypes) {
+      if (!tempDocuments[t]) { alert('Загрузите все обязательные документы'); return false; }
+    }
+    return true;
+  }
+  return true;
+}
+
+window.addFamilyMember = () => {
+  regFamilyMembers.push({ name: '', age: 0, type: 'child' });
+  updateFamilyMembersUI();
+};
+
+function updateFamilyMembersUI() {
+  const container = document.getElementById('familyMembersList');
+  container.innerHTML = regFamilyMembers.map((m, idx) => `
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <input value="${escapeHtml(m.name)}" onchange="regFamilyMembers[${idx}].name = this.value" placeholder="Имя" style="flex:1;">
+      <input type="number" value="${m.age}" onchange="regFamilyMembers[${idx}].age = parseInt(this.value)||0" placeholder="Возраст" style="width:70px;">
+      <select onchange="regFamilyMembers[${idx}].type = this.value">
+        <option ${m.type==='adult'?'selected':''} value="adult">Взрослый</option>
+        <option ${m.type==='child'?'selected':''} value="child">Ребёнок</option>
+        <option ${m.type==='elderly'?'selected':''} value="elderly">Пожилой</option>
+        <option ${m.type==='disabled'?'selected':''} value="disabled">Инвалид</option>
+      </select>
+      <i class="fas fa-trash" onclick="regFamilyMembers.splice(${idx},1);updateFamilyMembersUI()" style="color:red;cursor:pointer;"></i>
+    </div>
+  `).join('');
+}
+
+function updateDocumentsUI() {
+  // обязательные
+  let mandatory = [{ type: 'passport', label: 'Паспорт заявителя', required: true }];
+  regFamilyMembers.forEach((m, idx) => {
+    if (m.type === 'child' && m.age < 18) {
+      mandatory.push({ type: 'birth_cert', label: `Свидетельство о рождении: ${m.name || 'ребёнок'}`, required: true });
+    }
+  });
+  document.getElementById('mandatoryDocs').innerHTML = mandatory.map(doc => `
+    <div style="margin-bottom:12px;">
+      <label style="color:red;">${doc.label} *</label><br>
+      <input type="file" accept="image/*" onchange="uploadDocument('${doc.type}', this)" />
+      ${tempDocuments[doc.type] ? '<span style="color:green;">✓ Загружено</span>' : ''}
+    </div>
+  `).join('');
+
+  // необязательные
+  let optional = [
+    { type: 'income', label: 'Справка о доходах' },
+    { type: 'disability', label: 'Справка об инвалидности' }
+  ];
+  document.getElementById('optionalDocs').innerHTML = optional.map(doc => `
+    <div style="margin-bottom:12px;">
+      <label>${doc.label} (необязательно)</label><br>
+      <input type="file" accept="image/*" onchange="uploadDocument('${doc.type}', this)" />
+      ${tempDocuments[doc.type] ? '<span style="color:green;">✓ Загружено</span>' : ''}
+    </div>
+  `).join('');
+}
+
+window.uploadDocument = (type, fileInput) => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  if (file.size > 500 * 1024) { alert('Файл должен быть до 500 КБ'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    tempDocuments[type] = e.target.result;
+    updateDocumentsUI(); // обновить галочки
   };
+  reader.readAsDataURL(file);
+};
+
+window.finishRegistration = async () => {
+  if (!validateStep(3)) return;
+  const fn = document.getElementById('regFirstName').value.trim();
+  const ln = document.getElementById('regLastName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPassword').value;
+  const phone = document.getElementById('regPhone').value.trim();
+  const code = document.getElementById('countryCode').value;
+  const category = document.getElementById('regCategory').value;
+
+  if (STORAGE.users().some(u => u.email === email)) { alert('Email уже используется'); return; }
+
+  const hashed = await hashPassword(pass);
+  const documents = Object.keys(tempDocuments).map(type => ({
+    type,
+    image: tempDocuments[type],
+    status: 'pending',
+    comment: ''
+  }));
+
+  const user = {
+    id: Date.now() + '',
+    firstName: fn,
+    lastName: ln,
+    email,
+    password: hashed,
+    phone: code + phone,
+    role: 'user',
+    avatar: '',
+    familyMembers: regFamilyMembers,
+    category,
+    documents,
+    verified: false,
+    individualLimit: null
+  };
+
+  STORAGE.saveUsers([...STORAGE.users(), user]);
+  STORAGE.setCurrentUser(user);
+
+  // очищаем временные данные
+  regFamilyMembers = [];
+  tempDocuments = {};
+
+  showScreen('mainScreen');
+  updateUIForUser();
+  alert('Регистрация завершена. Ваш профиль отправлен на верификацию.');
+};
   window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); };
 
   function showScreen(id) {
@@ -465,7 +703,7 @@
     const user = STORAGE.currentUser();
     if (user.blocked) { alert('Вы заблокированы до отправки всех отзывов'); return; }
     const cart = STORAGE.cart();
-    if (cart.length >= STORAGE.maxLimit()) { alert(`Лимит корзины: ${STORAGE.maxLimit()} товаров`); return; }
+    if (cart.length >= getUserLimit(user)) { alert(`Лимит корзины: ${getUserLimit(user)} товаров`); return; }
     const p = STORAGE.products().find(p => p.id === prodId);
     if (!p || p.availableQuantity < 1) { alert('Недоступен'); return; }
     if (p.sizes && p.sizes.length) { showSizeSelector(prodId); return; }
@@ -605,8 +843,13 @@
   }
      window.createOrder = () => {
     const user = STORAGE.currentUser();
+       const cart = STORAGE.cart();
+    if (cart.length > getUserLimit(user)) { alert(`Лимит корзины: ${getUserLimit(user)} товаров`); return; }   
     if (user.blocked) { alert('Сначала оставьте отзывы на все полученные товары'); return; }
-    const cart = STORAGE.cart();
+       if (!user.verified) {
+  alert('Ваш профиль ещё не проверен администратором. Дождитесь верификации.');
+  return;
+}
     if (!cart.length) { alert('Корзина пуста'); return; }
     const slotId = document.getElementById('timeSlotSelect').value;
     if (!slotId) { alert('Выберите время'); return; }
@@ -645,6 +888,11 @@
       document.getElementById('profileAvatar').style.display = 'none';
       document.getElementById('defaultAvatar').style.display = 'block';
     }
+        document.getElementById('profileCategory').textContent = u.category || '—';
+    document.getElementById('profileVerificationStatus').textContent = u.verified ? '✅ Подтверждён' : '⏳ Ожидает проверки';
+    document.getElementById('profileFamilyList').innerHTML = (u.familyMembers||[]).map(m =>
+      `<li>${escapeHtml(m.name)}, ${m.age} лет (${getTypeLabel(m.type)})</li>`
+    ).join('') || '<li>Нет данных</li>';
   }
   window.saveAvatar = () => {
     const file = document.getElementById('avatarInput').files[0];
@@ -901,6 +1149,7 @@ itemsForReview.push({ order, item, review: exists || null });
         if (btn.dataset.adminTab === 'petitions') renderPetitions();
         if (btn.dataset.adminTab === 'calendar') renderCalendar();
         if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
+        if (btn.dataset.adminTab === 'verification') renderVerificationList();
       };
     });
     document.getElementById('orderSearchInput').oninput = renderAllOrders;
@@ -1283,12 +1532,83 @@ itemsForReview.push({ order, item, review: exists || null });
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
     renderAdminReviews(); alert('Отзыв отклонён');
   };
+  function getDocTypeLabel(type) {
+  const map = { passport:'Паспорт', birth_cert:'Свид. о рожд.', income:'Справка о доходах', disability:'Справка об инвалидности', additional:'Доп. документ' };
+  return map[type] || type;
+}
 
-  function renderRecipientsTab() { document.getElementById('maxItemsLimit').value = STORAGE.maxLimit(); }
+function renderVerificationList() {
+  const search = document.getElementById('verificationSearch').value.toLowerCase();
+  const users = STORAGE.users().filter(u => u.role === 'user' && !u.verified &&
+    (`${u.firstName} ${u.lastName}`).toLowerCase().includes(search));
+  document.getElementById('verificationList').innerHTML = users.map(user => {
+    const docsHtml = (user.documents||[]).map(doc => `
+      <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+        <span>${getDocTypeLabel(doc.type)}</span>
+        <img src="${doc.image}" style="width:40px;height:40px;border-radius:8px;cursor:pointer;" onclick="openFullscreenPhoto('${doc.image}')" onerror="this.style.display='none'">
+        <span style="color:${doc.status==='approved'?'green':doc.status==='rejected'?'red':'orange'}">${doc.status}</span>
+        <button class="btn primary small" onclick="verifyDocument('${user.id}','${doc.type}','approved')">✓</button>
+        <button class="btn danger small" onclick="verifyDocument('${user.id}','${doc.type}','rejected')">✗</button>
+        <button class="btn secondary small" onclick="requestAdditionalDoc('${user.id}')">Запросить доп.</button>
+      </div>`).join('');
+    return `<div class="order-card">
+      <h4>${user.firstName} ${user.lastName}</h4>
+      <p>Категория: ${user.category||'—'}</p>
+      ${docsHtml}
+    </div>`;
+  }).join('') || '<p class="text-center">Нет пользователей на верификации</p>';
+}
+
+window.verifyDocument = (userId, docType, status) => {
+  const users = STORAGE.users();
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+  const doc = user.documents.find(d => d.type === docType);
+  if (doc) doc.status = status;
+  const mandatoryTypes = ['passport'];
+  (user.familyMembers||[]).forEach(m => {
+    if (m.type === 'child' && m.age < 18) mandatoryTypes.push('birth_cert');
+  });
+  user.verified = mandatoryTypes.every(t => user.documents.some(d => d.type === t && d.status === 'approved'));
+  STORAGE.saveUsers(users);
+  renderVerificationList();
+};
+
+window.requestAdditionalDoc = (userId) => {
+  const users = STORAGE.users();
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+  user.documents.push({ type: 'additional', image: '', status: 'requested', comment: 'Запрошен дополнительный документ' });
+  STORAGE.saveUsers(users);
+  renderVerificationList();
+};
+
+  function renderRecipientsTab() {
+  document.getElementById('maxItemsLimit').value = STORAGE.maxLimit();
+  populateUserSelectForLimit();
+}
   window.saveMaxItemsLimit = () => {
     const v = parseInt(document.getElementById('maxItemsLimit').value);
     if (v > 0) { STORAGE.saveMaxLimit(v); renderRecipientsTab(); } else alert('Лимит должен быть больше 0');
   };
+  function populateUserSelectForLimit() {
+  const select = document.getElementById('userSelectForLimit');
+  const users = STORAGE.users().filter(u => u.role === 'user');
+  select.innerHTML = users.map(u => `<option value="${u.id}">${u.firstName} ${u.lastName} (${u.email})</option>`).join('');
+}
+
+window.saveIndividualLimit = () => {
+  const userId = document.getElementById('userSelectForLimit').value;
+  const limitVal = document.getElementById('individualLimitInput').value;
+  const limit = limitVal ? parseInt(limitVal) : null;
+  const users = STORAGE.users();
+  const user = users.find(u => u.id === userId);
+  if (user) {
+    user.individualLimit = limit;
+    STORAGE.saveUsers(users);
+    alert('Индивидуальный лимит сохранён');
+  }
+};
   window.openFullscreenPhoto = (src) => { if (!src) return; document.getElementById('fullscreenImage').src = src; document.getElementById('fullscreenPhotoModal').style.display = 'flex'; };
 
   function updateHeaderAvatar() {
