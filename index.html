@@ -593,8 +593,8 @@ window.uploadDocument = (type, fileInput) => {
 if (file.size > 500 * 1024) {
   alert('Файл должен быть до 500 КБ');
   return;
-} { alert('Файл должен быть до 500 КБ'); return; }
-  const reader = new FileReader();
+}
+const reader = new FileReader();
   reader.onload = e => {
     tempDocuments[type] = e.target.result;
     updateDocumentsUI(); // обновить галочки
@@ -870,17 +870,12 @@ window.finishRegistration = async () => {
        const cart = STORAGE.cart();
     if (cart.length > getUserLimit(user)) { alert(`Лимит корзины: ${getUserLimit(user)} товаров`); return; }   
     if (user.blocked) { alert('Сначала оставьте отзывы на все полученные товары'); return; }
-       if (!user.verified) {
+              if (!user.verified) {
   alert('Ваш профиль ещё не проверен администратором. Дождитесь верификации.');
   return;
 }
     if (!cart.length) {
   alert('Корзина пуста');
-  return;
-}
-
-if (!user.verified) {
-  alert('Профиль не подтверждён');
   return;
 }
     const slotId = document.getElementById('timeSlotSelect').value;
@@ -897,22 +892,9 @@ if (!user.verified) {
       recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email },
       issued: false, archived: false
     };
-    STORAGE.saveOrders([...STORAGE.orders(), order]);
-    // уменьшаем остатки
-const products = STORAGE.products();
-
-cart.forEach(item => {
-  const p = products.find(p => p.id === item.id);
-  if (p && p.availableQuantity > 0) {
-    p.availableQuantity--;
-  }
-});
-
-STORAGE.saveProducts(products);
-
-// слот
-slot.used++;
-STORAGE.saveSlots(slots);
+        STORAGE.saveOrders([...STORAGE.orders(), order]);
+    slot.used++;
+    STORAGE.saveSlots(slots);
     STORAGE.saveCart([]);
     updateCartBadge();
     alert('Заказ отправлен на согласование');
