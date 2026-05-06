@@ -140,7 +140,7 @@
       <div id="loginForm">
         <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="loginEmail" placeholder="Email" value="user@test.com"></div>
         <div class="input-group"><i class="far fa-lock"></i><input type="password" id="loginPassword" placeholder="Пароль" value="123456"></div>
-        <button class="btn primary" onclick="appLogin()">Войти</button>
+       <button class="btn primary" id="loginBtn">Войти</button>
         <p class="link" onclick="showRegister()">Зарегистрироваться</p>
         <p class="link" style="font-size:12px; color:#8e8e93;">Админ: admin@fond.ru / admin123</p>
       </div>
@@ -464,7 +464,7 @@ window.showLogin = () => {
     const user = STORAGE.users().find(u => u.email === email && u.password === hashed);
     if (!user) { alert('Неверные данные'); return; }
     STORAGE.setCurrentUser(user);
-    if (user.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
+    if (user.role === 'admin' && user.email === 'admin@fond.ru') { showScreen('adminScreen'); renderAdmin(); }
     else { showScreen('mainScreen'); updateUIForUser(); }
   };
   // ─── Многошаговая регистрация ─────────────────
@@ -596,7 +596,10 @@ window.finishRegistration = async () => {
   const code = document.getElementById('countryCode').value;
   const category = document.getElementById('regCategory').value;
 
-  if (STORAGE.users().some(u => u.email === email)) { alert('Email уже используется'); return; }
+  if (STORAGE.users().some(u => u.email === email || u.phone === code + phone)) {
+  alert('Email или телефон уже используется');
+  return;
+}
 
   const hashed = await hashPassword(pass);
   const documents = Object.keys(tempDocuments).map(type => ({
@@ -677,7 +680,9 @@ window.finishRegistration = async () => {
   }
   function populateCategoryFilter() {
     const cats = [...new Set(STORAGE.products().map(p => p.category))];
-    document.getElementById('categoryFilter').innerHTML = '<option value="">Все категории</option>' + cats.map(c => `<option>${escapeHtml(c)}</option>`).join('');
+    document.getElementById('categoryFilter').innerHTML =
+  '<option value="">Все категории</option>' +
+  cats.map(c => `<option>${escapeHtml(c)}</option>`).join('');
   }
   window.renderProducts = () => {
     let prods = STORAGE.products().filter(p => p.isPlaced && p.availableQuantity > 0);
@@ -707,7 +712,10 @@ window.finishRegistration = async () => {
     const p = STORAGE.products().find(p => p.id === prodId);
     if (!p || p.availableQuantity < 1) { alert('Недоступен'); return; }
     if (p.sizes && p.sizes.length) { showSizeSelector(prodId); return; }
-    if (cart.some(i => i.id === prodId)) { alert('Уже в корзине'); return; }
+    if (cart.some(i => i.id === prodId && i.selectedSize === null)) {
+  alert('Уже в корзине');
+  return;
+}
     cart.push({...p, quantity: 1, selectedSize: null});
     STORAGE.saveCart(cart);
     updateCartBadge();
@@ -866,8 +874,21 @@ window.finishRegistration = async () => {
       issued: false, archived: false
     };
     STORAGE.saveOrders([...STORAGE.orders(), order]);
-    slot.used++;
-    STORAGE.saveSlots(slots);
+    // уменьшаем остатки
+const products = STORAGE.products();
+
+cart.forEach(item => {
+  const p = products.find(p => p.id === item.id);
+  if (p && p.availableQuantity > 0) {
+    p.availableQuantity--;
+  }
+});
+
+STORAGE.saveProducts(products);
+
+// слот
+slot.used++;
+STORAGE.saveSlots(slots);
     STORAGE.saveCart([]);
     updateCartBadge();
     alert('Заказ отправлен на согласование');
