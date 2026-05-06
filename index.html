@@ -28,60 +28,10 @@ body {
 }
 #app {
   width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
+  height: 100dvh;
   background: white;
-  min-height: 100vh;
-  min-height: 100dvh; /* фикс iPhone */
-  border-radius: 30px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-
-  /* ВАЖНО для iPhone */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-  .screen { display: none; flex: 1; flex-direction: column; height: 100%; background: white; }
-    .screen.active { display: flex; }
-    .auth-container { padding: 50px 24px; text-align: center; background: white; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .logo-img { width: 80px; height: 80px; border-radius: 40px; object-fit: cover; background: #f2f2f6; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .logo h1 { font-size: 26px; font-weight: 600; color: #1c1c1e; margin-top: 20px; letter-spacing: -0.3px; }
-    .logo h2 { font-size: 18px; font-weight: 400; color: #007aff; margin-bottom: 40px; }
-    .input-group { display: flex; align-items: center; background: #f2f2f6; border-radius: 16px; padding: 4px 16px; margin-bottom: 14px; }
-    .input-group i { color: #8e8e93; width: 24px; font-size: 18px; }
-    .input-group input, .input-group select { flex: 1; border: none; background: transparent; padding: 14px 0; font-size: 16px; outline: none; }
-    .btn { border: none; border-radius: 16px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 12px; transition: 0.2s; letter-spacing: -0.2px; }
-    .btn.primary { background: #007aff; color: white; }
-    .btn.primary:active { background: #0051d5; }
-    .btn.secondary { background: #f2f2f6; color: #007aff; }
-    .btn.danger { background: #ff3b30; color: white; }
-    .btn.small { padding: 10px 16px; font-size: 14px; width: auto; }
-    .link { color: #007aff; text-decoration: none; font-size: 14px; cursor: pointer; margin-top: 16px; display: inline-block; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: white; border-bottom: 1px solid rgba(0,0,0,0.05); }
-    header h3 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
-    .header-icons { display: flex; align-items: center; }
-    .profile-icon-header { cursor: pointer; width: 40px; height: 40px; border-radius: 20px; background: #f2f2f6; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .profile-icon-header img { width: 100%; height: 100%; object-fit: cover; }
-    .tab-content { flex: 1; overflow-y: auto; padding: 18px; padding-bottom: 110px; background: #f2f2f6; }
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
-    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .product-card { background: white; border-radius: 16px; padding: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.03); cursor: pointer; transition: 0.15s; overflow: hidden; }
-    .product-card:active { transform: scale(0.97); }
-   .product-photo { width: 100%; height: 200px; border-radius: 16px 16px 0 0; margin-bottom: 0; background: #f2f2f6; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
-    .product-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .product-photo i { font-size: 32px; color: #c7c7cc; }
-    .product-stats { font-size: 13px; color: #8e8e93; margin: 4px 0; }
-    .cart-item-info { flex: 1; }
-.cart-item-wrapper {
-  overflow: hidden;
-  border-radius: 20px;
-  margin-bottom: 12px;
-  width: 100%;
-  max-width: 100%;
+  margin: 0;
+  border-radius: 0;
 }
   .cart-item-inner { display: flex; align-items: stretch; transition: transform 0.2s ease; width: calc(100% + 80px); }
     .cart-item-main { flex: 1; display: flex; align-items: center; gap: 14px; background: white; border-radius: 20px 0 0 20px; padding: 14px; cursor: pointer; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
