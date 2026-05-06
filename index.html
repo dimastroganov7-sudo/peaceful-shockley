@@ -123,7 +123,40 @@
 #mainHeader .header-icons {
   margin-right: -8px;
 }
- 
+ /* Адаптация под десктоп */
+@media (min-width: 768px) {
+  #app {
+    max-width: 700px;       /* шире, чем на телефоне, но не на весь экран */
+    margin: 20px auto;
+    border-radius: 24px;
+  }
+
+  .tab-content {
+    padding-bottom: 40px;   /* на десктопе убираем большой отступ под нижнее меню */
+  }
+
+  .bottom-nav {
+    max-width: 700px;       /* растягиваем навигацию на всю ширину приложения */
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);  /* три товара в ряд вместо двух */
+    gap: 12px;
+  }
+
+  .admin-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Общие отступы можно немного увеличить */
+  header, .auth-container, .modal-content {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
   </style>
 </head>
 <body>
