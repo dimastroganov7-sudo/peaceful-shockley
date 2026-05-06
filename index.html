@@ -500,7 +500,15 @@ function validateStep(s) {
     const conf = document.getElementById('regConfirm').value;
     const phone = document.getElementById('regPhone').value.trim();
     if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return false; }
-    if (pass !== conf) { alert('Пароли не совпадают'); return false; }
+    if (pass.length < 6) {
+  alert('Пароль должен быть минимум 6 символов');
+  return false;
+}
+
+if (pass !== conf) {
+  alert('Пароли не совпадают');
+  return false;
+}
     return true;
   }
   if (s === 2) {
@@ -577,7 +585,15 @@ function updateDocumentsUI() {
 window.uploadDocument = (type, fileInput) => {
   const file = fileInput.files[0];
   if (!file) return;
-  if (file.size > 500 * 1024) { alert('Файл должен быть до 500 КБ'); return; }
+  if (!file.type.startsWith('image/')) {
+  alert('Можно загружать только изображения');
+  return;
+}
+
+if (file.size > 500 * 1024) {
+  alert('Файл должен быть до 500 КБ');
+  return;
+} { alert('Файл должен быть до 500 КБ'); return; }
   const reader = new FileReader();
   reader.onload = e => {
     tempDocuments[type] = e.target.result;
@@ -610,7 +626,7 @@ window.finishRegistration = async () => {
   }));
 
   const user = {
-    id: Date.now() + '',
+    id: crypto.randomUUID(),
     firstName: fn,
     lastName: ln,
     email,
@@ -858,7 +874,15 @@ window.finishRegistration = async () => {
   alert('Ваш профиль ещё не проверен администратором. Дождитесь верификации.');
   return;
 }
-    if (!cart.length) { alert('Корзина пуста'); return; }
+    if (!cart.length) {
+  alert('Корзина пуста');
+  return;
+}
+
+if (!user.verified) {
+  alert('Профиль не подтверждён');
+  return;
+}
     const slotId = document.getElementById('timeSlotSelect').value;
     if (!slotId) { alert('Выберите время'); return; }
     const slots = STORAGE.slots();
