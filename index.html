@@ -357,7 +357,7 @@
   STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
   STORAGE.saveMaxLimit = v => localStorage.setItem('f_maxLimit',v);
 
-  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];let selectedCategories = [];
+  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];let selectedCategories = [];let selectedPhotoFilters = new Set();
 
   // Хеширование
   async function hashPassword(pwd) {
@@ -1288,13 +1288,18 @@ if (catContainer) {
     else icon.innerHTML = '<i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i>';
   }
   function updateUIForUser() {
-    updateCartBadge();
-    renderProducts();
-    populateCategoryFilter();
-    switchTab('home');
-    updateHeaderAvatar();
-    checkUserBlock();
-  }
+    try {
+        updateCartBadge();
+        renderProducts();
+        populateCategoryFilter();
+        switchTab('home');
+        updateHeaderAvatar();
+        checkUserBlock();
+    } catch (e) {
+        alert('Ошибка в updateUIForUser: ' + e.message);
+        console.error(e);
+    }
+}
 
   // Закрытие модалок по фону
   document.querySelectorAll('.modal').forEach(modal => {
