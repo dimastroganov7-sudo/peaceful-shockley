@@ -53,7 +53,7 @@
     .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 11px; cursor: pointer; position: relative; font-weight: 500; }
     .nav-item i { font-size: 24px; margin-bottom: 4px; }
     .nav-item.active { color: #007aff; }
-    .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: none; align-items: center; justify-content: center; padding: 0 5px; }
+    .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
     .filter-bar select, .filter-bar input { flex: 1; padding: 12px 14px; border-radius: 16px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
     .admin-tabs { display: flex; border-bottom: 1px solid #e5e5ea; flex-wrap: wrap; }
@@ -62,7 +62,7 @@
     .admin-pane { display: none; padding: 20px; background: #f2f2f6; min-height: 100%; }
     .admin-pane.active { display: block; }
     .admin-products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
-    .admin-product-card { background: white; border-radius: 20px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); position: relative; }
+    .admin-product-card { background: white; border-radius: 20px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
     .admin-product-card .product-photo { height: 100px; margin-bottom: 8px; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-content { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
@@ -89,7 +89,6 @@
     .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
-    .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; color: #007aff; padding: 8px; }
   </style>
 </head>
 <body>
@@ -144,46 +143,36 @@
         <div class="slot-select"><select id="timeSlotSelect"></select></div>
         <button class="btn primary" onclick="createOrder()">Отправить на согласование</button>
       </div>
-     <div id="profileTab" class="tab-pane" style="background:#f2f2f6; padding: 16px;">
-  <!-- Шапка профиля -->
-  <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:16px;">
-    <div style="position:relative;" onclick="document.getElementById('avatarInput').click()">
-      <img id="profileAvatar" src="" style="width:72px;height:72px;border-radius:36px;object-fit:cover;display:none;">
-      <div id="defaultAvatar" style="width:72px;height:72px;border-radius:36px;background:#e5e5ea;display:flex;align-items:center;justify-content:center;">
-        <i class="far fa-user-circle" style="font-size:48px;color:#8e8e93;"></i>
+      <div id="profileTab" class="tab-pane">
+        <div style="text-align:center; padding:20px;">
+          <img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;display:none;">
+          <i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;display:none;"></i>
+          <h3 id="profileName" style="margin-top:12px;"></h3>
+          <p id="profilePhone" style="color:#8e8e93;"></p>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
+        <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
+        <button class="btn secondary" onclick="logout()">Выйти</button>
       </div>
-      <i class="fas fa-camera" style="position:absolute;bottom:0;right:0;background:white;border-radius:50%;padding:4px;font-size:12px;color:#007aff;box-shadow:0 2px 8px rgba(0,0,0,0.1);"></i>
+      <div id="ordersTab" class="tab-pane">
+        <div id="ordersListView"></div>
+        <div id="orderDetailsView" style="display:none;"></div>
+      </div>
+      <div id="reviewsTab" class="tab-pane">
+        <div class="text-center" style="margin:20px 0;">
+          <h3 style="font-size:24px;font-weight:700;">Делитесь впечатлением</h3>
+          <p style="color:#8e8e93;">Это помогает нам развиваться ради помощи нуждающимся.</p>
+        </div>
+        <div id="pendingReviewsList"></div>
+      </div>
     </div>
-    <div style="flex:1;">
-      <h3 id="profileName" style="margin:0;font-size:20px;font-weight:600;">Иван Иванов</h3>
-      <p id="profilePhone" style="margin:4px 0 0;color:#8e8e93;">+7 916 123-45-67</p>
-    </div>
+    <nav class="bottom-nav">
+      <div class="nav-item active" data-tab="home"><i class="far fa-compass"></i><span>Главная</span></div>
+      <div class="nav-item" data-tab="cart"><i class="far fa-shopping-basket"></i><span>Корзина</span><span id="navCartBadge" class="badge" style="display:none;">0</span></div>
+      <div class="nav-item" data-tab="orders"><i class="far fa-list-alt"></i><span>Заказы</span></div>
+      <div class="nav-item" data-tab="reviews"><i class="far fa-star"></i><span>Отзывы</span><span id="reviewBadge" class="badge" style="display:none;">0</span></div>
+    </nav>
   </div>
-  
-  <!-- Овалы статуса -->
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-    <div id="familyStatusOval" style="background:#e5f5ff;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;">Многодетная</div>
-    <div id="childrenCountOval" style="background:#efffe8;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;">3 детей</div>
-    <div id="adultsCountOval" style="background:#fff3e0;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;">2 взрослых</div>
-    <div id="verifiedOval" style="background:#e6ffe0;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:4px;">
-      <i class="fas fa-check-circle" style="color:#34c759;"></i> Верифицирован
-    </div>
-  </div>
-  
-  <!-- Панель «Члены семьи» -->
-  <div class="order-card" style="cursor:pointer;" onclick="openFamilyDetails()">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h4 style="margin:0;">Члены семьи</h4>
-      <i class="fas fa-chevron-right" style="color:#8e8e93;"></i>
-    </div>
-    <div id="familyCirclesPreview" style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
-      <!-- сюда будут вставлены кружочки -->
-    </div>
-  </div>
-  
-  <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
-  <button class="btn secondary" style="margin-top:20px;" onclick="logout()">Выйти</button>
-</div>
 
   <!-- АДМИН-ПАНЕЛЬ -->
   <div id="adminScreen" class="screen">
@@ -208,7 +197,7 @@
         <div id="petitionStats" class="text-center mt-2" style="color:#8e8e93;"></div>
       </div>
       <div id="adminCalendar" class="admin-pane">
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span id="calendarMonthYear" style="font-size:18px;font-weight:600;"></span><div><button class="btn-icon" onclick="changeCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button><button class="btn-icon" onclick="changeCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button></div></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span id="calendarMonthYear" style="font-size:18px;font-weight:600;"></span><div><button class="btn small" onclick="changeCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button><button class="btn small" onclick="changeCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button></div></div>
         <div class="calendar-grid" id="calendarGrid"></div>
         <button class="btn primary" style="margin-top:18px;" onclick="openAddSlotModal()">+ Добавить слот</button>
         <div id="slotsList" class="mt-2"></div>
@@ -275,60 +264,6 @@
   <div id="fullscreenPhotoModal" class="modal" style="align-items:center; background:rgba(0,0,0,0.9);" onclick="closeModal('fullscreenPhotoModal')">
     <img id="fullscreenImage" style="max-width:90%;max-height:90%;border-radius:20px;object-fit:contain;">
   </div>
-        <div id="fullscreenPhotoModal" class="modal" style="align-items:center; background:rgba(0,0,0,0.9);" onclick="closeModal('fullscreenPhotoModal')">
-    <img id="fullscreenImage" style="max-width:90%;max-height:90%;border-radius:20px;object-fit:contain;">
-  </div>
-
-  <!-- Новые модальные окна -->
-  <div id="addFamilyMemberModal" class="modal">
-    <div class="modal-content">
-      <i class="fas fa-times" onclick="closeModal('addFamilyMemberModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
-      <h3 style="margin-bottom:16px;">Добавить члена семьи</h3>
-      <input id="fmFirstName" placeholder="Имя" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      <input id="fmLastName" placeholder="Фамилия" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      
-      <label style="display:block;margin-bottom:8px;font-weight:500;">Тип</label>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <button class="btn small" id="btnFmChild" onclick="setFamilyType('child')" style="background:#f2f2f6;">Ребенок</button>
-        <button class="btn small" id="btnFmAdult" onclick="setFamilyType('adult')" style="background:#f2f2f6;">Взрослый</button>
-      </div>
-      
-      <div id="fmAdultRole" style="display:none;margin-bottom:12px;">
-        <label style="display:block;margin-bottom:8px;font-weight:500;">Роль</label>
-        <div style="display:flex;gap:8px;">
-          <button class="btn small role-btn" data-role="husband" onclick="selectAdultRole('husband')">Муж</button>
-          <button class="btn small role-btn" data-role="wife" onclick="selectAdultRole('wife')">Жена</button>
-          <button class="btn small role-btn" data-role="pensioner" onclick="selectAdultRole('pensioner')">Пенсионер</button>
-        </div>
-      </div>
-      
-      <div id="fmChildGender" style="display:none;margin-bottom:12px;">
-        <label style="display:block;margin-bottom:8px;font-weight:500;">Пол</label>
-        <div style="display:flex;gap:8px;">
-          <button class="btn small" id="btnChildM" onclick="selectChildGender('M')" style="background:#007aff;color:white;">М</button>
-          <button class="btn small" id="btnChildF" onclick="selectChildGender('F')" style="background:#f2f2f6;">Ж</button>
-        </div>
-      </div>
-      
-      <label style="display:block;margin-bottom:8px;font-weight:500;">Возраст</label>
-      <input type="number" id="fmAge" min="0" max="150" placeholder="Возраст" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      
-      <label style="display:block;margin-bottom:8px;font-weight:500;">Документы</label>
-      <div id="fmDocuments" style="margin-bottom:12px;"></div>
-      <button class="btn secondary small" onclick="addDocumentInput('fmDocuments')"><i class="fas fa-plus"></i> Свидетельство/документ</button>
-      
-      <button class="btn primary" style="margin-top:16px;" onclick="submitFamilyMember()">Запросить верификацию</button>
-    </div>
-  </div>
-
-  <div id="familyDetailModal" class="modal">
-    <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
-      <i class="fas fa-times" onclick="closeModal('familyDetailModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
-      <h3 style="margin-bottom:16px;">Профиль семьи</h3>
-      <div id="familyDetailList"></div>
-      <button class="btn primary" onclick="openAddFamilyMemberModal()" style="margin-top:12px;">+ Добавить члена семьи</button>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -336,47 +271,41 @@
   'use strict';
   function escapeHtml(str) { return String(str).replace(/[&<>"'/]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;'})[m]); }
 
-  const STORAGE = {
-    users: () => JSON.parse(localStorage.getItem('f_users')||'[]'),
-    saveUsers: u => localStorage.setItem('f_users',JSON.stringify(u)),
-    products: () => JSON.parse(localStorage.getItem('f_products')||'[]'),
-    saveProducts: p => localStorage.setItem('f_products',JSON.stringify(p)),
-    slots: () => JSON.parse(localStorage.getItem('f_slots')||'[]'),
-    saveSlots: s => localStorage.setItem('f_slots',JSON.stringify(s)),
-    orders: () => JSON.parse(localStorage.getItem('f_orders')||'[]'),
-    saveOrders: o => localStorage.setItem('f_orders',JSON.stringify(o)),
-    reviews: () => JSON.parse(localStorage.getItem('f_reviews')||'[]'),
-    saveReviews: r => localStorage.setItem('f_reviews',JSON.stringify(r)),
-    currentUser: () => JSON.parse(sessionStorage.getItem('f_curUser')||'null'),
-    setCurrentUser: u => sessionStorage.setItem('f_curUser',JSON.stringify(u)),
-    cart: () => JSON.parse(localStorage.getItem('f_cart')||'[]'),
-    saveCart: c => localStorage.setItem('f_cart',JSON.stringify(c)),
-    maxLimit: () => parseInt(localStorage.getItem('f_maxLimit')||'10'),
-    saveMaxLimit: v => localStorage.setItem('f_maxLimit',v)
-  };
+  function STORAGE() { /* инициализация при первом вызове */ }
+  STORAGE.users = () => JSON.parse(localStorage.getItem('f_users')||'[]');
+  STORAGE.saveUsers = u => localStorage.setItem('f_users',JSON.stringify(u));
+  STORAGE.products = () => JSON.parse(localStorage.getItem('f_products')||'[]');
+  STORAGE.saveProducts = p => localStorage.setItem('f_products',JSON.stringify(p));
+  STORAGE.slots = () => JSON.parse(localStorage.getItem('f_slots')||'[]');
+  STORAGE.saveSlots = s => localStorage.setItem('f_slots',JSON.stringify(s));
+  STORAGE.orders = () => JSON.parse(localStorage.getItem('f_orders')||'[]');
+  STORAGE.saveOrders = o => localStorage.setItem('f_orders',JSON.stringify(o));
+  STORAGE.reviews = () => JSON.parse(localStorage.getItem('f_reviews')||'[]');
+  STORAGE.saveReviews = r => localStorage.setItem('f_reviews',JSON.stringify(r));
+  STORAGE.currentUser = () => JSON.parse(sessionStorage.getItem('f_curUser')||'null');
+  STORAGE.setCurrentUser = u => sessionStorage.setItem('f_curUser',JSON.stringify(u));
+  STORAGE.cart = () => JSON.parse(localStorage.getItem('f_cart')||'[]');
+  STORAGE.saveCart = c => localStorage.setItem('f_cart',JSON.stringify(c));
+  STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
+  STORAGE.saveMaxLimit = v => localStorage.setItem('f_maxLimit',v);
 
-  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null,
-    currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
-    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
+  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
 
+  // Хеширование
   async function hashPassword(pwd) {
     const enc = new TextEncoder().encode(pwd);
     const hash = await crypto.subtle.digest('SHA-256', enc);
     return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  async function initData() { if (!localStorage.getItem('f_familyMembers')) {
-  STORAGE.saveFamilyMembers([]);
-}
+  // Инициализация данных
+  async function initData() {
     if (!STORAGE.users().length) {
       STORAGE.saveUsers([
         {id:'1',firstName:'Иван',lastName:'Иванов',email:'user@test.com',password:await hashPassword('123456'),phone:'+79161234567',role:'user',avatar:''},
         {id:'adm',firstName:'Админ',email:'admin@fond.ru',password:await hashPassword('admin123'),role:'admin',phone:'',avatar:''}
       ]);
     }
-    if (!localStorage.getItem('f_familyMembers')) {
-  STORAGE.saveFamilyMembers([]);
-}
     if (!STORAGE.products().length) {
       STORAGE.saveProducts([
         {id:'p1',article:'GR001',name:'Гречка 1кг',category:'Продукты',photos:[],quantity:10,availableQuantity:10,isPlaced:true,sizes:[],description:'Качественная гречка'},
@@ -400,6 +329,7 @@
     }
   }
 
+  // Глобальные функции
   window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
   window.closeModal = (id) => {
@@ -440,6 +370,7 @@
     document.getElementById(id).classList.add('active');
   }
 
+  // Навигация
   document.querySelectorAll('.bottom-nav .nav-item').forEach(el => {
     el.addEventListener('click', () => switchTab(el.dataset.tab));
   });
@@ -453,10 +384,10 @@
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
     if (tabId === 'cart') { renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
     if (tabId === 'profile') renderProfile();
-    if (tabId === 'orders') {
-      document.getElementById('ordersListView').style.display = 'block';
-      document.getElementById('orderDetailsView').style.display = 'none';
-      renderUserOrders();
+    if (tabId === 'orders') { 
+      document.getElementById('ordersListView').style.display = 'block'; 
+      document.getElementById('orderDetailsView').style.display = 'none'; 
+      renderUserOrders(); 
     }
     if (tabId === 'reviews') renderUserReviews();
   };
@@ -483,7 +414,7 @@
     else if (sort === 'old') prods.sort((a,b) => a.id.localeCompare(b.id));
     document.getElementById('productsContainer').innerHTML = prods.map(p => `
       <div class="product-card" onclick="openProductDetail('${p.id}','home')">
-        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image"></i>'}</div>
+        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="">` : '<i class="far fa-image"></i>'}</div>
         <h4 style="font-weight:600;">${escapeHtml(p.name)}</h4>
         <small style="color:#8e8e93;">${escapeHtml(p.article)}</small>
         <div class="product-stats">В наличии: ${p.availableQuantity}</div>
@@ -589,83 +520,47 @@
 
   // Профиль
   function renderProfile() {
-  const u = STORAGE.currentUser();
-  if (!u) return;
-
-  const avatarEl = document.getElementById('profileAvatar');
-  const defaultEl = document.getElementById('defaultAvatar');
-  if (u.avatar) {
-    avatarEl.src = u.avatar;
-    avatarEl.style.display = 'block';
-    defaultEl.style.display = 'none';
-  } else {
-    avatarEl.style.display = 'none';
-    defaultEl.style.display = 'flex';
-  }
-
-  document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName||''}`;
-  document.getElementById('profilePhone').textContent = u.phone;
-
-  const family = getFamilyForCurrentUser();
-  const children = family.filter(m => m.type === 'child');
-  const adults = family.filter(m => m.type === 'adult');
-
-  document.getElementById('familyStatusOval').textContent = children.length >= 3 ? 'Многодетная' : (children.length === 0 ? 'Без детей' : 'С детьми');
-  document.getElementById('childrenCountOval').textContent = `${children.length} ${children.length === 1 ? 'ребёнок' : children.length < 5 ? 'ребёнка' : 'детей'}`;
-  document.getElementById('adultsCountOval').textContent = `${adults.length + 1} ${adults.length + 1 === 1 ? 'взрослый' : adults.length + 1 < 5 ? 'взрослых' : 'взрослых'}`;
-
-  const allVerified = u.verified !== false && family.every(m => m.verified);
-  document.getElementById('verifiedOval').style.display = allVerified ? 'flex' : 'none';
-
-  const preview = document.getElementById('familyCirclesPreview');
-  preview.innerHTML = '';
-
-  // Владелец
-  addFamilyCircle(preview, {
-    firstName: u.firstName,
-    lastName: u.lastName,
-    avatar: u.avatar,
-    type: 'owner',
-    gender: 'adult'
-  });
-
-  // Члены семьи
-  family.forEach(m => addFamilyCircle(preview, m));
-
-  updateHeaderAvatar();
-}
-
-function addFamilyCircle(container, member) {
-  const circle = document.createElement('div');
-  circle.style.cssText = 'text-align:center;width:56px;flex-shrink:0;';
-
-  let iconHtml = '';
-  if (member.avatar) {
-    iconHtml = `<img src="${member.avatar}" style="width:40px;height:40px;border-radius:20px;object-fit:cover;">`;
-  } else {
-    if (member.type === 'child') {
-      iconHtml = member.gender === 'F'
-        ? '<i class="fas fa-female" style="font-size:32px;color:#ff69b4;"></i>'
-        : '<i class="fas fa-male" style="font-size:32px;color:#007aff;"></i>';
+    const u = STORAGE.currentUser();
+    if (!u) return;
+    document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName||''}`;
+    document.getElementById('profilePhone').textContent = u.phone;
+    if (u.avatar) {
+      document.getElementById('profileAvatar').src = u.avatar;
+      document.getElementById('profileAvatar').style.display = 'block';
+      document.getElementById('defaultAvatar').style.display = 'none';
     } else {
-      iconHtml = '<i class="fas fa-user" style="font-size:32px;color:#a5d6a7;"></i>';
+      document.getElementById('profileAvatar').style.display = 'none';
+      document.getElementById('defaultAvatar').style.display = 'block';
     }
   }
+  window.saveAvatar = () => {
+    const file = document.getElementById('avatarInput').files[0];
+    if (!file) return;
+    if (file.size > 200*1024) { alert('Фото должно быть до 200 КБ'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 300; canvas.height = 300;
+        canvas.getContext('2d').drawImage(img, 0, 0, 300, 300);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const users = STORAGE.users();
+        const cur = STORAGE.currentUser();
+        const idx = users.findIndex(u => u.id === cur.id);
+        if (idx === -1) return;
+        users[idx].avatar = dataUrl;
+        STORAGE.saveUsers(users);
+        STORAGE.setCurrentUser(users[idx]);
+        renderProfile();
+        updateHeaderAvatar();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
 
-  circle.innerHTML = `
-    <div style="width:48px;height:48px;border-radius:24px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;margin:0 auto;">${iconHtml}</div>
-    <div style="font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${member.firstName||'Вы'}</div>
-  `;
-  container.appendChild(circle);
-}
-
-function getFamilyForCurrentUser() {
-  const user = STORAGE.currentUser();
-  if (!user) return [];
-  return STORAGE.familyMembers().filter(m => m.userId === user.id);
-}
-
-  // Заказы пользователя
+  // Заказы пользователя - АКТИВНЫЕ, с фото сразу
   window.renderUserOrders = () => {
     const user = STORAGE.currentUser();
     if (!user) return;
@@ -721,7 +616,7 @@ function getFamilyForCurrentUser() {
       <div style="display:flex;gap:14px;padding:18px 16px;overflow-x:auto;">
         ${order.items.map(i => {
           const prod = STORAGE.products().find(p => p.id === i.productId);
-          return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'" style="width:72px;height:72px;border-radius:18px;object-fit:cover;border:3px solid ${i.productId === selectedDetailItemId ? '#007aff' : 'transparent'};cursor:pointer;flex-shrink:0;background:#f2f2f6;">`;
+          return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'">`;
         }).join('')}
       </div>
       <div style="padding:0 18px;">
@@ -738,7 +633,10 @@ function getFamilyForCurrentUser() {
         <div class="text-center" style="color:#8e8e93;">${escapeHtml(order.address)}<br>Плановая дата: ${new Date(order.slotTime).toLocaleDateString('ru-RU')}</div>
       </div>`;
   }
-  window.selectDetailItem = (productId) => { selectedDetailItemId = productId; renderOrderDetail(); };
+  window.selectDetailItem = (productId) => {
+    selectedDetailItemId = productId;
+    renderOrderDetail();
+  };
   window.closeOrderDetails = () => {
     document.getElementById('ordersListView').style.display = 'block';
     document.getElementById('orderDetailsView').style.display = 'none';
@@ -763,11 +661,10 @@ function getFamilyForCurrentUser() {
         <p style="color:#8e8e93;">${escapeHtml(prod.article)}</p>
         <p>${escapeHtml(prod.description || 'Описание отсутствует')}</p>
       </div>
-      <button class="btn primary" style="margin:0 18px 18px;width:calc(100% - 36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
+      <button class="btn primary" style="margin:0 18px 18px;width:calc(100%-36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
   };
   window.switchDetailPhoto = (src, el) => {
-    const main = document.getElementById('detailMainPhoto');
-    if (main) main.src = src;
+    document.getElementById('detailMainPhoto').src = src;
     document.querySelectorAll('#productDetailContent img').forEach(i => i.style.borderColor = 'transparent');
     el.style.borderColor = '#007aff';
   };
@@ -781,12 +678,21 @@ function getFamilyForCurrentUser() {
     updateCartBadge();
     closeModal('productDetailModal');
   };
-  window.addToCartFromDetail = (prodId) => { addToCart(prodId); closeModal('productDetailModal'); };
+  window.addToCartFromDetail = (prodId) => {
+    const p = STORAGE.products().find(p => p.id === prodId);
+    if (!p) return;
+    if (p.sizes && p.sizes.length) { /* размеры уже показаны */ return; }
+    addToCart(prodId);
+    closeModal('productDetailModal');
+  };
   window.closeProductDetail = () => {
     document.getElementById('productDetailModal').style.display = 'none';
     if (returnToScreen === 'cart') switchTab('cart');
   };
-  window.shareProduct = () => { if (navigator.share) navigator.share({ title: 'Товар', url: window.location.href }); else alert('Поделиться'); };
+  window.shareProduct = () => {
+    if (navigator.share) navigator.share({ title: 'Товар', url: window.location.href });
+    else alert('Поделиться');
+  };
 
   // Отзывы
   window.renderUserReviews = () => {
@@ -798,7 +704,9 @@ function getFamilyForCurrentUser() {
       order.items.forEach(item => {
         if (item.status !== 'issued') return;
         const exists = STORAGE.reviews().find(r => r.orderId === order.id && r.productId === item.productId);
-        if (!exists || exists.status === 'rejected') itemsForReview.push({ order, item, review: exists || null });
+        if (!exists || exists.status === 'rejected') {
+          itemsForReview.push({ order, item, review: exists || null });
+        }
       });
     });
     const badge = document.getElementById('reviewBadge');
@@ -831,6 +739,7 @@ function getFamilyForCurrentUser() {
     alert('Отзыв отправлен на модерацию');
     renderUserReviews();
   };
+
   function checkUserBlock() {
     const user = STORAGE.currentUser();
     if (!user) return;
@@ -849,7 +758,7 @@ function getFamilyForCurrentUser() {
     renderPetitions();
     renderAdminReviews();
     document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
-      btn.onclick = () => {
+      btn.addEventListener('click', () => {
         document.querySelectorAll('.admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
@@ -858,18 +767,19 @@ function getFamilyForCurrentUser() {
         if (btn.dataset.adminTab === 'petitions') renderPetitions();
         if (btn.dataset.adminTab === 'calendar') renderCalendar();
         if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
-      };
+      });
     });
-    document.getElementById('orderSearchInput').oninput = renderAllOrders;
+    document.getElementById('orderSearchInput').addEventListener('input', renderAllOrders);
   }
+
   function renderAdminProducts() {
     document.getElementById('adminProductsList').innerHTML = STORAGE.products().map(p => `
       <div class="admin-product-card">
-        <div class="product-photo" onclick="openFullscreenPhoto('${p.photos?.[0]||''}')">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image"></i>'}</div>
+        <div class="product-photo" onclick="openFullscreenPhoto('${p.photos?.[0]||''}')">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="">` : '<i class="far fa-image"></i>'}</div>
         <h4>${escapeHtml(p.name)}</h4><small>${escapeHtml(p.article)}</small>
-        <div style="font-size:13px;color:#8e8e93;">В наличии: ${p.availableQuantity}/${p.quantity}</div>
-        <div style="margin:6px 0;">${p.isPlaced ? '✅ Размещён' : `<button class="btn primary small" onclick="placeProduct('${p.id}')">Разместить</button>`}</div>
-        <i class="fas fa-trash" style="position:absolute;top:10px;right:10px;cursor:pointer;color:#ff3b30;" onclick="event.stopPropagation();deleteProduct('${p.id}')"></i>
+        <div>В наличии: ${p.availableQuantity}/${p.quantity}</div>
+        <div>${p.isPlaced ? '✅ Размещён' : `<button class="btn primary small" onclick="placeProduct('${p.id}')">Разместить</button>`}</div>
+        <i class="fas fa-trash" style="float:right;cursor:pointer;color:#ff3b30;" onclick="deleteProduct('${p.id}')"></i>
       </div>`).join('');
   }
   window.placeProduct = (id) => {
@@ -885,14 +795,8 @@ function getFamilyForCurrentUser() {
     document.getElementById('addProductModal').style.display = 'flex';
     tempProductPhotos = [];
     document.getElementById('photoPreviewContainer').innerHTML = '';
-    document.getElementById('prodName').value = '';
-    document.getElementById('prodArticle').value = '';
-    document.getElementById('prodSizes').value = '';
-    document.getElementById('prodDescription').value = '';
-    document.getElementById('prodQuantity').value = 1;
-    document.getElementById('prodPlaceImmediately').checked = true;
   };
-  document.getElementById('productPhotosInput').onchange = function() {
+  document.getElementById('productPhotosInput').addEventListener('change', function() {
     const files = Array.from(this.files).slice(0, 3);
     const preview = document.getElementById('photoPreviewContainer');
     preview.innerHTML = '';
@@ -908,7 +812,7 @@ function getFamilyForCurrentUser() {
       };
       reader.readAsDataURL(f);
     });
-  };
+  });
   window.addProduct = () => {
     const name = document.getElementById('prodName').value.trim();
     const article = document.getElementById('prodArticle').value.trim();
@@ -928,6 +832,7 @@ function getFamilyForCurrentUser() {
     renderProducts();
     populateCategoryFilter();
   };
+
   function renderAdminSlots() {
     document.getElementById('slotsList').innerHTML = STORAGE.slots().map(s => `
       <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:16px;padding:12px;margin-bottom:8px;">
@@ -935,15 +840,22 @@ function getFamilyForCurrentUser() {
         <i class="fas fa-trash" style="color:#ff3b30;cursor:pointer;" onclick="deleteSlot('${s.id}')"></i>
       </div>`).join('');
   }
-  window.deleteSlot = (id) => { STORAGE.saveSlots(STORAGE.slots().filter(s => s.id !== id)); renderAdminSlots(); renderCalendar(); };
+  window.deleteSlot = (id) => {
+    STORAGE.saveSlots(STORAGE.slots().filter(s => s.id !== id));
+    renderAdminSlots();
+    renderCalendar();
+  };
   window.openAddSlotModal = () => { document.getElementById('addSlotModal').style.display = 'flex'; };
   window.addSlot = () => {
     const dt = document.getElementById('slotDateTime').value;
     const cap = parseInt(document.getElementById('slotCapacity').value);
     if (!dt || !cap) { alert('Заполните все поля'); return; }
     STORAGE.saveSlots([...STORAGE.slots(), { id: 's_'+Date.now(), datetime: dt, capacity: cap, used: 0 }]);
-    closeModal('addSlotModal'); renderAdminSlots(); renderCalendar();
+    closeModal('addSlotModal');
+    renderAdminSlots();
+    renderCalendar();
   };
+
   function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
@@ -955,19 +867,26 @@ function getFamilyForCurrentUser() {
     for (let i = 1; i < firstDay; i++) html += '<div></div>';
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      html += `<div class="calendar-day ${slotDates.includes(dateStr) ? 'has-slot' : ''} ${selectedCalendarDate === dateStr ? 'selected' : ''}" onclick="selectCalendarDate('${dateStr}')">${d}</div>`;
+      const isSel = selectedCalendarDate === dateStr;
+      html += `<div class="calendar-day ${slotDates.includes(dateStr) ? 'has-slot' : ''} ${isSel ? 'selected' : ''}" onclick="selectCalendarDate('${dateStr}')">${d}</div>`;
     }
     document.getElementById('calendarGrid').innerHTML = html;
   }
-  window.changeCalendarMonth = (d) => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + d); renderCalendar(); };
+  window.changeCalendarMonth = (d) => {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + d);
+    renderCalendar();
+  };
   window.selectCalendarDate = (dateStr) => {
-    selectedCalendarDate = dateStr; renderCalendar();
+    selectedCalendarDate = dateStr;
+    renderCalendar();
     const orders = STORAGE.orders().filter(o => o.slotTime?.startsWith(dateStr) && o.status === 'approved');
     const aggregated = {};
     orders.forEach(o => {
       o.items.forEach(item => {
         if (item.status !== 'approved') return;
-        if (!aggregated[item.productId]) aggregated[item.productId] = { product: STORAGE.products().find(p => p.id === item.productId), count: 0 };
+        if (!aggregated[item.productId]) {
+          aggregated[item.productId] = { product: STORAGE.products().find(p => p.id === item.productId), count: 0 };
+        }
         aggregated[item.productId].count++;
       });
     });
@@ -975,7 +894,7 @@ function getFamilyForCurrentUser() {
       <div style="display:flex;align-items:center;gap:12px;padding:12px;background:white;border-radius:16px;margin-bottom:8px;">
         <img src="${a.product?.photos?.[0]||''}" style="width:40px;height:40px;border-radius:12px;object-fit:cover;" onerror="this.style.display='none'">
         <div><b>${escapeHtml(a.product?.name||'')}</b><br>Одобрено: ${a.count} шт.</div>
-      </div>`).join('') || '<p class="text-center">Нет одобренных товаров на эту дату</p>';
+      </div>`).join('') || '<p>Нет одобренных товаров на эту дату</p>';
   };
 
   // Прошения
@@ -1017,10 +936,24 @@ function getFamilyForCurrentUser() {
     const available = STORAGE.products().filter(p => petitions.some(pt => pt.productId === p.id)).reduce((s,p) => s + p.availableQuantity, 0);
     document.getElementById('petitionStats').textContent = `🔍 Найдено позиций: ${petitions.length} | Остаток выбранных товаров: ${available}`;
   };
-  window.togglePhotoFilter = (pid) => { selectedPhotoFilters.has(pid) ? selectedPhotoFilters.delete(pid) : selectedPhotoFilters.add(pid); renderPetitions(); };
-  window.togglePetitionSelectMode = () => { petitionSelectMode = !petitionSelectMode; selectedPetitionKeys.clear(); document.getElementById('toggleSelectModeBtn').textContent = petitionSelectMode ? 'Готово' : 'Выбрать'; renderPetitions(); };
-  window.togglePetitionSelection = (key) => { selectedPetitionKeys.has(key) ? selectedPetitionKeys.delete(key) : selectedPetitionKeys.add(key); renderPetitions(); };
-  window.selectAllPetitions = () => { getPetitionItems().forEach(p => selectedPetitionKeys.add(p.key)); renderPetitions(); };
+  window.togglePhotoFilter = (pid) => {
+    selectedPhotoFilters.has(pid) ? selectedPhotoFilters.delete(pid) : selectedPhotoFilters.add(pid);
+    renderPetitions();
+  };
+  window.togglePetitionSelectMode = () => {
+    petitionSelectMode = !petitionSelectMode;
+    selectedPetitionKeys.clear();
+    document.getElementById('toggleSelectModeBtn').textContent = petitionSelectMode ? 'Готово' : 'Выбрать';
+    renderPetitions();
+  };
+  window.togglePetitionSelection = (key) => {
+    selectedPetitionKeys.has(key) ? selectedPetitionKeys.delete(key) : selectedPetitionKeys.add(key);
+    renderPetitions();
+  };
+  window.selectAllPetitions = () => {
+    getPetitionItems().forEach(p => selectedPetitionKeys.add(p.key));
+    renderPetitions();
+  };
   function processPetitionItem(orderId, itemIndex, approve) {
     const orders = STORAGE.orders();
     const order = orders.find(o => o.id === orderId);
@@ -1033,7 +966,9 @@ function getFamilyForCurrentUser() {
       prod.availableQuantity--;
       STORAGE.saveProducts(STORAGE.products());
       item.status = 'approved';
-    } else item.status = 'rejected';
+    } else {
+      item.status = 'rejected';
+    }
     const statuses = order.items.map(i => i.status);
     order.status = statuses.every(s => s === 'approved') ? 'approved' : statuses.every(s => s === 'rejected') ? 'rejected' : 'partially_approved';
     STORAGE.saveOrders(orders);
@@ -1042,35 +977,52 @@ function getFamilyForCurrentUser() {
   window.approvePetitionItem = (oid, idx) => { processPetitionItem(oid, idx, true); selectedPetitionKeys.clear(); renderPetitions(); renderAdminProducts(); };
   window.rejectPetitionItem = (oid, idx) => { processPetitionItem(oid, idx, false); selectedPetitionKeys.clear(); renderPetitions(); };
   window.bulkApprovePetitions = () => {
-    for (const key of selectedPetitionKeys) { const [oid, idx] = key.split('|'); if (!processPetitionItem(oid, parseInt(idx), true)) break; }
-    selectedPetitionKeys.clear(); renderPetitions(); renderAdminProducts();
+    for (const key of selectedPetitionKeys) {
+      const [oid, idx] = key.split('|');
+      if (!processPetitionItem(oid, parseInt(idx), true)) break;
+    }
+    selectedPetitionKeys.clear();
+    renderPetitions();
+    renderAdminProducts();
   };
   window.bulkRejectPetitions = () => {
-    for (const key of selectedPetitionKeys) { const [oid, idx] = key.split('|'); processPetitionItem(oid, parseInt(idx), false); }
-    selectedPetitionKeys.clear(); renderPetitions();
+    for (const key of selectedPetitionKeys) {
+      const [oid, idx] = key.split('|');
+      processPetitionItem(oid, parseInt(idx), false);
+    }
+    selectedPetitionKeys.clear();
+    renderPetitions();
   };
 
   // Заказы (админ)
-  window.switchOrderView = (view) => { currentOrderView = view; document.getElementById('adminOrderDateFilter').style.display = view === 'all' ? 'block' : 'none'; renderAllOrders(); };
+  window.switchOrderView = (view) => {
+    currentOrderView = view;
+    document.getElementById('adminOrderDateFilter').style.display = view === 'all' ? 'block' : 'none';
+    renderAllOrders();
+  };
   function populateAdminOrderDateFilter() {
     const dates = [...new Set(STORAGE.orders().map(o => o.slotTime?.split('T')[0]).filter(Boolean))].sort();
     document.getElementById('adminOrderDateFilter').innerHTML = '<option value="">Все даты</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
   }
   window.renderAllOrders = () => {
     let orders = STORAGE.orders();
-    if (currentOrderView === 'today') orders = orders.filter(o => !o.archived && o.slotTime?.startsWith(new Date().toISOString().slice(0,10)) && o.status === 'approved' && !o.issued);
-    else if (currentOrderView === 'all') {
+    if (currentOrderView === 'today') {
+      const today = new Date().toISOString().slice(0, 10);
+      orders = orders.filter(o => !o.archived && o.slotTime?.startsWith(today) && o.status === 'approved' && !o.issued);
+    } else if (currentOrderView === 'all') {
       orders = orders.filter(o => !o.archived && !o.issued);
       const filter = document.getElementById('adminOrderDateFilter')?.value;
       if (filter) orders = orders.filter(o => o.slotTime?.startsWith(filter));
-    } else orders = orders.filter(o => o.archived);
+    } else {
+      orders = orders.filter(o => o.archived);
+    }
     const search = document.getElementById('orderSearchInput')?.value.toLowerCase() || '';
     if (search) orders = orders.filter(o => o.id.toLowerCase().includes(search) || `${o.recipient.firstName} ${o.recipient.lastName}`.toLowerCase().includes(search) || o.recipient.phone.includes(search));
     document.getElementById('allOrdersList').innerHTML = orders.map(o => `
       <div class="order-card">
         <div><b>${o.id}</b> · ${escapeHtml(o.recipient.firstName)} ${escapeHtml(o.recipient.lastName)} 📞${escapeHtml(o.recipient.phone)}<br>${new Date(o.slotTime).toLocaleString('ru-RU')}</div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">${o.items.map(i => `<span style="font-size:13px;">${escapeHtml(i.name)} (${i.status==='approved'||i.status==='issued'?'✅':i.status==='rejected'?'❌':'⏳'})</span>`).join(' ')}</div>
-        ${!o.archived ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="event.stopPropagation();openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="event.stopPropagation();cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
+        ${!o.archived ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
       </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
   };
   window.openIssueModal = (orderId) => {
@@ -1092,7 +1044,8 @@ function getFamilyForCurrentUser() {
     const issuedIds = new Set();
     checkboxes.forEach((cb, idx) => { if (cb.checked) issuedIds.add(approvedItems[idx].productId); });
     order.items.forEach(i => { if (i.status === 'approved' && issuedIds.has(i.productId)) i.status = 'issued'; });
-    order.issued = true; order.archived = true;
+    order.issued = true;
+    order.archived = true;
     STORAGE.saveOrders(STORAGE.orders());
     const user = STORAGE.users().find(u => u.id === order.userId);
     const allReviews = STORAGE.reviews();
@@ -1103,7 +1056,8 @@ function getFamilyForCurrentUser() {
           id: 'rev-'+Date.now()+'-'+Math.random().toString(36).slice(2),
           userId: order.userId, orderId: order.id, productId,
           userName: `${order.recipient.firstName} ${order.recipient.lastName}`,
-          userAvatar: user?.avatar || '', productName: item.name,
+          userAvatar: user?.avatar || '',
+          productName: item.name,
           productPhoto: STORAGE.products().find(p => p.id === productId)?.photos?.[0] || '',
           link: '', status: 'pending'
         });
@@ -1111,16 +1065,25 @@ function getFamilyForCurrentUser() {
     });
     STORAGE.saveReviews(allReviews);
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    closeModal('issueOrderModal'); renderAllOrders();
+    closeModal('issueOrderModal');
+    renderAllOrders();
     alert('Заказ выдан и перемещён в архив');
   };
   window.cancelOrder = (orderId) => {
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
-    order.items.forEach(i => { if (i.status === 'approved') { const prod = STORAGE.products().find(p => p.id === i.productId); if (prod) prod.availableQuantity++; } });
-    order.status = 'cancelled'; order.archived = true;
-    STORAGE.saveProducts(STORAGE.products()); STORAGE.saveOrders(STORAGE.orders());
-    renderAllOrders(); alert('Заказ отменён и перемещён в архив');
+    order.items.forEach(i => {
+      if (i.status === 'approved') {
+        const prod = STORAGE.products().find(p => p.id === i.productId);
+        if (prod) prod.availableQuantity++;
+      }
+    });
+    order.status = 'cancelled';
+    order.archived = true;
+    STORAGE.saveProducts(STORAGE.products());
+    STORAGE.saveOrders(STORAGE.orders());
+    renderAllOrders();
+    alert('Заказ отменён и перемещён в архив');
   };
 
   // Отзывы (админ)
@@ -1135,34 +1098,49 @@ function getFamilyForCurrentUser() {
       </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет отзывов на модерации</p>';
   }
   window.approveReview = (reviewId) => {
-    const reviews = STORAGE.reviews(); const review = reviews.find(r => r.id === reviewId);
-    if (!review) return; review.status = 'approved'; STORAGE.saveReviews(reviews);
+    const reviews = STORAGE.reviews();
+    const review = reviews.find(r => r.id === reviewId);
+    if (!review) return;
+    review.status = 'approved';
+    STORAGE.saveReviews(reviews);
     const user = STORAGE.users().find(u => u.id === review.userId);
     if (user) { user.blocked = STORAGE.reviews().filter(r => r.userId === user.id && (r.status === 'pending' || r.status === 'rejected')).length > 0; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    renderAdminReviews(); alert('Отзыв одобрен');
+    renderAdminReviews();
+    alert('Отзыв одобрен');
   };
   window.rejectReview = (reviewId) => {
-    const reviews = STORAGE.reviews(); const review = reviews.find(r => r.id === reviewId);
-    if (!review) return; review.status = 'rejected'; STORAGE.saveReviews(reviews);
+    const reviews = STORAGE.reviews();
+    const review = reviews.find(r => r.id === reviewId);
+    if (!review) return;
+    review.status = 'rejected';
+    STORAGE.saveReviews(reviews);
     const user = STORAGE.users().find(u => u.id === review.userId);
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    renderAdminReviews(); alert('Отзыв отклонён');
+    renderAdminReviews();
+    alert('Отзыв отклонён');
   };
 
-  function renderRecipientsTab() { document.getElementById('maxItemsLimit').value = STORAGE.maxLimit(); }
+  function renderRecipientsTab() {
+    document.getElementById('maxItemsLimit').value = STORAGE.maxLimit();
+  }
   window.saveMaxItemsLimit = () => {
     const v = parseInt(document.getElementById('maxItemsLimit').value);
-    if (v > 0) { STORAGE.saveMaxLimit(v); renderRecipientsTab(); } else alert('Лимит должен быть больше 0');
+    if (v > 0) { STORAGE.saveMaxLimit(v); renderRecipientsTab(); }
+    else alert('Лимит должен быть больше 0');
   };
-  window.openFullscreenPhoto = (src) => { if (!src) return; document.getElementById('fullscreenImage').src = src; document.getElementById('fullscreenPhotoModal').style.display = 'flex'; };
+  window.openFullscreenPhoto = (src) => {
+    if (!src) return;
+    document.getElementById('fullscreenImage').src = src;
+    document.getElementById('fullscreenPhotoModal').style.display = 'flex';
+  };
 
+  // Вспомогательные функции
   function updateHeaderAvatar() {
     const u = STORAGE.currentUser();
     const icon = document.getElementById('headerProfileIcon');
     if (u?.avatar) icon.innerHTML = `<img src="${u.avatar}" alt="">`;
     else icon.innerHTML = '<i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i>';
   }
-
   function updateUIForUser() {
     updateCartBadge();
     renderProducts();
@@ -1178,7 +1156,7 @@ function getFamilyForCurrentUser() {
   });
   document.getElementById('sizeSelectModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSizeModal(); });
 
-  // Синхронизация
+  // Синхронизация между вкладами
   window.addEventListener('storage', e => {
     if (e.key?.startsWith('f_')) {
       const cur = STORAGE.currentUser();
@@ -1186,146 +1164,16 @@ function getFamilyForCurrentUser() {
       else if (cur) updateUIForUser();
     }
   });
-window.openFamilyDetails = function() {
-  document.getElementById('familyDetailModal').style.display = 'flex';
-  renderFamilyDetail();
-};
 
-function renderFamilyDetail() {
-  const u = STORAGE.currentUser();
-  const family = getFamilyForCurrentUser();
-  const container = document.getElementById('familyDetailList');
-  
-  let html = '';
-  
-  // Сначала владелец
-  html += `
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
-      <div style="width:48px;height:48px;border-radius:24px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;">
-        ${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : '<i class="far fa-user-circle" style="font-size:32px;color:#a5d6a7;"></i>'}
-      </div>
-      <div style="flex:1;">
-        <strong>${u.firstName} ${u.lastName}</strong>
-        <div style="font-size:13px;color:#8e8e93;">Вы (владелец профиля)</div>
-      </div>
-    </div>`;
-  
-  // Члены семьи
-  family.forEach(member => {
-    let statusLine = '';
-    if (member.type === 'child') {
-      statusLine = `Ребёнок ${member.age ? member.age+' лет' : ''}`;
-    } else {
-      statusLine = member.role ? (member.role === 'husband' ? 'Муж' : member.role === 'wife' ? 'Жена' : 'Пенсионер') : 'Взрослый';
-    }
-    if (member.verified) {
-      statusLine += ' <span style="color:#34c759;">✓</span>';
-    } else {
-      statusLine += ' <span style="color:#ffcc00;">⏳ на верификации</span>';
-    }
-    html += `
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
-        <div style="width:48px;height:48px;border-radius:24px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;">
-          ${member.avatar ? `<img src="${member.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : 
-            (member.type === 'child' ? (member.gender === 'F' ? '<i class="fas fa-female" style="font-size:28px;color:#ff69b4;"></i>' : '<i class="fas fa-male" style="font-size:28px;color:#007aff;"></i>') : '<i class="fas fa-user" style="font-size:28px;color:#a5d6a7;"></i>')
-          }
-        </div>
-        <div style="flex:1;">
-          <strong>${member.firstName} ${member.lastName}</strong>
-          <div style="font-size:13px;color:#8e8e93;">${statusLine}</div>
-        </div>
-        ${member.documents && member.documents.length ? '<i class="fas fa-file-alt" style="color:#007aff;"></i>' : ''}
-      </div>`;
-  });
-  
-  container.innerHTML = html;
-}
-  window.openAddFamilyMemberModal = function() {
-  document.getElementById('addFamilyMemberModal').style.display = 'flex';
-  document.getElementById('fmFirstName').value = '';
-  document.getElementById('fmLastName').value = '';
-  document.getElementById('fmAge').value = '';
-  document.getElementById('fmDocuments').innerHTML = '';
-  setFamilyType('child');
-};
-
-window.setFamilyType = function(type) {
-  currentFamilyType = type;
-  document.getElementById('btnFmChild').style.background = type === 'child' ? '#007aff' : '#f2f2f6';
-  document.getElementById('btnFmChild').style.color = type === 'child' ? 'white' : 'black';
-  document.getElementById('btnFmAdult').style.background = type === 'adult' ? '#007aff' : '#f2f2f6';
-  document.getElementById('btnFmAdult').style.color = type === 'adult' ? 'white' : 'black';
-
-  document.getElementById('fmAdultRole').style.display = type === 'adult' ? 'block' : 'none';
-  document.getElementById('fmChildGender').style.display = type === 'child' ? 'block' : 'none';
-};
-
-window.selectAdultRole = function(role) {
-  currentAdultRole = role;
-  document.querySelectorAll('.role-btn').forEach(b => b.style.background = '#f2f2f6');
-  const btn = document.querySelector(`.role-btn[data-role="${role}"]`);
-  if (btn) btn.style.background = '#007aff';
-};
-
-window.selectChildGender = function(gender) {
-  currentChildGender = gender;
-  document.getElementById('btnChildM').style.background = gender === 'M' ? '#007aff' : '#f2f2f6';
-  document.getElementById('btnChildM').style.color = gender === 'M' ? 'white' : 'black';
-  document.getElementById('btnChildF').style.background = gender === 'F' ? '#ff69b4' : '#f2f2f6';
-  document.getElementById('btnChildF').style.color = gender === 'F' ? 'white' : 'black';
-};
-
-window.addDocumentInput = function(containerId) {
-  const container = document.getElementById(containerId);
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.placeholder = 'Ссылка на документ или название';
-  input.style = 'width:100%;padding:10px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:6px;';
-  container.appendChild(input);
-};
-
-window.submitFamilyMember = function() {
-  const firstName = document.getElementById('fmFirstName').value.trim();
-  const lastName = document.getElementById('fmLastName').value.trim();
-  const age = parseInt(document.getElementById('fmAge').value) || 0;
-  if (!firstName || !lastName) { alert('Введите имя и фамилию'); return; }
-
-  const documents = [];
-  document.querySelectorAll('#fmDocuments input').forEach(inp => {
-    if (inp.value.trim()) documents.push(inp.value.trim());
-  });
-
-  const user = STORAGE.currentUser();
-  const newMember = {
-    id: 'fm_'+Date.now(),
-    userId: user.id,
-    firstName,
-    lastName,
-    type: currentFamilyType,
-    role: currentFamilyType === 'adult' ? currentAdultRole : null,
-    gender: currentFamilyType === 'child' ? currentChildGender : null,
-    age: age,
-    documents: documents,
-    verified: false,
-    avatar: ''
-  };
-
-  const allMembers = STORAGE.familyMembers();
-  allMembers.push(newMember);
-  STORAGE.saveFamilyMembers(allMembers);
-
-  closeModal('addFamilyMemberModal');
-  renderProfile();
-  renderFamilyDetail();
-  alert('Член семьи отправлен на верификацию администратору');
-};
   // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
     if (cur) {
       if (cur.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
       else { showScreen('mainScreen'); updateUIForUser(); }
-    } else showScreen('authScreen');
+    } else {
+      showScreen('authScreen');
+    }
     updateCartBadge();
   });
 })();
