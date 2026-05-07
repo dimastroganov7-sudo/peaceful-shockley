@@ -21,8 +21,8 @@ body {
   min-width: 320px;
 }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, sans-serif; }
-    body {
-  background: #f2f2f6;
+   body {
+  background: #fff;
   margin: 0;
   min-height: 100vh;
 }
@@ -54,8 +54,8 @@ body {
     .cart-item-checkbox.checked i { color: white; font-size: 14px; }
     .cart-item-checkbox.unchecked { background: white; }
     .cart-item-checkbox.unchecked i { display: none; }
-    .map-container { height: 190px; border-radius: 20px; margin: 14px 0; overflow: hidden; }
-    .slot-select { background: #f2f2f6; border-radius: 18px; padding: 16px; margin: 16px 0; }
+    .map-container { height: 190px; border-radius: 12px; margin: 14px 0; overflow: hidden; }
+    .slot-select { background: #f2f2f6; border-radius: 12px; padding: 16px; margin: 16px 0; }
     .slot-select select { width: 100%; border: none; background: transparent; font-size: 16px; font-weight: 500; color: #1c1c1e; outline: none; }
     .bottom-nav { position: absolute;          
   bottom: 20px;
@@ -63,37 +63,60 @@ body {
   right: 20px;
   width: auto;
   max-width: none;
-  transform: none; background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 34px; padding: 10px 20px; display: flex; justify-content: space-around; box-shadow: 0 8px 32px rgba(0,0,0,0.08); z-index: 100; border: 1px solid rgba(255,255,255,0.6); }
+  transform: none; background:#fff;
+border-top:1px solid #ececec; border-radius: 12px; padding: 10px 20px; display: flex; justify-content: space-around; box-shadow: 0 8px 32px rgba(0,0,0,0.08); z-index: 100; border: 1px solid rgba(255,255,255,0.6); }
     .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 11px; cursor: pointer; position: relative; font-weight: 500; }
     .nav-item i { font-size: 24px; margin-bottom: 4px; }
-  .product-photo {
-  height: 200px;
+ .product-photo{
+  width:100%;
+  aspect-ratio: 3/4;
+  background:#f6f6f7;
+  overflow:hidden;
 }
 
-.product-card {
-  min-height: 260px;
+.product-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.product-card{
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:none;
+  min-height:auto;
+}
+
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding-bottom:120px;
 }
     .nav-item.active { color: #007aff; }
     .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: none; align-items: center; justify-content: center; padding: 0 5px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-    .filter-bar select, .filter-bar input { flex: 1; padding: 12px 14px; border-radius: 16px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
+    .filter-bar select, .filter-bar input { flex: 1; padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
     .admin-tabs { display: flex; border-bottom: 1px solid #e5e5ea; flex-wrap: wrap; }
     .tab-btn { flex: 1; padding: 14px 8px; background: none; border: none; font-size: 14px; font-weight: 500; color: #8e8e93; cursor: pointer; }
     .tab-btn.active { color: #007aff; border-bottom: 2px solid #007aff; }
     .admin-pane { display: none; padding: 20px; background: #f2f2f6; min-height: 100%; }
     .admin-pane.active { display: block; }
     .admin-products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
-    .admin-product-card { background: white; border-radius: 20px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); position: relative; }
+    .admin-product-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); position: relative; }
     .admin-product-card .product-photo { height: 100px; margin-bottom: 8px; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-    .modal-content { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
-    .order-card { background: white; border-radius: 22px; padding: 18px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; }
+    .modal-content { background: white; padding: 28px 24px; border-radius: 12px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
+    .order-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; }
     .status-step { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 12px; font-weight: 500; color: #8e8e93; }
-    .status-icon { width: 44px; height: 44px; border-radius: 22px; background: #f2f2f6; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .status-icon { width: 44px; height: 44px; border-radius: 12px; background: #f2f2f6; display: flex; align-items: center; justify-content: center; font-size: 22px; }
     .status-step.active .status-icon { background: #007aff; color: white; }
     .status-step.active { color: #007aff; }
-    .petition-item, .review-item { background: white; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
-    .detail-photo { width: 72px; height: 72px; border-radius: 18px; object-fit: cover; border: 3px solid transparent; cursor: pointer; flex-shrink: 0; background: #f2f2f6; }
+    .petition-item, .review-item { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
+    .detail-photo { width: 72px; height: 72px; border-radius: 12px; object-fit: cover; border: 3px solid transparent; cursor: pointer; flex-shrink: 0; background: #f2f2f6; }
     .detail-photo.selected { border-color: #007aff; }
     .selection-circle { width: 24px; height: 24px; border-radius: 12px; border: 2px solid #c7c7cc; cursor: pointer; flex-shrink: 0; }
     .selection-circle.selected { background: #007aff; border-color: #007aff; }
@@ -103,19 +126,26 @@ body {
     .calendar-day.selected { background: #ff3b30 !important; color: white; }
     .size-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: flex-end; z-index: 1100; }
     .size-modal-content { background: white; border-radius: 26px 26px 0 0; width: 100%; max-width: 420px; padding: 26px; }
-    .size-chip { padding: 10px 20px; border-radius: 22px; background: #f2f2f6; cursor: pointer; font-weight: 500; font-size: 15px; border: none; }
+    .size-chip { padding: 10px 20px; border-radius: 12px; background: #f2f2f6; cursor: pointer; font-weight: 500; font-size: 15px; border: none; }
     .size-chip.selected { background: #007aff; color: white; }
     .text-center { text-align: center; }
     .mt-2 { margin-top: 16px; }
-    .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
+    .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
     .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; color: #007aff; padding: 8px; }
     /* Градиентная шапка только на главной */
 /* Градиентная шапка только на главной */
-#mainHeader.header-gradient {
-  background: linear-gradient(to bottom, #007aff, #f2f2f6);
-  border-bottom: none;
+#mainHeader{
+  background:#fff;
+  border-bottom:1px solid #f0f0f0;
+  padding:14px 16px;
+}
+
+#mainHeader h3{
+  color:#111;
+  font-size:20px;
+  font-weight:700;
 }
 #mainHeader.header-gradient h3 { color: white; }
 #mainHeader.header-gradient .profile-icon-header i { color: white; }
@@ -155,7 +185,16 @@ html, body {
 .admin-pane {
   overflow-x: hidden;
 }
+button.btn.primary{
+  background:#cb11ab;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+}
 
+button.btn.primary:active{
+  transform:scale(.98);
+}
 /* Адаптация под десктоп */
 @media (min-width: 768px) {
   body {
@@ -337,14 +376,14 @@ html, body {
       </div>
       <div id="profileTab" class="tab-pane">
         <div style="text-align:center; padding:20px;">
-          <img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;display:none;">
+          <img id="profileAvatar" style="width:72px;height:72px;border-radius:12px;display:none;">
           <i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;display:none;"></i>
           <h3 id="profileName" style="margin-top:12px;"></h3>
           <p id="profilePhone" style="color:#8e8e93;"></p>
         </div>
         <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
         <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
-        <div style="background:#f2f2f6;border-radius:20px;padding:16px;margin:16px 0;">
+        <div style="background:#f2f2f6;border-radius:12px;padding:16px;margin:16px 0;">
   <p style="margin:0;"><strong>Категория:</strong> <span id="profileCategory"></span></p>
   <p style="margin:8px 0 0;"><strong>Статус:</strong> <span id="profileVerificationStatus"></span></p>
   <h4 style="margin:12px 0 4px;">Состав семьи</h4>
@@ -403,17 +442,17 @@ html, body {
         <div id="calendarDayDetails" class="mt-2"></div>
       </div>
       <div id="adminHistory" class="admin-pane">
-        <input type="text" id="orderSearchInput" placeholder="Поиск по номеру/ФИО/телефону" style="width:100%;margin-bottom:12px;padding:12px;border-radius:16px;border:1px solid #e5e5ea;" oninput="renderAllOrders()">
+        <input type="text" id="orderSearchInput" placeholder="Поиск по номеру/ФИО/телефону" style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;" oninput="renderAllOrders()">
                 <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('active')">Сборка</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
-        <select id="adminOrderDateFilter" style="display:none;width:100%;margin-bottom:12px;padding:12px;border-radius:16px;border:1px solid #e5e5ea;" onchange="renderAllOrders()"></select>
+        <select id="adminOrderDateFilter" style="display:none;width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;" onchange="renderAllOrders()"></select>
         <div id="allOrdersList"></div>
       </div>
       <div id="adminRecipients" class="admin-pane">
-        <div style="background:white;border-radius:24px;padding:24px;">
+        <div style="background:white;border-radius:12px;padding:24px;">
           <h4>Лимит товаров в корзине</h4>
           <input type="number" id="maxItemsLimit" style="width:100%;padding:14px;font-size:18px;border-radius:16px;border:1px solid #e5e5ea;margin:16px 0;" min="1">
           <button class="btn primary" onclick="saveMaxItemsLimit()">Сохранить</button>
-          <div style="background:white;border-radius:24px;padding:24px;margin-top:16px;">
+          <div style="background:white;border-radius:12px;padding:24px;margin-top:16px;">
   <h4>Индивидуальный лимит</h4>
   <select id="userSelectForLimit" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin:12px 0;"></select>
   <input type="number" id="individualLimitInput" placeholder="Лимит (пусто — глобальный)" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
@@ -436,11 +475,11 @@ html, body {
       <i class="fas fa-times" onclick="closeModal('addProductModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
       <h3 style="margin-bottom:16px;">Новый товар</h3>
       <input id="prodName" placeholder="Название" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      <input id="prodArticle" placeholder="Артикул" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      <input id="prodSizes" placeholder="Размеры (через запятую, например: S,M,L)" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      <select id="prodCategory" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><option>Продукты</option><option>Одежда</option><option>Гигиена</option><option>Прочее</option></select>
-      <textarea id="prodDescription" placeholder="Описание товара" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;resize:vertical;"></textarea>
-      <input type="number" id="prodQuantity" value="1" min="1" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      <input id="prodArticle" placeholder="Артикул" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      <input id="prodSizes" placeholder="Размеры (через запятую, например: S,M,L)" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      <select id="prodCategory" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;"><option>Продукты</option><option>Одежда</option><option>Гигиена</option><option>Прочее</option></select>
+      <textarea id="prodDescription" placeholder="Описание товара" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;resize:vertical;"></textarea>
+      <input type="number" id="prodQuantity" value="1" min="1" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;">
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><input type="checkbox" id="prodPlaceImmediately" checked> Разместить сразу</label>
       <input type="file" id="productPhotosInput" multiple accept="image/*" style="margin-bottom:12px;">
       <div id="photoPreviewContainer" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
@@ -465,7 +504,7 @@ html, body {
     </div>
   </div>
   <div id="productDetailModal" class="modal" style="align-items:stretch; padding:0;">
-  <div class="modal-content" id="productDetailContent" style="padding:0;border-radius:28px;overflow:hidden;max-width:380px; max-height:100%; height:100%;"></div>
+  <div class="modal-content" id="productDetailContent" style="padding:0;border-radius:12px;overflow:hidden;max-width:380px; max-height:100%; height:100%;"></div>
 </div>
   <div id="sizeSelectModal" class="size-modal">
     <div class="size-modal-content" id="sizeSelectContent"></div>
