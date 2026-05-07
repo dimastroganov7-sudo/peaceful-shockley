@@ -144,36 +144,46 @@
         <div class="slot-select"><select id="timeSlotSelect"></select></div>
         <button class="btn primary" onclick="createOrder()">Отправить на согласование</button>
       </div>
-      <div id="profileTab" class="tab-pane">
-        <div style="text-align:center; padding:20px;">
-          <img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;display:none;">
-          <i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;display:none;"></i>
-          <h3 id="profileName" style="margin-top:12px;"></h3>
-          <p id="profilePhone" style="color:#8e8e93;"></p>
-        </div>
-        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
-        <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
-        <button class="btn secondary" onclick="logout()">Выйти</button>
+     <div id="profileTab" class="tab-pane" style="background:#f2f2f6; padding: 16px;">
+  <!-- Шапка профиля -->
+  <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:16px;">
+    <div style="position:relative;" onclick="document.getElementById('avatarInput').click()">
+      <img id="profileAvatar" src="" style="width:72px;height:72px;border-radius:36px;object-fit:cover;display:none;">
+      <div id="defaultAvatar" style="width:72px;height:72px;border-radius:36px;background:#e5e5ea;display:flex;align-items:center;justify-content:center;">
+        <i class="far fa-user-circle" style="font-size:48px;color:#8e8e93;"></i>
       </div>
-      <div id="ordersTab" class="tab-pane">
-        <div id="ordersListView"></div>
-        <div id="orderDetailsView" style="display:none;"></div>
-      </div>
-      <div id="reviewsTab" class="tab-pane">
-        <div class="text-center" style="margin:20px 0;">
-          <h3 style="font-size:24px;font-weight:700;">Делитесь впечатлением</h3>
-          <p style="color:#8e8e93;">Это помогает нам развиваться ради помощи нуждающимся.</p>
-        </div>
-        <div id="pendingReviewsList"></div>
-      </div>
+      <i class="fas fa-camera" style="position:absolute;bottom:0;right:0;background:white;border-radius:50%;padding:4px;font-size:12px;color:#007aff;box-shadow:0 2px 8px rgba(0,0,0,0.1);"></i>
     </div>
-    <nav class="bottom-nav">
-      <div class="nav-item active" data-tab="home"><i class="far fa-compass"></i><span>Главная</span></div>
-      <div class="nav-item" data-tab="cart"><i class="far fa-shopping-basket"></i><span>Корзина</span><span id="navCartBadge" class="badge">0</span></div>
-      <div class="nav-item" data-tab="orders"><i class="far fa-list-alt"></i><span>Заказы</span></div>
-      <div class="nav-item" data-tab="reviews"><i class="far fa-star"></i><span>Отзывы</span><span id="reviewBadge" class="badge">0</span></div>
-    </nav>
+    <div style="flex:1;">
+      <h3 id="profileName" style="margin:0;font-size:20px;font-weight:600;">Иван Иванов</h3>
+      <p id="profilePhone" style="margin:4px 0 0;color:#8e8e93;">+7 916 123-45-67</p>
+    </div>
   </div>
+  
+  <!-- Овалы статуса -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+    <div id="familyStatusOval" style="background:#e5f5ff;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;">Многодетная</div>
+    <div id="childrenCountOval" style="background:#efffe8;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;">3 детей</div>
+    <div id="adultsCountOval" style="background:#fff3e0;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;">2 взрослых</div>
+    <div id="verifiedOval" style="background:#e6ffe0;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:4px;">
+      <i class="fas fa-check-circle" style="color:#34c759;"></i> Верифицирован
+    </div>
+  </div>
+  
+  <!-- Панель «Члены семьи» -->
+  <div class="order-card" style="cursor:pointer;" onclick="openFamilyDetails()">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h4 style="margin:0;">Члены семьи</h4>
+      <i class="fas fa-chevron-right" style="color:#8e8e93;"></i>
+    </div>
+    <div id="familyCirclesPreview" style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+      <!-- сюда будут вставлены кружочки -->
+    </div>
+  </div>
+  
+  <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
+  <button class="btn secondary" style="margin-top:20px;" onclick="logout()">Выйти</button>
+</div>
 
   <!-- АДМИН-ПАНЕЛЬ -->
   <div id="adminScreen" class="screen">
@@ -265,6 +275,60 @@
   <div id="fullscreenPhotoModal" class="modal" style="align-items:center; background:rgba(0,0,0,0.9);" onclick="closeModal('fullscreenPhotoModal')">
     <img id="fullscreenImage" style="max-width:90%;max-height:90%;border-radius:20px;object-fit:contain;">
   </div>
+        <div id="fullscreenPhotoModal" class="modal" style="align-items:center; background:rgba(0,0,0,0.9);" onclick="closeModal('fullscreenPhotoModal')">
+    <img id="fullscreenImage" style="max-width:90%;max-height:90%;border-radius:20px;object-fit:contain;">
+  </div>
+
+  <!-- Новые модальные окна -->
+  <div id="addFamilyMemberModal" class="modal">
+    <div class="modal-content">
+      <i class="fas fa-times" onclick="closeModal('addFamilyMemberModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
+      <h3 style="margin-bottom:16px;">Добавить члена семьи</h3>
+      <input id="fmFirstName" placeholder="Имя" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      <input id="fmLastName" placeholder="Фамилия" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      
+      <label style="display:block;margin-bottom:8px;font-weight:500;">Тип</label>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="btn small" id="btnFmChild" onclick="setFamilyType('child')" style="background:#f2f2f6;">Ребенок</button>
+        <button class="btn small" id="btnFmAdult" onclick="setFamilyType('adult')" style="background:#f2f2f6;">Взрослый</button>
+      </div>
+      
+      <div id="fmAdultRole" style="display:none;margin-bottom:12px;">
+        <label style="display:block;margin-bottom:8px;font-weight:500;">Роль</label>
+        <div style="display:flex;gap:8px;">
+          <button class="btn small role-btn" data-role="husband" onclick="selectAdultRole('husband')">Муж</button>
+          <button class="btn small role-btn" data-role="wife" onclick="selectAdultRole('wife')">Жена</button>
+          <button class="btn small role-btn" data-role="pensioner" onclick="selectAdultRole('pensioner')">Пенсионер</button>
+        </div>
+      </div>
+      
+      <div id="fmChildGender" style="display:none;margin-bottom:12px;">
+        <label style="display:block;margin-bottom:8px;font-weight:500;">Пол</label>
+        <div style="display:flex;gap:8px;">
+          <button class="btn small" id="btnChildM" onclick="selectChildGender('M')" style="background:#007aff;color:white;">М</button>
+          <button class="btn small" id="btnChildF" onclick="selectChildGender('F')" style="background:#f2f2f6;">Ж</button>
+        </div>
+      </div>
+      
+      <label style="display:block;margin-bottom:8px;font-weight:500;">Возраст</label>
+      <input type="number" id="fmAge" min="0" max="150" placeholder="Возраст" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      
+      <label style="display:block;margin-bottom:8px;font-weight:500;">Документы</label>
+      <div id="fmDocuments" style="margin-bottom:12px;"></div>
+      <button class="btn secondary small" onclick="addDocumentInput('fmDocuments')"><i class="fas fa-plus"></i> Свидетельство/документ</button>
+      
+      <button class="btn primary" style="margin-top:16px;" onclick="submitFamilyMember()">Запросить верификацию</button>
+    </div>
+  </div>
+
+  <div id="familyDetailModal" class="modal">
+    <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
+      <i class="fas fa-times" onclick="closeModal('familyDetailModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
+      <h3 style="margin-bottom:16px;">Профиль семьи</h3>
+      <div id="familyDetailList"></div>
+      <button class="btn primary" onclick="openAddFamilyMemberModal()" style="margin-top:12px;">+ Добавить члена семьи</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -308,6 +372,9 @@
         {id:'adm',firstName:'Админ',email:'admin@fond.ru',password:await hashPassword('admin123'),role:'admin',phone:'',avatar:''}
       ]);
     }
+    if (!localStorage.getItem('f_familyMembers')) {
+  STORAGE.saveFamilyMembers([]);
+}
     if (!STORAGE.products().length) {
       STORAGE.saveProducts([
         {id:'p1',article:'GR001',name:'Гречка 1кг',category:'Продукты',photos:[],quantity:10,availableQuantity:10,isPlaced:true,sizes:[],description:'Качественная гречка'},
@@ -1081,7 +1148,60 @@
       else if (cur) updateUIForUser();
     }
   });
+window.openFamilyDetails = function() {
+  document.getElementById('familyDetailModal').style.display = 'flex';
+  renderFamilyDetail();
+};
 
+function renderFamilyDetail() {
+  const u = STORAGE.currentUser();
+  const family = getFamilyForCurrentUser();
+  const container = document.getElementById('familyDetailList');
+  
+  let html = '';
+  
+  // Сначала владелец
+  html += `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+      <div style="width:48px;height:48px;border-radius:24px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;">
+        ${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : '<i class="far fa-user-circle" style="font-size:32px;color:#a5d6a7;"></i>'}
+      </div>
+      <div style="flex:1;">
+        <strong>${u.firstName} ${u.lastName}</strong>
+        <div style="font-size:13px;color:#8e8e93;">Вы (владелец профиля)</div>
+      </div>
+    </div>`;
+  
+  // Члены семьи
+  family.forEach(member => {
+    let statusLine = '';
+    if (member.type === 'child') {
+      statusLine = `Ребёнок ${member.age ? member.age+' лет' : ''}`;
+    } else {
+      statusLine = member.role ? (member.role === 'husband' ? 'Муж' : member.role === 'wife' ? 'Жена' : 'Пенсионер') : 'Взрослый';
+    }
+    if (member.verified) {
+      statusLine += ' <span style="color:#34c759;">✓</span>';
+    } else {
+      statusLine += ' <span style="color:#ffcc00;">⏳ на верификации</span>';
+    }
+    html += `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+        <div style="width:48px;height:48px;border-radius:24px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;">
+          ${member.avatar ? `<img src="${member.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : 
+            (member.type === 'child' ? (member.gender === 'F' ? '<i class="fas fa-female" style="font-size:28px;color:#ff69b4;"></i>' : '<i class="fas fa-male" style="font-size:28px;color:#007aff;"></i>') : '<i class="fas fa-user" style="font-size:28px;color:#a5d6a7;"></i>')
+          }
+        </div>
+        <div style="flex:1;">
+          <strong>${member.firstName} ${member.lastName}</strong>
+          <div style="font-size:13px;color:#8e8e93;">${statusLine}</div>
+        </div>
+        ${member.documents && member.documents.length ? '<i class="fas fa-file-alt" style="color:#007aff;"></i>' : ''}
+      </div>`;
+  });
+  
+  container.innerHTML = html;
+}
   // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
