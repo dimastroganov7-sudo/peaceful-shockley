@@ -89,6 +89,39 @@
     .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
+    .category-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 4px;
+}
+.category-card {
+  background: #f2f2f6;
+  border-radius: 20px;
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  color: #1c1c1e;
+  user-select: none;
+}
+.category-card i {
+  font-size: 32px;
+  color: #8e8e93;
+}
+.category-card.active {
+  background: #007aff;
+  color: white;
+}
+.category-card.active i {
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -110,15 +143,49 @@
         <p class="link" style="font-size:12px; color:#8e8e93;">Админ: admin@fond.ru / admin123</p>
       </div>
       <div id="registerForm" style="display:none;">
-        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
-        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
-        <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
-        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
-        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
-        <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
-        <button class="btn primary" onclick="appRegister()">Зарегистрироваться</button>
-        <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
+  <!-- Шаг 1: основные данные -->
+  <div id="regStep1">
+    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
+    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
+    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regMiddleName" placeholder="Отчество"></div>
+    <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
+    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
+    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
+    <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер телефона"></div>
+    <button class="btn primary" onclick="goToStep2()">Далее <i class="fas fa-arrow-right" style="margin-left:6px;"></i></button>
+    <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
+  </div>
+
+  <!-- Шаг 2: категории семьи -->
+  <div id="regStep2" style="display:none;">
+    <h3 style="text-align:center; font-weight:600; margin-bottom:6px;">Категория семьи</h3>
+    <p style="text-align:center; color:#8e8e93; font-size:14px; margin-bottom:20px;">
+      Выберите одну или несколько.<br>От этого зависит объём помощи и нужные документы.
+    </p>
+    <div class="category-grid" id="categoryGrid">
+      <div class="category-card" data-cat="many_children" onclick="toggleCategory(this)">
+        <i class="fas fa-heart" style="position:relative;">
+          <i class="fas fa-heart" style="position:absolute; font-size:14px; top:4px; left:7px; color:inherit;"></i>
+        </i>
+        <span>Многодетная семья</span>
       </div>
+      <div class="category-card" data-cat="low_income" onclick="toggleCategory(this)">
+        <i class="fas fa-ruble-sign"></i>
+        <span>Малоимущая семья</span>
+      </div>
+      <div class="category-card" data-cat="disability" onclick="toggleCategory(this)">
+        <i class="fas fa-wheelchair"></i>
+        <span>Инвалидность</span>
+      </div>
+      <div class="category-card" data-cat="displaced" onclick="toggleCategory(this)">
+        <i class="fas fa-people-arrows"></i>
+        <span>Вынужденные переселенцы</span>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+      <button class="btn secondary" onclick="goToStep1()" style="width:48%;">← Назад</button>
+      <button class="btn primary" onclick="appRegister()" style="width:48%;">Зарегистрироваться</button>
+    </div>
     </div>
   </div>
 
@@ -145,11 +212,12 @@
       </div>
       <div id="profileTab" class="tab-pane">
         <div style="text-align:center; padding:20px;">
-          <img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;display:none;">
-          <i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;display:none;"></i>
-          <h3 id="profileName" style="margin-top:12px;"></h3>
-          <p id="profilePhone" style="color:#8e8e93;"></p>
-        </div>
+  <img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;display:none;">
+  <i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;display:none;"></i>
+  <h3 id="profileName" style="margin-top:12px;"></h3>
+  <p id="profilePhone" style="color:#8e8e93;"></p>
+  <div id="profileCategories" style="margin-top:8px;"></div>
+</div>
         <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
         <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
         <button class="btn secondary" onclick="logout()">Выйти</button>
@@ -289,7 +357,7 @@
   STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
   STORAGE.saveMaxLimit = v => localStorage.setItem('f_maxLimit',v);
 
-  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
+  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];let selectedCategories = [];
 
   // Хеширование
   async function hashPassword(pwd) {
@@ -330,7 +398,14 @@
   }
 
   // Глобальные функции
-  window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
+  window.showRegister = () => {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('registerForm').style.display = 'block';
+  document.getElementById('regStep1').style.display = 'block';
+  document.getElementById('regStep2').style.display = 'none';
+  selectedCategories = [];
+  document.querySelectorAll('.category-card.active').forEach(c => c.classList.remove('active'));
+};
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
   window.closeModal = (id) => {
     document.getElementById(id).style.display = 'none';
@@ -347,23 +422,81 @@
     else { showScreen('mainScreen'); updateUIForUser(); }
   };
   window.appRegister = async () => {
-    const fn = document.getElementById('regFirstName').value.trim();
-    const ln = document.getElementById('regLastName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const pass = document.getElementById('regPassword').value;
-    const conf = document.getElementById('regConfirm').value;
-    const phone = document.getElementById('regPhone').value.trim();
-    const code = document.getElementById('countryCode').value;
-    if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return; }
-    if (pass !== conf) { alert('Пароли не совпадают'); return; }
-    if (STORAGE.users().some(u => u.email === email)) { alert('Email занят'); return; }
-    const hashed = await hashPassword(pass);
-    const user = { id: Date.now()+'', firstName:fn, lastName:ln, email, password:hashed, phone:code+phone, role:'user', avatar:'' };
-    STORAGE.saveUsers([...STORAGE.users(), user]);
-    STORAGE.setCurrentUser(user);
-    showScreen('mainScreen'); updateUIForUser();
+  if (selectedCategories.length === 0) {
+    alert('Выберите хотя бы одну категорию семьи');
+    return;
+  }
+
+  const fn = document.getElementById('regFirstName').value.trim();
+  const ln = document.getElementById('regLastName').value.trim();
+  const mn = document.getElementById('regMiddleName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPassword').value;
+  const phone = document.getElementById('regPhone').value.trim();
+  const code = document.getElementById('countryCode').value;
+
+  if (!fn || !ln || !email || !pass || !phone) {
+    alert('Заполните все обязательные поля'); return;
+  }
+
+  if (STORAGE.users().some(u => u.email === email)) {
+    alert('Email занят'); return;
+  }
+
+  const hashed = await hashPassword(pass);
+  const user = {
+    id: Date.now()+'',
+    firstName: fn,
+    lastName: ln,
+    middleName: mn,
+    email,
+    password: hashed,
+    phone: code+phone,
+    role: 'user',
+    avatar: '',
+    categories: [...selectedCategories]
   };
-  window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); };
+
+  STORAGE.saveUsers([...STORAGE.users(), user]);
+  STORAGE.setCurrentUser(user);
+
+  selectedCategories = [];
+  document.querySelectorAll('.category-card.active').forEach(c => c.classList.remove('active'));
+  document.getElementById('regStep1').style.display = 'block';
+  document.getElementById('regStep2').style.display = 'none';
+  showScreen('mainScreen');
+  updateUIForUser();
+};
+  window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); }; window.goToStep1 = () => {
+  document.getElementById('regStep1').style.display = 'block';
+  document.getElementById('regStep2').style.display = 'none';
+};
+
+window.goToStep2 = () => {
+  const fn = document.getElementById('regFirstName').value.trim();
+  const ln = document.getElementById('regLastName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPassword').value;
+  const conf = document.getElementById('regConfirm').value;
+  if (!fn || !ln || !email || !pass) {
+    alert('Заполните все обязательные поля');
+    return;
+  }
+  if (pass !== conf) {
+    alert('Пароли не совпадают');
+    return;
+  }
+  document.getElementById('regStep1').style.display = 'none';
+  document.getElementById('regStep2').style.display = 'block';
+};
+
+window.toggleCategory = (el) => {
+  el.classList.toggle('active');
+  selectedCategories = [];
+  document.querySelectorAll('.category-card.active').forEach(card => {
+    selectedCategories.push(card.dataset.cat);
+  });
+};
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -524,6 +657,19 @@
     if (!u) return;
     document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName||''}`;
     document.getElementById('profilePhone').textContent = u.phone;
+    const catContainer = document.getElementById('profileCategories');
+if (catContainer) {
+  const catNames = {
+    many_children: 'Многодетная',
+    low_income: 'Малоимущая',
+    disability: 'Инвалидность',
+    displaced: 'Переселенцы'
+  };
+  const catHtml = (u.categories || []).map(c =>
+    `<span style="display:inline-block;background:#e5f5ff;border-radius:16px;padding:4px 12px;margin:4px;font-size:13px;">${catNames[c] || c}</span>`
+  ).join('');
+  catContainer.innerHTML = catHtml || '';
+}
     if (u.avatar) {
       document.getElementById('profileAvatar').src = u.avatar;
       document.getElementById('profileAvatar').style.display = 'block';
