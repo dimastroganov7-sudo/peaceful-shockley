@@ -365,7 +365,9 @@
     return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  async function initData() {
+  async function initData() { if (!localStorage.getItem('f_familyMembers')) {
+  STORAGE.saveFamilyMembers([]);
+}
     if (!STORAGE.users().length) {
       STORAGE.saveUsers([
         {id:'1',firstName:'Иван',lastName:'Иванов',email:'user@test.com',password:await hashPassword('123456'),phone:'+79161234567',role:'user',avatar:''},
@@ -587,45 +589,81 @@
 
   // Профиль
   function renderProfile() {
-    const u = STORAGE.currentUser();
-    if (!u) return;
-    document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName||''}`;
-    document.getElementById('profilePhone').textContent = u.phone;
-    if (u.avatar) {
-      document.getElementById('profileAvatar').src = u.avatar;
-      document.getElementById('profileAvatar').style.display = 'block';
-      document.getElementById('defaultAvatar').style.display = 'none';
+  const u = STORAGE.currentUser();
+  if (!u) return;
+
+  const avatarEl = document.getElementById('profileAvatar');
+  const defaultEl = document.getElementById('defaultAvatar');
+  if (u.avatar) {
+    avatarEl.src = u.avatar;
+    avatarEl.style.display = 'block';
+    defaultEl.style.display = 'none';
+  } else {
+    avatarEl.style.display = 'none';
+    defaultEl.style.display = 'flex';
+  }
+
+  document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName||''}`;
+  document.getElementById('profilePhone').textContent = u.phone;
+
+  const family = getFamilyForCurrentUser();
+  const children = family.filter(m => m.type === 'child');
+  const adults = family.filter(m => m.type === 'adult');
+
+  document.getElementById('familyStatusOval').textContent = children.length >= 3 ? 'Многодетная' : (children.length === 0 ? 'Без детей' : 'С детьми');
+  document.getElementById('childrenCountOval').textContent = `${children.length} ${children.length === 1 ? 'ребёнок' : children.length < 5 ? 'ребёнка' : 'детей'}`;
+  document.getElementById('adultsCountOval').textContent = `${adults.length + 1} ${adults.length + 1 === 1 ? 'взрослый' : adults.length + 1 < 5 ? 'взрослых' : 'взрослых'}`;
+
+  const allVerified = u.verified !== false && family.every(m => m.verified);
+  document.getElementById('verifiedOval').style.display = allVerified ? 'flex' : 'none';
+
+  const preview = document.getElementById('familyCirclesPreview');
+  preview.innerHTML = '';
+
+  // Владелец
+  addFamilyCircle(preview, {
+    firstName: u.firstName,
+    lastName: u.lastName,
+    avatar: u.avatar,
+    type: 'owner',
+    gender: 'adult'
+  });
+
+  // Члены семьи
+  family.forEach(m => addFamilyCircle(preview, m));
+
+  updateHeaderAvatar();
+}
+
+function addFamilyCircle(container, member) {
+  const circle = document.createElement('div');
+  circle.style.cssText = 'text-align:center;width:56px;flex-shrink:0;';
+
+  let iconHtml = '';
+  if (member.avatar) {
+    iconHtml = `<img src="${member.avatar}" style="width:40px;height:40px;border-radius:20px;object-fit:cover;">`;
+  } else {
+    if (member.type === 'child') {
+      iconHtml = member.gender === 'F'
+        ? '<i class="fas fa-female" style="font-size:32px;color:#ff69b4;"></i>'
+        : '<i class="fas fa-male" style="font-size:32px;color:#007aff;"></i>';
     } else {
-      document.getElementById('profileAvatar').style.display = 'none';
-      document.getElementById('defaultAvatar').style.display = 'block';
+      iconHtml = '<i class="fas fa-user" style="font-size:32px;color:#a5d6a7;"></i>';
     }
   }
-  window.saveAvatar = () => {
-    const file = document.getElementById('avatarInput').files[0];
-    if (!file) return;
-    if (file.size > 200*1024) { alert('Фото должно быть до 200 КБ'); return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 300; canvas.height = 300;
-        canvas.getContext('2d').drawImage(img, 0, 0, 300, 300);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        const users = STORAGE.users();
-        const cur = STORAGE.currentUser();
-        const idx = users.findIndex(u => u.id === cur.id);
-        if (idx === -1) return;
-        users[idx].avatar = dataUrl;
-        STORAGE.saveUsers(users);
-        STORAGE.setCurrentUser(users[idx]);
-        renderProfile();
-        updateHeaderAvatar();
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  };
+
+  circle.innerHTML = `
+    <div style="width:48px;height:48px;border-radius:24px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;margin:0 auto;">${iconHtml}</div>
+    <div style="font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${member.firstName||'Вы'}</div>
+  `;
+  container.appendChild(circle);
+}
+
+function getFamilyForCurrentUser() {
+  const user = STORAGE.currentUser();
+  if (!user) return [];
+  return STORAGE.familyMembers().filter(m => m.userId === user.id);
+}
 
   // Заказы пользователя
   window.renderUserOrders = () => {
@@ -1202,6 +1240,85 @@ function renderFamilyDetail() {
   
   container.innerHTML = html;
 }
+  window.openAddFamilyMemberModal = function() {
+  document.getElementById('addFamilyMemberModal').style.display = 'flex';
+  document.getElementById('fmFirstName').value = '';
+  document.getElementById('fmLastName').value = '';
+  document.getElementById('fmAge').value = '';
+  document.getElementById('fmDocuments').innerHTML = '';
+  setFamilyType('child');
+};
+
+window.setFamilyType = function(type) {
+  currentFamilyType = type;
+  document.getElementById('btnFmChild').style.background = type === 'child' ? '#007aff' : '#f2f2f6';
+  document.getElementById('btnFmChild').style.color = type === 'child' ? 'white' : 'black';
+  document.getElementById('btnFmAdult').style.background = type === 'adult' ? '#007aff' : '#f2f2f6';
+  document.getElementById('btnFmAdult').style.color = type === 'adult' ? 'white' : 'black';
+
+  document.getElementById('fmAdultRole').style.display = type === 'adult' ? 'block' : 'none';
+  document.getElementById('fmChildGender').style.display = type === 'child' ? 'block' : 'none';
+};
+
+window.selectAdultRole = function(role) {
+  currentAdultRole = role;
+  document.querySelectorAll('.role-btn').forEach(b => b.style.background = '#f2f2f6');
+  const btn = document.querySelector(`.role-btn[data-role="${role}"]`);
+  if (btn) btn.style.background = '#007aff';
+};
+
+window.selectChildGender = function(gender) {
+  currentChildGender = gender;
+  document.getElementById('btnChildM').style.background = gender === 'M' ? '#007aff' : '#f2f2f6';
+  document.getElementById('btnChildM').style.color = gender === 'M' ? 'white' : 'black';
+  document.getElementById('btnChildF').style.background = gender === 'F' ? '#ff69b4' : '#f2f2f6';
+  document.getElementById('btnChildF').style.color = gender === 'F' ? 'white' : 'black';
+};
+
+window.addDocumentInput = function(containerId) {
+  const container = document.getElementById(containerId);
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Ссылка на документ или название';
+  input.style = 'width:100%;padding:10px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:6px;';
+  container.appendChild(input);
+};
+
+window.submitFamilyMember = function() {
+  const firstName = document.getElementById('fmFirstName').value.trim();
+  const lastName = document.getElementById('fmLastName').value.trim();
+  const age = parseInt(document.getElementById('fmAge').value) || 0;
+  if (!firstName || !lastName) { alert('Введите имя и фамилию'); return; }
+
+  const documents = [];
+  document.querySelectorAll('#fmDocuments input').forEach(inp => {
+    if (inp.value.trim()) documents.push(inp.value.trim());
+  });
+
+  const user = STORAGE.currentUser();
+  const newMember = {
+    id: 'fm_'+Date.now(),
+    userId: user.id,
+    firstName,
+    lastName,
+    type: currentFamilyType,
+    role: currentFamilyType === 'adult' ? currentAdultRole : null,
+    gender: currentFamilyType === 'child' ? currentChildGender : null,
+    age: age,
+    documents: documents,
+    verified: false,
+    avatar: ''
+  };
+
+  const allMembers = STORAGE.familyMembers();
+  allMembers.push(newMember);
+  STORAGE.saveFamilyMembers(allMembers);
+
+  closeModal('addFamilyMemberModal');
+  renderProfile();
+  renderFamilyDetail();
+  alert('Член семьи отправлен на верификацию администратору');
+};
   // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
