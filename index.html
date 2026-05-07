@@ -1,122 +1,78 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Три сестры · Благотворительный фонд</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-html, body { width: 100%; overflow-x: hidden; }
-  html {
-  font-size: 16px;
-}
-
-body {
-  min-width: 320px;
-}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+  <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, sans-serif; }
-   body {
-  background: #fff;
-  margin: 0;
-  min-height: 100vh;
-}
-#app {
-  width: 100%;
-  height: 100dvh;
-  background: white;
-  margin: 0;
-  border-radius: 0;
-}
-  .cart-item-inner { display: flex; align-items: stretch; transition: transform 0.2s ease; width: calc(100% + 80px); }
-    .cart-item-main { flex: 1; display: flex; align-items: center; gap: 14px; background: white; border-radius: 20px 0 0 20px; padding: 14px; cursor: pointer; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
-    .cart-item-delete { width: 80px; background: #ff3b30; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 0 20px 20px 0; cursor: pointer; font-size: 14px; font-weight: 500; }
-    .cart-item-delete i { font-size: 22px; margin-bottom: 4px; }
-        .cart-select-all { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .cart-checkbox { width: 24px; height: 24px; border-radius: 6px; border: 2px solid #007aff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-    .cart-checkbox.checked { background: #007aff; }
-    .cart-checkbox.checked i { color: white; font-size: 14px; display: block; }
-    .cart-checkbox.unchecked { background: white; }
-    .cart-checkbox.unchecked i { display: none; }
-    .cart-actions { position: relative; margin-left: auto; }
-    .cart-actions-btn { color: #007aff; font-weight: 600; cursor: pointer; font-size: 15px; }
-    .cart-actions-dropdown { display: none; position: absolute; right: 0; top: 24px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; overflow: hidden; }
-    .cart-actions-dropdown.show { display: block; }
-    .cart-actions-dropdown div { padding: 12px 20px; white-space: nowrap; cursor: pointer; color: #ff3b30; font-weight: 500; }
-    .cart-item-photo-wrap { position: relative; width: 80px; height: 106px; flex-shrink: 0; }
-    .cart-item-checkbox { position: absolute; top: 4px; left: 4px; z-index: 5; width: 24px; height: 24px; border-radius: 6px; border: 2px solid #007aff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .cart-item-checkbox.checked { background: #007aff; }
-    .cart-item-checkbox.checked i { color: white; font-size: 14px; }
-    .cart-item-checkbox.unchecked { background: white; }
-    .cart-item-checkbox.unchecked i { display: none; }
-    .map-container { height: 190px; border-radius: 12px; margin: 14px 0; overflow: hidden; }
-    .slot-select { background: #f2f2f6; border-radius: 12px; padding: 16px; margin: 16px 0; }
+    body { background: #f2f2f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    #app { width: 100%; max-width: 420px; margin: 0 auto; background: white; min-height: 100vh; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+    .screen { display: none; flex: 1; flex-direction: column; height: 100%; background: white; }
+    .screen.active { display: flex; }
+    .auth-container { padding: 50px 24px; text-align: center; background: white; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .logo-img { width: 80px; height: 80px; border-radius: 40px; object-fit: cover; background: #f2f2f6; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .logo h1 { font-size: 26px; font-weight: 600; color: #1c1c1e; margin-top: 20px; letter-spacing: -0.3px; }
+    .logo h2 { font-size: 18px; font-weight: 400; color: #007aff; margin-bottom: 40px; }
+    .input-group { display: flex; align-items: center; background: #f2f2f6; border-radius: 16px; padding: 4px 16px; margin-bottom: 14px; }
+    .input-group i { color: #8e8e93; width: 24px; font-size: 18px; }
+    .input-group input, .input-group select { flex: 1; border: none; background: transparent; padding: 14px 0; font-size: 16px; outline: none; }
+    .btn { border: none; border-radius: 16px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 12px; transition: 0.2s; letter-spacing: -0.2px; }
+    .btn.primary { background: #007aff; color: white; }
+    .btn.primary:active { background: #0051d5; }
+    .btn.secondary { background: #f2f2f6; color: #007aff; }
+    .btn.danger { background: #ff3b30; color: white; }
+    .btn.small { padding: 10px 16px; font-size: 14px; width: auto; }
+    .link { color: #007aff; text-decoration: none; font-size: 14px; cursor: pointer; margin-top: 16px; display: inline-block; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: white; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    header h3 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+    .header-icons { display: flex; align-items: center; }
+    .profile-icon-header { cursor: pointer; width: 40px; height: 40px; border-radius: 20px; background: #f2f2f6; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .profile-icon-header img { width: 100%; height: 100%; object-fit: cover; }
+    .tab-content { flex: 1; overflow-y: auto; padding: 18px; padding-bottom: 110px; background: #f2f2f6; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .product-card { background: white; border-radius: 22px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); cursor: pointer; transition: 0.15s; }
+    .product-card:active { transform: scale(0.97); }
+    .product-photo { width: 100%; height: 130px; border-radius: 18px; margin-bottom: 10px; background: #f2f2f6; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+    .product-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .product-photo i { font-size: 32px; color: #c7c7cc; }
+    .product-stats { font-size: 13px; color: #8e8e93; margin: 4px 0; }
+    .cart-item { display: flex; align-items: center; gap: 14px; background: white; border-radius: 20px; padding: 14px; margin-bottom: 12px; cursor: pointer; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
+    .cart-item-photo { width: 56px; height: 56px; border-radius: 16px; object-fit: cover; background: #f2f2f6; }
+    .cart-item-info { flex: 1; }
+    .map-container { height: 190px; border-radius: 20px; margin: 14px 0; overflow: hidden; }
+    .slot-select { background: #f2f2f6; border-radius: 18px; padding: 16px; margin: 16px 0; }
     .slot-select select { width: 100%; border: none; background: transparent; font-size: 16px; font-weight: 500; color: #1c1c1e; outline: none; }
-    .bottom-nav { position: absolute;          
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
-  width: auto;
-  max-width: none;
-  transform: none; background:#fff;
-border-top:1px solid #ececec; border-radius: 12px; padding: 10px 20px; display: flex; justify-content: space-around; box-shadow: 0 8px 32px rgba(0,0,0,0.08); z-index: 100; border: 1px solid rgba(255,255,255,0.6); }
+    .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 380px; background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 34px; padding: 10px 20px; display: flex; justify-content: space-around; box-shadow: 0 8px 32px rgba(0,0,0,0.08); z-index: 100; border: 1px solid rgba(255,255,255,0.6); }
     .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 11px; cursor: pointer; position: relative; font-weight: 500; }
     .nav-item i { font-size: 24px; margin-bottom: 4px; }
- .product-photo{
-  width:100%;
-  aspect-ratio: 3/4;
-  background:#f6f6f7;
-  overflow:hidden;
-}
-
-.product-photo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.product-card{
-  background:#fff;
-  border-radius:12px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  box-shadow:none;
-  min-height:auto;
-}
-
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  padding-bottom:120px;
-}
     .nav-item.active { color: #007aff; }
     .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: none; align-items: center; justify-content: center; padding: 0 5px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-    .filter-bar select, .filter-bar input { flex: 1; padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
+    .filter-bar select, .filter-bar input { flex: 1; padding: 12px 14px; border-radius: 16px; border: 1px solid #e5e5ea; background: white; font-size: 14px; }
     .admin-tabs { display: flex; border-bottom: 1px solid #e5e5ea; flex-wrap: wrap; }
     .tab-btn { flex: 1; padding: 14px 8px; background: none; border: none; font-size: 14px; font-weight: 500; color: #8e8e93; cursor: pointer; }
     .tab-btn.active { color: #007aff; border-bottom: 2px solid #007aff; }
     .admin-pane { display: none; padding: 20px; background: #f2f2f6; min-height: 100%; }
     .admin-pane.active { display: block; }
     .admin-products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
-    .admin-product-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); position: relative; }
+    .admin-product-card { background: white; border-radius: 20px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); position: relative; }
     .admin-product-card .product-photo { height: 100px; margin-bottom: 8px; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-    .modal-content { background: white; padding: 28px 24px; border-radius: 12px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
-    .order-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; }
+    .modal-content { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; }
+    .order-card { background: white; border-radius: 22px; padding: 18px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; }
     .status-step { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 12px; font-weight: 500; color: #8e8e93; }
-    .status-icon { width: 44px; height: 44px; border-radius: 12px; background: #f2f2f6; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .status-icon { width: 44px; height: 44px; border-radius: 22px; background: #f2f2f6; display: flex; align-items: center; justify-content: center; font-size: 22px; }
     .status-step.active .status-icon { background: #007aff; color: white; }
     .status-step.active { color: #007aff; }
-    .petition-item, .review-item { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
-    .detail-photo { width: 72px; height: 72px; border-radius: 12px; object-fit: cover; border: 3px solid transparent; cursor: pointer; flex-shrink: 0; background: #f2f2f6; }
+    .petition-item, .review-item { background: white; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
+    .detail-photo { width: 72px; height: 72px; border-radius: 18px; object-fit: cover; border: 3px solid transparent; cursor: pointer; flex-shrink: 0; background: #f2f2f6; }
     .detail-photo.selected { border-color: #007aff; }
     .selection-circle { width: 24px; height: 24px; border-radius: 12px; border: 2px solid #c7c7cc; cursor: pointer; flex-shrink: 0; }
     .selection-circle.selected { background: #007aff; border-color: #007aff; }
@@ -126,162 +82,14 @@ border-top:1px solid #ececec; border-radius: 12px; padding: 10px 20px; display: 
     .calendar-day.selected { background: #ff3b30 !important; color: white; }
     .size-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: flex-end; z-index: 1100; }
     .size-modal-content { background: white; border-radius: 26px 26px 0 0; width: 100%; max-width: 420px; padding: 26px; }
-    .size-chip { padding: 10px 20px; border-radius: 12px; background: #f2f2f6; cursor: pointer; font-weight: 500; font-size: 15px; border: none; }
+    .size-chip { padding: 10px 20px; border-radius: 22px; background: #f2f2f6; cursor: pointer; font-weight: 500; font-size: 15px; border: none; }
     .size-chip.selected { background: #007aff; color: white; }
     .text-center { text-align: center; }
     .mt-2 { margin-top: 16px; }
-    .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
+    .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
     .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; color: #007aff; padding: 8px; }
-    /* Градиентная шапка только на главной */
-/* Градиентная шапка только на главной */
-#mainHeader{
-  background:#fff;
-  border-bottom:1px solid #f0f0f0;
-  padding:14px 16px;
-}
-
-#mainHeader h3{
-  color:#111;
-  font-size:20px;
-  font-weight:700;
-}
-#mainHeader.header-gradient h3 { color: white; }
-#mainHeader.header-gradient .profile-icon-header i { color: white; }
-
-/* Иконка у правого края */
-#mainHeader .header-icons {
-  margin-right: -8px;
-}
-
-/* Запрещаем горизонтальную прокрутку везде */
-html, body {
-  overflow-x: hidden;
-}
-#app {
-  overflow-x: hidden;
-}
-.screen {
-  overflow-x: hidden;
-  width: 100%;
-}
-.tab-content,
-.admin-pane {
-  overflow-x: hidden;
-}
-/* Глобальный запрет горизонтальной прокрутки */
-html, body {
-  overflow-x: hidden;
-}
-#app {
-  overflow-x: hidden;
-}
-.screen {
-  overflow-x: hidden;
-  width: 100%;
-}
-.tab-content,
-.admin-pane {
-  overflow-x: hidden;
-}
-button.btn.primary{
-  background:#cb11ab;
-  border:none;
-  border-radius:12px;
-  font-weight:600;
-}
-
-button.btn.primary:active{
-  transform:scale(.98);
-}
-/* Адаптация под десктоп */
-@media (min-width: 768px) {
-  body {
-    display: block; /* убираем flex на ПК */
-  }
-
-  #app {
-    max-width: 700px;
-    width: 100%;
-    margin: 20px auto;
-    border-radius: 24px;
-    overflow-x: hidden;
-  }
-
-  .screen {
-    width: 100%;
-    overflow-x: hidden;
-  }
-
-  .tab-content {
-    padding-bottom: 40px;
-    overflow-x: hidden;
-  }
-
-  .bottom-nav {
-    position: fixed;
-    max-width: 660px;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 10px;
-  }
-
-  .products-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .admin-products-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  header {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .auth-container {
-    padding: 50px 24px;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-
-  .modal-content {
-    padding: 28px 24px;
-  }
-
-  .admin-pane {
-    overflow-x: hidden;
-  }
-
-  /* Чтобы фильтры и поисковые строки не вылезали */
-  .filter-bar select,
-  .filter-bar input,
-  #petitionSearch,
-  #orderSearchInput,
-  #verificationSearch {
-    width: auto;
-    max-width: 100%;
-  }
-}
-/* На экранах тоньше 420px убираем фиксированную ширину и скругления */
-@media (max-width: 419px) {
-  body {
-    margin: 0;
-    padding: 0;
-  }
-  #app {
-    max-width: 100%;
-    border-radius: 0;
-    margin: 0;
-    box-shadow: none;
-  }
-  .bottom-nav {
-    left: 12px;
-    right: 12px;
-  }
-}
   </style>
 </head>
 <body>
@@ -298,66 +106,28 @@ button.btn.primary:active{
       <div id="loginForm">
         <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="loginEmail" placeholder="Email" value="user@test.com"></div>
         <div class="input-group"><i class="far fa-lock"></i><input type="password" id="loginPassword" placeholder="Пароль" value="123456"></div>
-       <button class="btn primary" id="loginBtn" onclick="appLogin()">Войти</button>
+        <button class="btn primary" onclick="appLogin()">Войти</button>
         <p class="link" onclick="showRegister()">Зарегистрироваться</p>
         <p class="link" style="font-size:12px; color:#8e8e93;">Админ: admin@fond.ru / admin123</p>
       </div>
-<div id="registerSteps" style="display:none;">
-  <!-- Шаг 1: Основные данные -->
-  <div class="step" id="step1">
-    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
-    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
-    <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
-    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
-    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
-    <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
-    <button class="btn primary" onclick="nextStep(2)">Далее</button>
-  </div>
-
-  <!-- Шаг 2: Категория и состав семьи -->
-  <div class="step" id="step2" style="display:none;">
-    <select id="regCategory" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:16px;">
-      <option value="">Выберите категорию</option>
-      <option>Многодетная семья</option>
-      <option>Малоимущие</option>
-      <option>Беженцы</option>
-      <option>Временные трудности</option>
-      <option>Пенсионер</option>
-      <option>Инвалидность</option>
-    </select>
-    <h4 style="margin-bottom:8px;">Члены семьи</h4>
-    <div id="familyMembersList"></div>
-    <button class="btn secondary small" onclick="addFamilyMember()">+ Добавить члена семьи</button>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn secondary" onclick="nextStep(1)">Назад</button>
-      <button class="btn primary" onclick="nextStep(3)">Далее</button>
-    </div>
-  </div>
-
-  <!-- Шаг 3: Документы -->
-  <div class="step" id="step3" style="display:none;">
-    <h4 style="margin-bottom:10px;">Обязательные документы <span style="color:red;">*</span></h4>
-    <div id="mandatoryDocs"></div>
-    <h4 style="margin:16px 0 10px;">Дополнительные документы</h4>
-    <div id="optionalDocs"></div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn secondary" onclick="nextStep(2)">Назад</button>
-      <button class="btn primary" onclick="finishRegistration()">Завершить регистрацию</button>
-    </div>
-  </div>
-</div>
-
-<button class="btn primary" id="startRegBtn" onclick="startRegistration()">Зарегистрироваться</button>
-<p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
+      <div id="registerForm" style="display:none;">
+        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
+        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
+        <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
+        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
+        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
+        <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
+        <button class="btn primary" onclick="appRegister()">Зарегистрироваться</button>
+        <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
       </div>
     </div>
   </div>
 
   <!-- ОСНОВНОЙ ЭКРАН ПОЛЬЗОВАТЕЛЯ -->
   <div id="mainScreen" class="screen">
-    <header id="mainHeader">
+    <header>
       <h3>Три сестры</h3>
-      <div class="header-icons"><div class="profile-icon-header" onclick="switchTab('profile')" id="headerProfileIcon"><i class="far fa-user-circle" style="font-size:28px;"></i></div></div>
+      <div class="header-icons"><div class="profile-icon-header" onclick="switchTab('profile')" id="headerProfileIcon"><i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i></div></div>
     </header>
     <div class="tab-content" id="userTabContent">
       <div id="homeTab" class="tab-pane active">
@@ -367,7 +137,7 @@ button.btn.primary:active{
         </div>
         <div class="products-grid" id="productsContainer"></div>
       </div>
-                  <div id="cartTab" class="tab-pane">
+      <div id="cartTab" class="tab-pane">
         <h4 style="margin-bottom:14px;">Корзина помощи</h4>
         <div id="cartItems"></div>
         <div class="map-container" id="cartMap"></div>
@@ -376,19 +146,13 @@ button.btn.primary:active{
       </div>
       <div id="profileTab" class="tab-pane">
         <div style="text-align:center; padding:20px;">
-          <img id="profileAvatar" style="width:72px;height:72px;border-radius:12px;display:none;">
+          <img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;display:none;">
           <i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;display:none;"></i>
           <h3 id="profileName" style="margin-top:12px;"></h3>
           <p id="profilePhone" style="color:#8e8e93;"></p>
         </div>
         <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
         <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
-        <div style="background:#f2f2f6;border-radius:12px;padding:16px;margin:16px 0;">
-  <p style="margin:0;"><strong>Категория:</strong> <span id="profileCategory"></span></p>
-  <p style="margin:8px 0 0;"><strong>Статус:</strong> <span id="profileVerificationStatus"></span></p>
-  <h4 style="margin:12px 0 4px;">Состав семьи</h4>
-  <ul id="profileFamilyList" style="list-style:none;padding:0;margin:0;"></ul>
-</div>
         <button class="btn secondary" onclick="logout()">Выйти</button>
       </div>
       <div id="ordersTab" class="tab-pane">
@@ -420,7 +184,6 @@ button.btn.primary:active{
       <button class="tab-btn" data-admin-tab="calendar">Календарь</button>
       <button class="tab-btn" data-admin-tab="history">Заказы</button>
       <button class="tab-btn" data-admin-tab="recipients">Лимиты/Отзывы</button>
-      <button class="tab-btn" data-admin-tab="verification">Верификация</button>
     </div>
     <div style="flex:1; overflow-y:auto;">
       <div id="adminProducts" class="admin-pane active">
@@ -428,7 +191,7 @@ button.btn.primary:active{
         <div id="adminProductsList" class="admin-products-grid"></div>
       </div>
       <div id="adminPetitions" class="admin-pane">
-                      <div style="display:flex; gap:8px; margin-bottom:14px;"><input id="petitionSearch" placeholder="Поиск" style="flex:1;" oninput="renderPetitions()"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Выбрать</button></div>
+        <div style="display:flex; gap:8px; margin-bottom:14px;"><input id="petitionSearch" placeholder="Поиск" style="flex:1;" oninput="renderPetitions()"><button class="btn secondary small" id="toggleSelectModeBtn" onclick="togglePetitionSelectMode()">Выбрать</button></div>
         <div id="photoFilterStrip" style="display:flex; gap:10px; overflow-x:auto; padding:8px 0;"></div>
         <div id="petitionBulkActions" style="display:none; margin-bottom:14px;"><button class="btn primary small" onclick="bulkApprovePetitions()">✓ Согласовать</button><button class="btn danger small" onclick="bulkRejectPetitions()">✗ Отказать</button><button class="btn secondary small" onclick="selectAllPetitions()">Выбрать все</button></div>
         <div id="petitionsList"></div>
@@ -442,30 +205,20 @@ button.btn.primary:active{
         <div id="calendarDayDetails" class="mt-2"></div>
       </div>
       <div id="adminHistory" class="admin-pane">
-        <input type="text" id="orderSearchInput" placeholder="Поиск по номеру/ФИО/телефону" style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;" oninput="renderAllOrders()">
-                <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('active')">Сборка</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
-        <select id="adminOrderDateFilter" style="display:none;width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;" onchange="renderAllOrders()"></select>
+        <input type="text" id="orderSearchInput" placeholder="Поиск по номеру/ФИО/телефону" style="width:100%;margin-bottom:12px;padding:12px;border-radius:16px;border:1px solid #e5e5ea;" oninput="renderAllOrders()">
+        <div style="display:flex; gap:8px; margin-bottom:14px;"><button class="btn secondary small" onclick="switchOrderView('today')">Сегодня</button><button class="btn secondary small" onclick="switchOrderView('all')">Активные</button><button class="btn secondary small" onclick="switchOrderView('archive')">Архив</button></div>
+        <select id="adminOrderDateFilter" style="display:none;width:100%;margin-bottom:12px;padding:12px;border-radius:16px;border:1px solid #e5e5ea;" onchange="renderAllOrders()"></select>
         <div id="allOrdersList"></div>
       </div>
       <div id="adminRecipients" class="admin-pane">
-        <div style="background:white;border-radius:12px;padding:24px;">
+        <div style="background:white;border-radius:24px;padding:24px;">
           <h4>Лимит товаров в корзине</h4>
           <input type="number" id="maxItemsLimit" style="width:100%;padding:14px;font-size:18px;border-radius:16px;border:1px solid #e5e5ea;margin:16px 0;" min="1">
           <button class="btn primary" onclick="saveMaxItemsLimit()">Сохранить</button>
-          <div style="background:white;border-radius:12px;padding:24px;margin-top:16px;">
-  <h4>Индивидуальный лимит</h4>
-  <select id="userSelectForLimit" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin:12px 0;"></select>
-  <input type="number" id="individualLimitInput" placeholder="Лимит (пусто — глобальный)" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-  <button class="btn primary" onclick="saveIndividualLimit()">Сохранить</button>
-</div>
         </div>
         <h4 style="margin-top:24px;">Отзывы на модерации</h4>
         <div id="adminReviewsList"></div>
       </div>
-      <div id="adminVerification" class="admin-pane">
-  <input type="text" id="verificationSearch" placeholder="Поиск по имени" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:16px;" oninput="renderVerificationList()">
-  <div id="verificationList"></div>
-</div>
     </div>
   </div>
 
@@ -475,11 +228,11 @@ button.btn.primary:active{
       <i class="fas fa-times" onclick="closeModal('addProductModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
       <h3 style="margin-bottom:16px;">Новый товар</h3>
       <input id="prodName" placeholder="Название" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      <input id="prodArticle" placeholder="Артикул" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      <input id="prodSizes" placeholder="Размеры (через запятую, например: S,M,L)" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;">
-      <select id="prodCategory" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;"><option>Продукты</option><option>Одежда</option><option>Гигиена</option><option>Прочее</option></select>
-      <textarea id="prodDescription" placeholder="Описание товара" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;resize:vertical;"></textarea>
-      <input type="number" id="prodQuantity" value="1" min="1" style="width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      <input id="prodArticle" placeholder="Артикул" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      <input id="prodSizes" placeholder="Размеры (через запятую, например: S,M,L)" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
+      <select id="prodCategory" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;"><option>Продукты</option><option>Одежда</option><option>Гигиена</option><option>Прочее</option></select>
+      <textarea id="prodDescription" placeholder="Описание товара" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;resize:vertical;"></textarea>
+      <input type="number" id="prodQuantity" value="1" min="1" style="width:100%;padding:14px;border-radius:16px;border:1px solid #e5e5ea;margin-bottom:12px;">
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><input type="checkbox" id="prodPlaceImmediately" checked> Разместить сразу</label>
       <input type="file" id="productPhotosInput" multiple accept="image/*" style="margin-bottom:12px;">
       <div id="photoPreviewContainer" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
@@ -495,23 +248,25 @@ button.btn.primary:active{
       <button class="btn primary" onclick="addSlot()">Добавить</button>
     </div>
   </div>
-   <div id="issueOrderModal" class="modal">
-    <div class="modal-content" id="issueOrderModalContent" style="max-width:400px; max-height:90vh; overflow-y:auto;">
+  <div id="issueOrderModal" class="modal">
+    <div class="modal-content">
       <i class="fas fa-times" onclick="closeModal('issueOrderModal')" style="float:right;cursor:pointer;font-size:18px;"></i>
-      <h3 style="margin-bottom:16px;">Сборка заказа</h3>
-      <div id="collectionItems"></div>
-      <div id="collectionActions" style="margin-top:16px;"></div>
+      <h3 style="margin-bottom:16px;">Выдача заказа</h3>
+      <div id="issueOrderItems"></div>
+      <button class="btn primary" onclick="confirmIssueOrder()" style="margin-top:12px;">Подтвердить выдачу</button>
     </div>
   </div>
-  <div id="productDetailModal" class="modal" style="align-items:stretch; padding:0;">
-  <div class="modal-content" id="productDetailContent" style="padding:0;border-radius:12px;overflow:hidden;max-width:380px; max-height:100%; height:100%;"></div>
-</div>
+  <div id="productDetailModal" class="modal" style="align-items:flex-start; padding:10px;">
+    <div class="modal-content" id="productDetailContent" style="padding:0;border-radius:28px;overflow:hidden;max-width:380px;"></div>
+  </div>
   <div id="sizeSelectModal" class="size-modal">
     <div class="size-modal-content" id="sizeSelectContent"></div>
   </div>
-    <div id="fullscreenPhotoModal" class="modal" onclick="closeModal('fullscreenPhotoModal')">
-    <img id="fullscreenImage" style="max-width:90%; max-height:90%; border-radius:16px;">
+  <div id="fullscreenPhotoModal" class="modal" style="align-items:center; background:rgba(0,0,0,0.9);" onclick="closeModal('fullscreenPhotoModal')">
+    <img id="fullscreenImage" style="max-width:90%;max-height:90%;border-radius:20px;object-fit:contain;">
   </div>
+</div>
+
 <script>
 (function(){
   'use strict';
@@ -535,21 +290,10 @@ button.btn.primary:active{
     maxLimit: () => parseInt(localStorage.getItem('f_maxLimit')||'10'),
     saveMaxLimit: v => localStorage.setItem('f_maxLimit',v)
   };
-  function getUserLimit(user) {
-  return (user.individualLimit && user.individualLimit > 0) ? user.individualLimit : STORAGE.maxLimit();
-}
 
-function getTypeLabel(type) {
-  const map = { adult:'Взрослый', child:'Ребёнок', elderly:'Пожилой', disabled:'Инвалид' };
-  return map[type] || type;
-}
-
-  let petitionSelectMode=false, selectedPetitionKeys=new Set(), selectedPhotoFilters=new Set(), currentCalendarDate=new Date(), leafletMap=null,
-    currentOrderView='active', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
-    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[], swipedCartItemIndex=null,
-        cartSelectedItems = new Set();
-  let regFamilyMembers = [];
-let tempDocuments = {};
+  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null,
+    currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home',
+    currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
 
   async function hashPassword(pwd) {
     const enc = new TextEncoder().encode(pwd);
@@ -564,16 +308,6 @@ let tempDocuments = {};
         {id:'adm',firstName:'Админ',email:'admin@fond.ru',password:await hashPassword('admin123'),role:'admin',phone:'',avatar:''}
       ]);
     }
-    // Сразу после загрузки пользователей (перед if (!STORAGE.products().length)...)
-const users = STORAGE.users().map(u => ({
-  ...u,
-  familyMembers: u.familyMembers || [],
-  category: u.category || '',
-  documents: u.documents || [],
-  verified: u.verified ?? false,
-  individualLimit: u.individualLimit || null
-}));
-STORAGE.saveUsers(users);
     if (!STORAGE.products().length) {
       STORAGE.saveProducts([
         {id:'p1',article:'GR001',name:'Гречка 1кг',category:'Продукты',photos:[],quantity:10,availableQuantity:10,isPlaced:true,sizes:[],description:'Качественная гречка'},
@@ -597,20 +331,8 @@ STORAGE.saveUsers(users);
     }
   }
 
- window.showRegister = () => {
-  document.getElementById('loginForm').style.display = 'none';
-  document.getElementById('registerSteps').style.display = 'none'; // шаги пока не видны
-  document.getElementById('startRegBtn').style.display = 'block';   // кнопка запуска видна
-  // ссылка "Уже есть аккаунт?" тоже должна быть видна (она уже есть в родителе)
-  // при необходимости показать форму регистрации как целое (внешний контейнер) – он и так виден,
-  // поэтому просто скрываем шаги и показываем кнопку.
-};
-
-window.showLogin = () => {
-  document.getElementById('registerSteps').style.display = 'none';
-  document.getElementById('startRegBtn').style.display = 'none';
-  document.getElementById('loginForm').style.display = 'block';
-};
+  window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
+  window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
   window.closeModal = (id) => {
     document.getElementById(id).style.display = 'none';
     if (id === 'fullscreenPhotoModal') document.getElementById('fullscreenImage').src = '';
@@ -622,194 +344,26 @@ window.showLogin = () => {
     const user = STORAGE.users().find(u => u.email === email && u.password === hashed);
     if (!user) { alert('Неверные данные'); return; }
     STORAGE.setCurrentUser(user);
-    if (user.role === 'admin' && user.email === 'admin@fond.ru') { showScreen('adminScreen'); renderAdmin(); }
+    if (user.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
     else { showScreen('mainScreen'); updateUIForUser(); }
   };
-  // ─── Многошаговая регистрация ─────────────────
-
-window.startRegistration = () => {
-  // минимум один член семьи — сам заявитель
-  regFamilyMembers = [{ name: '', age: 0, type: 'adult' }];
-  tempDocuments = {};
-  document.getElementById('registerSteps').style.display = 'block';
-  document.getElementById('step1').style.display = 'block';
-  document.getElementById('step2').style.display = 'none';
-  document.getElementById('step3').style.display = 'none';
-  document.getElementById('startRegBtn').style.display = 'none';
-};
-
-window.nextStep = (step) => {
-  // простая валидация
-  if (step !== 1) {
-    if (!validateStep(step - 1)) return;
-  }
-  document.querySelectorAll('#registerSteps .step').forEach(el => el.style.display = 'none');
-  document.getElementById('step' + step).style.display = 'block';
-  if (step === 2) updateFamilyMembersUI();
-  if (step === 3) updateDocumentsUI();
-};
-
-function validateStep(s) {
-  if (s === 1) {
+  window.appRegister = async () => {
     const fn = document.getElementById('regFirstName').value.trim();
     const ln = document.getElementById('regLastName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const pass = document.getElementById('regPassword').value;
     const conf = document.getElementById('regConfirm').value;
     const phone = document.getElementById('regPhone').value.trim();
-    if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return false; }
-    if (pass.length < 6) {
-  alert('Пароль должен быть минимум 6 символов');
-  return false;
-}
-
-if (pass !== conf) {
-  alert('Пароли не совпадают');
-  return false;
-}
-    return true;
-  }
-  if (s === 2) {
-    if (!document.getElementById('regCategory').value) { alert('Выберите категорию'); return false; }
-    if (regFamilyMembers.length === 0) { alert('Добавьте хотя бы одного члена семьи'); return false; }
-    return true;
-  }
-  if (s === 3) {
-    // проверка, что все обязательные документы загружены (по типам)
-    const mandatoryTypes = ['passport']; // базово паспорт
-    regFamilyMembers.forEach(m => {
-      if (m.type === 'child' && m.age < 18) mandatoryTypes.push('birth_cert');
-    });
-    for (const t of mandatoryTypes) {
-      if (!tempDocuments[t]) { alert('Загрузите все обязательные документы'); return false; }
-    }
-    return true;
-  }
-  return true;
-}
-
-window.addFamilyMember = () => {
-  regFamilyMembers.push({ name: '', age: 0, type: 'child' });
-  updateFamilyMembersUI();
-};
-
-function updateFamilyMembersUI() {
-  const container = document.getElementById('familyMembersList');
-  container.innerHTML = regFamilyMembers.map((m, idx) => `
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-      <input value="${escapeHtml(m.name)}" onchange="regFamilyMembers[${idx}].name = this.value" placeholder="Имя" style="flex:1;">
-      <input type="number" value="${m.age}" onchange="regFamilyMembers[${idx}].age = parseInt(this.value)||0" placeholder="Возраст" style="width:70px;">
-      <select onchange="regFamilyMembers[${idx}].type = this.value">
-        <option ${m.type==='adult'?'selected':''} value="adult">Взрослый</option>
-        <option ${m.type==='child'?'selected':''} value="child">Ребёнок</option>
-        <option ${m.type==='elderly'?'selected':''} value="elderly">Пожилой</option>
-        <option ${m.type==='disabled'?'selected':''} value="disabled">Инвалид</option>
-      </select>
-      <i class="fas fa-trash" onclick="regFamilyMembers.splice(${idx},1);updateFamilyMembersUI()" style="color:red;cursor:pointer;"></i>
-    </div>
-  `).join('');
-}
-
-function updateDocumentsUI() {
-  // обязательные
-  let mandatory = [{ type: 'passport', label: 'Паспорт заявителя', required: true }];
-  regFamilyMembers.forEach((m, idx) => {
-    if (m.type === 'child' && m.age < 18) {
-      mandatory.push({ type: 'birth_cert', label: `Свидетельство о рождении: ${m.name || 'ребёнок'}`, required: true });
-    }
-  });
-  document.getElementById('mandatoryDocs').innerHTML = mandatory.map(doc => `
-    <div style="margin-bottom:12px;">
-      <label style="color:red;">${doc.label} *</label><br>
-      <input type="file" accept="image/*" onchange="uploadDocument('${doc.type}', this)" />
-      ${tempDocuments[doc.type] ? '<span style="color:green;">✓ Загружено</span>' : ''}
-    </div>
-  `).join('');
-
-  // необязательные
-  let optional = [
-    { type: 'income', label: 'Справка о доходах' },
-    { type: 'disability', label: 'Справка об инвалидности' }
-  ];
-  document.getElementById('optionalDocs').innerHTML = optional.map(doc => `
-    <div style="margin-bottom:12px;">
-      <label>${doc.label} (необязательно)</label><br>
-      <input type="file" accept="image/*" onchange="uploadDocument('${doc.type}', this)" />
-      ${tempDocuments[doc.type] ? '<span style="color:green;">✓ Загружено</span>' : ''}
-    </div>
-  `).join('');
-}
-
-window.uploadDocument = (type, fileInput) => {
-  const file = fileInput.files[0];
-  if (!file) return;
-  if (!file.type.startsWith('image/')) {
-  alert('Можно загружать только изображения');
-  return;
-}
-
-if (file.size > 500 * 1024) {
-  alert('Файл должен быть до 500 КБ');
-  return;
-}
-const reader = new FileReader();
-  reader.onload = e => {
-    tempDocuments[type] = e.target.result;
-    updateDocumentsUI(); // обновить галочки
+    const code = document.getElementById('countryCode').value;
+    if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return; }
+    if (pass !== conf) { alert('Пароли не совпадают'); return; }
+    if (STORAGE.users().some(u => u.email === email)) { alert('Email занят'); return; }
+    const hashed = await hashPassword(pass);
+    const user = { id: Date.now()+'', firstName:fn, lastName:ln, email, password:hashed, phone:code+phone, role:'user', avatar:'' };
+    STORAGE.saveUsers([...STORAGE.users(), user]);
+    STORAGE.setCurrentUser(user);
+    showScreen('mainScreen'); updateUIForUser();
   };
-  reader.readAsDataURL(file);
-};
-
-window.finishRegistration = async () => {
-  if (!validateStep(3)) return;
-  const fn = document.getElementById('regFirstName').value.trim();
-  const ln = document.getElementById('regLastName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const pass = document.getElementById('regPassword').value;
-  const phone = document.getElementById('regPhone').value.trim();
-  const code = document.getElementById('countryCode').value;
-  const category = document.getElementById('regCategory').value;
-
-  if (STORAGE.users().some(u => u.email === email || u.phone === code + phone)) {
-  alert('Email или телефон уже используется');
-  return;
-}
-
-  const hashed = await hashPassword(pass);
-  const documents = Object.keys(tempDocuments).map(type => ({
-    type,
-    image: tempDocuments[type],
-    status: 'pending',
-    comment: ''
-  }));
-
-  const user = {
-    id: crypto.randomUUID(),
-    firstName: fn,
-    lastName: ln,
-    email,
-    password: hashed,
-    phone: code + phone,
-    role: 'user',
-    avatar: '',
-    familyMembers: regFamilyMembers,
-    category,
-    documents,
-    verified: false,
-    individualLimit: null
-  };
-
-  STORAGE.saveUsers([...STORAGE.users(), user]);
-  STORAGE.setCurrentUser(user);
-
-  // очищаем временные данные
-  regFamilyMembers = [];
-  tempDocuments = {};
-
-  showScreen('mainScreen');
-  updateUIForUser();
-  alert('Регистрация завершена. Ваш профиль отправлен на верификацию.');
-};
   window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); };
 
   function showScreen(id) {
@@ -826,16 +380,9 @@ window.finishRegistration = async () => {
     if (ni) ni.classList.add('active');
     document.querySelectorAll('#userTabContent .tab-pane').forEach(p => p.style.display = 'none');
     const tabEl = document.getElementById(tabId+'Tab');
-      // Переключение градиентной шапки
-  const header = document.querySelector('#mainScreen header');
-  if (header) {
-    if (tabId === 'home') header.classList.add('header-gradient');
-    else header.classList.remove('header-gradient');
-  }
     if (tabEl) tabEl.style.display = 'block';
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
-       if (tabId === 'cart') { resetSwipedCart(); renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
-    else { resetSwipedCart(); }
+    if (tabId === 'cart') { renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
     if (tabId === 'profile') renderProfile();
     if (tabId === 'orders') {
       document.getElementById('ordersListView').style.display = 'block';
@@ -854,9 +401,7 @@ window.finishRegistration = async () => {
   }
   function populateCategoryFilter() {
     const cats = [...new Set(STORAGE.products().map(p => p.category))];
-    document.getElementById('categoryFilter').innerHTML =
-  '<option value="">Все категории</option>' +
-  cats.map(c => `<option>${escapeHtml(c)}</option>`).join('');
+    document.getElementById('categoryFilter').innerHTML = '<option value="">Все категории</option>' + cats.map(c => `<option>${escapeHtml(c)}</option>`).join('');
   }
   window.renderProducts = () => {
     let prods = STORAGE.products().filter(p => p.isPlaced && p.availableQuantity > 0);
@@ -869,27 +414,23 @@ window.finishRegistration = async () => {
     else if (sort === 'old') prods.sort((a,b) => a.id.localeCompare(b.id));
     document.getElementById('productsContainer').innerHTML = prods.map(p => `
       <div class="product-card" onclick="openProductDetail('${p.id}','home')">
-        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image" style="font-size:28px;"></i>'}</div>
-<div style="padding: 0 8px 8px;">
-  <h4 style="font-weight:600;font-size:14px;margin:8px 0 4px;">${escapeHtml(p.name)}</h4>
-  <div class="product-stats" style="font-size:12px;margin:0;">В наличии: ${p.availableQuantity}</div>
-  <div class="product-stats" style="font-size:12px;margin:0 0 6px;">👥 Запросов: ${getProductRequestCount(p.id)}</div>
-  <button class="btn primary small" style="margin-top:0;padding:8px 12px;font-size:13px;width:100%;border-radius:12px;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
-</div>
+        <div class="product-photo">${p.photos?.[0] ? `<img src="${p.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image"></i>'}</div>
+        <h4 style="font-weight:600;">${escapeHtml(p.name)}</h4>
+        <small style="color:#8e8e93;">${escapeHtml(p.article)}</small>
+        <div class="product-stats">В наличии: ${p.availableQuantity}</div>
+        <div class="product-stats">👥 Запросов: ${getProductRequestCount(p.id)}</div>
+        <button class="btn primary small" style="margin-top:8px;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
       </div>`).join('');
   };
   window.addToCart = (prodId) => {
     const user = STORAGE.currentUser();
     if (user.blocked) { alert('Вы заблокированы до отправки всех отзывов'); return; }
     const cart = STORAGE.cart();
-    if (cart.length >= getUserLimit(user)) { alert(`Лимит корзины: ${getUserLimit(user)} товаров`); return; }
+    if (cart.length >= STORAGE.maxLimit()) { alert(`Лимит корзины: ${STORAGE.maxLimit()} товаров`); return; }
     const p = STORAGE.products().find(p => p.id === prodId);
     if (!p || p.availableQuantity < 1) { alert('Недоступен'); return; }
     if (p.sizes && p.sizes.length) { showSizeSelector(prodId); return; }
-    if (cart.some(i => i.id === prodId && i.selectedSize === null)) {
-  alert('Уже в корзине');
-  return;
-}
+    if (cart.some(i => i.id === prodId)) { alert('Уже в корзине'); return; }
     cart.push({...p, quantity: 1, selectedSize: null});
     STORAGE.saveCart(cart);
     updateCartBadge();
@@ -922,99 +463,25 @@ window.finishRegistration = async () => {
   }
 
   // Корзина
-   // Корзина
-    window.renderCart = () => {
+  window.renderCart = () => {
     const cart = STORAGE.cart();
-    swipedCartItemIndex = null;
-    cartSelectedItems = new Set(cart.map((_, i) => i));
-    const allSelected = cartSelectedItems.size === cart.length;
-    
-    document.getElementById('cartItems').innerHTML = '';
-    if (!cart.length) {
-      document.getElementById('cartItems').innerHTML = '<p class="text-center" style="color:#8e8e93;">Корзина пуста</p>';
-      return;
-    }
-
-    const selectAllHtml = `
-      <div class="cart-select-all">
-        <div class="cart-checkbox ${allSelected ? 'checked' : 'unchecked'}" id="selectAllCheckbox" onclick="toggleSelectAll()">
-          <i class="fas fa-check"></i>
-        </div>
-        <span style="font-weight:500;">Выбрать все</span>
-        <div class="cart-actions">
-          <span class="cart-actions-btn" id="actionsBtn" onclick="toggleActionsMenu(event)">Действия ▾</span>
-          <div class="cart-actions-dropdown" id="actionsDropdown">
-            <div onclick="removeSelectedItems()">Удалить</div>
-          </div>
-        </div>
-      </div>`;
-    const itemsHtml = cart.map((item, idx) => {
-      const checked = cartSelectedItems.has(idx);
-      return `
-        <div class="cart-item-wrapper">
-          <div class="cart-item-inner" id="cart-inner-${idx}" style="transform:translateX(0);">
-            <div class="cart-item-main" data-cart-index="${idx}"
-                 ontouchstart="cartTouchStart(event, ${idx})" ontouchmove="cartTouchMove(event, ${idx})" ontouchend="cartTouchEnd(event, ${idx})"
-                 onclick="if(!event.target.closest('.cart-item-delete')) openProductDetail('${item.id}','cart')">
-              <div class="cart-item-photo-wrap">
-                <img src="${item.photos?.[0]||''}" style="width:100%;height:100%;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">
-                <div class="cart-item-checkbox ${checked ? 'checked' : 'unchecked'}" onclick="event.stopPropagation(); toggleCartItem(${idx})">
-                  <i class="fas fa-check"></i>
-                </div>
-              </div>
-              <div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong>${item.selectedSize ? ` <span style="color:#8e8e93;">(${escapeHtml(item.selectedSize)})</span>` : ''}</div>
-            </div>
-            <div class="cart-item-delete" onclick="removeFromCart(${idx})">
-              <i class="far fa-trash-alt"></i> Удалить
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-    document.getElementById('cartItems').innerHTML = selectAllHtml + itemsHtml;
-          const now = new Date();
-    const slotSelect = document.getElementById('timeSlotSelect');
-    if (slotSelect) {
-      const slots = STORAGE.slots().filter(s => new Date(s.datetime) > now && s.used < s.capacity);
-      slotSelect.innerHTML = slots.map(s => `<option value="${s.id}">${new Date(s.datetime).toLocaleString('ru-RU')}</option>`).join('');
-    }
+    document.getElementById('cartItems').innerHTML = cart.length ? cart.map((item, idx) => `
+      <div class="cart-item" onclick="openProductDetail('${item.id}','cart')">
+        <img class="cart-item-photo" src="${item.photos?.[0]||''}" onerror="this.style.display='none'">
+        <div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong>${item.selectedSize ? ` <span style="color:#8e8e93;">(${escapeHtml(item.selectedSize)})</span>` : ''}</div>
+        <i class="far fa-trash-alt" style="color:#ff3b30;cursor:pointer;" onclick="event.stopPropagation();removeFromCart(${idx})"></i>
+      </div>`).join('') : '<p class="text-center" style="color:#8e8e93;">Корзина пуста</p>';
+    const now = new Date();
+    const slots = STORAGE.slots().filter(s => new Date(s.datetime) > now && s.used < s.capacity);
+    document.getElementById('timeSlotSelect').innerHTML = slots.map(s => `<option value="${s.id}">${new Date(s.datetime).toLocaleString('ru-RU')}</option>`).join('');
   };
-    window.removeFromCart = (idx) => {
+  window.removeFromCart = (idx) => {
     let cart = STORAGE.cart();
     cart.splice(idx, 1);
     STORAGE.saveCart(cart);
-    resetSwipedCart();
     renderCart();
     updateCartBadge();
   };
-    let cartTouchStartX = 0, cartTouchCurrentX = 0;
-  window.cartTouchStart = (e, idx) => { cartTouchStartX = e.touches[0].clientX; };
-  window.cartTouchMove = (e, idx) => {
-    cartTouchCurrentX = e.touches[0].clientX;
-    const diff = cartTouchStartX - cartTouchCurrentX;
-    const inner = document.getElementById(`cart-inner-${idx}`);
-    if (!inner) return;
-    if (diff > 0 && diff <= 80) inner.style.transform = `translateX(-${diff}px)`;
-    else if (diff > 80) inner.style.transform = 'translateX(-80px)';
-  };
-  window.cartTouchEnd = (e, idx) => {
-    const diff = cartTouchStartX - cartTouchCurrentX;
-    const inner = document.getElementById(`cart-inner-${idx}`);
-    if (!inner) return;
-    if (diff > 40) {
-      inner.style.transform = 'translateX(-80px)';
-      swipedCartItemIndex = idx;
-    } else {
-      inner.style.transform = 'translateX(0)';
-      swipedCartItemIndex = null;
-    }
-  };
-  function resetSwipedCart() {
-    if (swipedCartItemIndex !== null) {
-      const inner = document.getElementById(`cart-inner-${swipedCartItemIndex}`);
-      if (inner) inner.style.transform = 'translateX(0)';
-      swipedCartItemIndex = null;
-    }
-  }
   function initMap() {
     const mapEl = document.getElementById('cartMap');
     if (!mapEl || mapEl.offsetParent === null) return;
@@ -1023,19 +490,11 @@ window.finishRegistration = async () => {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
     L.marker([55.531570, 37.498393]).addTo(leafletMap).bindPopup('Южное Бутово, Остафьевская ул, 44').openPopup();
   }
-     window.createOrder = () => {
+  window.createOrder = () => {
     const user = STORAGE.currentUser();
-       const cart = STORAGE.cart();
-    if (cart.length > getUserLimit(user)) { alert(`Лимит корзины: ${getUserLimit(user)} товаров`); return; }   
     if (user.blocked) { alert('Сначала оставьте отзывы на все полученные товары'); return; }
-              if (!user.verified) {
-  alert('Ваш профиль ещё не проверен администратором. Дождитесь верификации.');
-  return;
-}
-    if (!cart.length) {
-  alert('Корзина пуста');
-  return;
-}
+    const cart = STORAGE.cart();
+    if (!cart.length) { alert('Корзина пуста'); return; }
     const slotId = document.getElementById('timeSlotSelect').value;
     if (!slotId) { alert('Выберите время'); return; }
     const slots = STORAGE.slots();
@@ -1050,7 +509,7 @@ window.finishRegistration = async () => {
       recipient: { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email },
       issued: false, archived: false
     };
-        STORAGE.saveOrders([...STORAGE.orders(), order]);
+    STORAGE.saveOrders([...STORAGE.orders(), order]);
     slot.used++;
     STORAGE.saveSlots(slots);
     STORAGE.saveCart([]);
@@ -1073,11 +532,6 @@ window.finishRegistration = async () => {
       document.getElementById('profileAvatar').style.display = 'none';
       document.getElementById('defaultAvatar').style.display = 'block';
     }
-        document.getElementById('profileCategory').textContent = u.category || '—';
-    document.getElementById('profileVerificationStatus').textContent = u.verified ? '✅ Подтверждён' : '⏳ Ожидает проверки';
-    document.getElementById('profileFamilyList').innerHTML = (u.familyMembers||[]).map(m =>
-      `<li>${escapeHtml(m.name)}, ${m.age} лет (${getTypeLabel(m.type)})</li>`
-    ).join('') || '<li>Нет данных</li>';
   }
   window.saveAvatar = () => {
     const file = document.getElementById('avatarInput').files[0];
@@ -1120,22 +574,22 @@ window.finishRegistration = async () => {
       if (o.status === 'approved') { statusText = 'Заберите'; statusColor = '#ff3b30'; }
       else if (o.status === 'rejected') { statusText = 'Отменён'; statusColor = '#8e8e93'; }
       else { statusText = 'Согласование'; statusColor = '#ffcc00'; }
-const itemsHtml = o.items.map(i => {
-  const prod = STORAGE.products().find(p => p.id === i.productId);
-  const photoUrl = prod?.photos?.[0] || '';
-  let ist, isc;
-  if (i.status === 'approved' || i.status === 'issued') { ist = 'Ждёт вас'; isc = '#34c759'; }
-  else if (i.status === 'rejected') { ist = 'Отменён'; isc = '#ff3b30'; }
-  else { ist = 'Ожидает'; isc = '#ffcc00'; }
-  return `<div style="text-align:center;flex-shrink:0;">
-    ${photoUrl ? `<img src="${photoUrl}" style="width:80px;height:106px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">` : `<div style="width:80px;height:106px;border-radius:16px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;"><i class="far fa-image" style="color:#c7c7cc;font-size:20px;"></i></div>`}
-    <div style="font-size:12px;font-weight:500;color:${isc};margin-top:4px;">${ist}</div>
-  </div>`;
-}).join('');
-                   return `<div class="order-card" onclick="openOrderDetails('${o.id}')">
+      const itemsHtml = o.items.map(i => {
+        const prod = STORAGE.products().find(p => p.id === i.productId);
+        const photoUrl = prod?.photos?.[0] || '';
+        let ist, isc;
+        if (i.status === 'approved' || i.status === 'issued') { ist = 'Ждёт вас'; isc = '#34c759'; }
+        else if (i.status === 'rejected') { ist = 'Отменён'; isc = '#ff3b30'; }
+        else { ist = 'Ожидает'; isc = '#ffcc00'; }
+        return `<div style="text-align:center;flex-shrink:0;">
+          ${photoUrl ? `<img src="${photoUrl}" style="width:56px;height:56px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">` : `<div style="width:56px;height:56px;border-radius:16px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;"><i class="far fa-image" style="color:#c7c7cc;"></i></div>`}
+          <div style="font-size:11px;font-weight:500;color:${isc};margin-top:4px;">${ist}</div>
+        </div>`;
+      }).join('');
+      return `<div class="order-card" onclick="openOrderDetails('${o.id}')">
         <div><span style="font-size:17px;font-weight:700;color:${statusColor};">${statusText}</span><span style="color:#8e8e93;margin-left:8px;">${new Date(o.slotTime).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</span></div>
         <div style="color:#8e8e93;font-size:14px;margin:4px 0;">${escapeHtml(o.address)}</div>
-        <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;">${itemsHtml}</div>
+        <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:wrap;">${itemsHtml}</div>
         <span style="color:#007aff;font-weight:600;font-size:15px;">Подробнее →</span>
       </div>`;
     }).join('');
@@ -1160,11 +614,11 @@ const itemsHtml = o.items.map(i => {
         <div style="width:20px;"></div>
       </div>
       <div style="display:flex;gap:14px;padding:18px 16px;overflow-x:auto;">
-  ${order.items.map(i => {
-    const prod = STORAGE.products().find(p => p.id === i.productId);
-    return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'" style="width:80px;height:106px;border-radius:16px;object-fit:cover;border:3px solid ${i.productId === selectedDetailItemId ? '#007aff' : 'transparent'};cursor:pointer;flex-shrink:0;background:#f2f2f6;">`;
-  }).join('')}
-</div>
+        ${order.items.map(i => {
+          const prod = STORAGE.products().find(p => p.id === i.productId);
+          return `<img src="${prod?.photos?.[0]||''}" class="detail-photo ${i.productId === selectedDetailItemId ? 'selected' : ''}" onclick="selectDetailItem('${i.productId}')" onerror="this.style.display='none'" style="width:72px;height:72px;border-radius:18px;object-fit:cover;border:3px solid ${i.productId === selectedDetailItemId ? '#007aff' : 'transparent'};cursor:pointer;flex-shrink:0;background:#f2f2f6;">`;
+        }).join('')}
+      </div>
       <div style="padding:0 18px;">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;cursor:pointer;" onclick="openProductDetail('${selectedItem.productId}','orderDetail')">
           ${escapeHtml(selectedItem.name)} <i class="fas fa-chevron-right" style="color:#007aff;"></i>
@@ -1184,39 +638,7 @@ const itemsHtml = o.items.map(i => {
     document.getElementById('ordersListView').style.display = 'block';
     document.getElementById('orderDetailsView').style.display = 'none';
   };
-    window.toggleSelectAll = () => {
-    const cart = STORAGE.cart();
-    if (cartSelectedItems.size === cart.length) {
-      cartSelectedItems.clear();
-    } else {
-      cart.forEach((_, i) => cartSelectedItems.add(i));
-    }
-    renderCart();
-  };
 
-  window.toggleCartItem = (idx) => {
-    if (cartSelectedItems.has(idx)) cartSelectedItems.delete(idx);
-    else cartSelectedItems.add(idx);
-    renderCart();
-  };
-
-  window.toggleActionsMenu = (e) => {
-    e.stopPropagation();
-    const dd = document.getElementById('actionsDropdown');
-    dd.classList.toggle('show');
-    setTimeout(() => { dd.classList.remove('show'); }, 3000);
-  };
-
-  window.removeSelectedItems = () => {
-    let cart = STORAGE.cart();
-    cart = cart.filter((_, i) => !cartSelectedItems.has(i));
-    STORAGE.saveCart(cart);
-    cartSelectedItems.clear();
-    updateCartBadge();
-    renderCart();
-    document.getElementById('actionsDropdown').classList.remove('show');
-  };
-    
   // Карточка товара
   window.openProductDetail = (prodId, returnScreen) => {
     const prod = STORAGE.products().find(p => p.id === prodId);
@@ -1224,21 +646,19 @@ const itemsHtml = o.items.map(i => {
     returnToScreen = returnScreen || 'home';
     document.getElementById('productDetailModal').style.display = 'flex';
     document.getElementById('productDetailContent').innerHTML = `
-  <div style="display:flex;flex-direction:column;height:100%;">
-    <div style="position:relative;flex-shrink:0;height:50vh;background:#f2f2f6;">
-      ${prod.photos?.[0] ? `<img src="${prod.photos[0]}" id="detailMainPhoto" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;color:#c7c7cc;"></i>'}
-      <button class="back-btn" onclick="closeProductDetail()"><i class="fas fa-chevron-left"></i></button>
-      ${prod.photos && prod.photos.length > 1 ? `<button class="share-btn" onclick="shareProduct()"><i class="far fa-share-square"></i></button>` : ''}
-    </div>
-    ${prod.photos && prod.photos.length > 1 ? `<div style="display:flex;gap:10px;padding:12px 18px;overflow-x:auto;flex-shrink:0;">${prod.photos.map((p,i) => `<img src="${p}" style="width:50px;height:50px;border-radius:12px;object-fit:cover;cursor:pointer;border:2px solid ${i===0?'#007aff':'transparent'};" onclick="switchDetailPhoto('${p}',this)">`).join('')}</div>` : ''}
-    ${prod.sizes && prod.sizes.length ? `<div style="display:flex;gap:10px;flex-wrap:wrap;padding:14px 18px;flex-shrink:0;">${prod.sizes.map(s => `<button class="size-chip" onclick="addToCartWithSize('${prodId}','${escapeHtml(s)}')">${escapeHtml(s)}</button>`).join('')}</div>` : ''}
-    <div style="flex:1;overflow-y:auto;padding:0 18px 18px;color:#3a3a3c;">
-      <h4>${escapeHtml(prod.name)}</h4>
-      <p style="color:#8e8e93;">${escapeHtml(prod.article)}</p>
-      <p>${escapeHtml(prod.description || 'Описание отсутствует')}</p>
-    </div>
-    <button class="btn primary" style="margin:0 18px 18px;width:calc(100% - 36px);flex-shrink:0;" onclick="addToCartFromDetail('${prodId}')">В корзину</button>
-  </div>`;
+      <div style="position:relative;height:240px;background:#f2f2f6;">
+        ${prod.photos?.[0] ? `<img src="${prod.photos[0]}" id="detailMainPhoto" style="width:100%;height:100%;object-fit:cover;">` : '<i class="far fa-image" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;color:#c7c7cc;"></i>'}
+        <button class="back-btn" onclick="closeProductDetail()"><i class="fas fa-chevron-left"></i></button>
+        ${prod.photos && prod.photos.length > 1 ? `<button class="share-btn" onclick="shareProduct()"><i class="far fa-share-square"></i></button>` : ''}
+      </div>
+      ${prod.photos && prod.photos.length > 1 ? `<div style="display:flex;gap:10px;padding:12px 18px;overflow-x:auto;">${prod.photos.map((p,i) => `<img src="${p}" style="width:50px;height:50px;border-radius:12px;object-fit:cover;cursor:pointer;border:2px solid ${i===0?'#007aff':'transparent'};" onclick="switchDetailPhoto('${p}',this)">`).join('')}</div>` : ''}
+      ${prod.sizes && prod.sizes.length ? `<div style="display:flex;gap:10px;flex-wrap:wrap;padding:14px 18px;">${prod.sizes.map(s => `<button class="size-chip" onclick="addToCartWithSize('${prodId}','${escapeHtml(s)}')">${escapeHtml(s)}</button>`).join('')}</div>` : ''}
+      <div style="padding:0 18px 18px;color:#3a3a3c;">
+        <h4>${escapeHtml(prod.name)}</h4>
+        <p style="color:#8e8e93;">${escapeHtml(prod.article)}</p>
+        <p>${escapeHtml(prod.description || 'Описание отсутствует')}</p>
+      </div>
+      <button class="btn primary" style="margin:0 18px 18px;width:calc(100% - 36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
   };
   window.switchDetailPhoto = (src, el) => {
     const main = document.getElementById('detailMainPhoto');
@@ -1273,8 +693,7 @@ const itemsHtml = o.items.map(i => {
       order.items.forEach(item => {
         if (item.status !== 'issued') return;
         const exists = STORAGE.reviews().find(r => r.orderId === order.id && r.productId === item.productId);
-        if (exists && exists.status === 'approved') return;
-itemsForReview.push({ order, item, review: exists || null });
+        if (!exists || exists.status === 'rejected') itemsForReview.push({ order, item, review: exists || null });
       });
     });
     const badge = document.getElementById('reviewBadge');
@@ -1334,7 +753,6 @@ itemsForReview.push({ order, item, review: exists || null });
         if (btn.dataset.adminTab === 'petitions') renderPetitions();
         if (btn.dataset.adminTab === 'calendar') renderCalendar();
         if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
-        if (btn.dataset.adminTab === 'verification') renderVerificationList();
       };
     });
     document.getElementById('orderSearchInput').oninput = renderAllOrders;
@@ -1528,170 +946,78 @@ itemsForReview.push({ order, item, review: exists || null });
   };
 
   // Заказы (админ)
-    window.switchOrderView = (view) => { currentOrderView = view; document.getElementById('adminOrderDateFilter').style.display = 'block'; renderAllOrders(); };
+  window.switchOrderView = (view) => { currentOrderView = view; document.getElementById('adminOrderDateFilter').style.display = view === 'all' ? 'block' : 'none'; renderAllOrders(); };
   function populateAdminOrderDateFilter() {
     const dates = [...new Set(STORAGE.orders().map(o => o.slotTime?.split('T')[0]).filter(Boolean))].sort();
     document.getElementById('adminOrderDateFilter').innerHTML = '<option value="">Все даты</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
   }
-   window.renderAllOrders = () => {
+  window.renderAllOrders = () => {
     let orders = STORAGE.orders();
-    if (currentOrderView === 'active') {
-      orders = orders.filter(o => !o.archived && o.status === 'approved' && !o.issued);
-    } else { // archive
-      orders = orders.filter(o => o.archived);
-    }
-    const filter = document.getElementById('adminOrderDateFilter')?.value;
-    if (filter) orders = orders.filter(o => o.slotTime?.startsWith(filter));
+    if (currentOrderView === 'today') orders = orders.filter(o => !o.archived && o.slotTime?.startsWith(new Date().toISOString().slice(0,10)) && o.status === 'approved' && !o.issued);
+    else if (currentOrderView === 'all') {
+      orders = orders.filter(o => !o.archived && !o.issued);
+      const filter = document.getElementById('adminOrderDateFilter')?.value;
+      if (filter) orders = orders.filter(o => o.slotTime?.startsWith(filter));
+    } else orders = orders.filter(o => o.archived);
     const search = document.getElementById('orderSearchInput')?.value.toLowerCase() || '';
     if (search) orders = orders.filter(o => o.id.toLowerCase().includes(search) || `${o.recipient.firstName} ${o.recipient.lastName}`.toLowerCase().includes(search) || o.recipient.phone.includes(search));
-    
-    document.getElementById('allOrdersList').innerHTML = orders.map(o => {
-      const itemsHtml = o.items.map(i => {
-        const prod = STORAGE.products().find(p => p.id === i.productId);
-        const photoUrl = prod?.photos?.[0] || '';
-        return `<div style="text-align:center;flex-shrink:0;">
-          ${photoUrl ? `<img src="${photoUrl}" style="width:80px;height:106px;border-radius:16px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">` : `<div style="width:80px;height:106px;border-radius:16px;background:#f2f2f6;display:flex;align-items:center;justify-content:center;"><i class="far fa-image" style="color:#c7c7cc;font-size:20px;"></i></div>`}
-        </div>`;
-      }).join('');
-      return `<div class="order-card" onclick="openCollectionModal('${o.id}')">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <span style="font-size:17px;font-weight:700;color:#ff9500;">Сборка</span>
-            <span style="color:#8e8e93;margin-left:8px;">${new Date(o.slotTime).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</span>
-          </div>
-          <span style="color:#8e8e93;font-size:14px;">${o.id}</span>
-        </div>
-        <div style="display:flex;gap:10px;margin:12px 0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;">${itemsHtml}</div>
-        <span style="color:#007aff;font-weight:600;font-size:15px;">Подробнее →</span>
-      </div>`;
-    }).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
+    document.getElementById('allOrdersList').innerHTML = orders.map(o => `
+      <div class="order-card">
+        <div><b>${o.id}</b> · ${escapeHtml(o.recipient.firstName)} ${escapeHtml(o.recipient.lastName)} 📞${escapeHtml(o.recipient.phone)}<br>${new Date(o.slotTime).toLocaleString('ru-RU')}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">${o.items.map(i => `<span style="font-size:13px;">${escapeHtml(i.name)} (${i.status==='approved'||i.status==='issued'?'✅':i.status==='rejected'?'❌':'⏳'})</span>`).join(' ')}</div>
+        ${!o.archived ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="event.stopPropagation();openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="event.stopPropagation();cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
+      </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
   };
-  // Сборка заказа
-  window.openCollectionModal = (orderId) => {
+  window.openIssueModal = (orderId) => {
     currentIssueOrderId = orderId;
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
-    renderCollectionModal(order);
+    document.getElementById('issueOrderItems').innerHTML = order.items.filter(i => i.status === 'approved').map((i, idx) => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <input type="checkbox" id="issueItem-${idx}" checked>
+        <label for="issueItem-${idx}">${escapeHtml(i.name)}</label>
+      </div>`).join('');
     document.getElementById('issueOrderModal').style.display = 'flex';
   };
-
-  function renderCollectionModal(order) {
-    const itemsHtml = order.items.map((item, idx) => {
-      const prod = STORAGE.products().find(p => p.id === item.productId);
-      const photoUrl = prod?.photos?.[0] || '';
-      const isCollected = item.status === 'collected';
-      const isRejected = item.status === 'rejected' || item.status === 'cancelled';
-      const disabled = isCollected || isRejected;
-      return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;background:white;border-radius:16px;padding:12px;">
-        <img src="${photoUrl}" style="width:60px;height:80px;border-radius:12px;object-fit:cover;background:#f2f2f6;" onerror="this.style.display='none'">
-        <div style="flex:1;"><b>${escapeHtml(item.name)}</b></div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn small" style="padding:6px 12px;font-size:13px;border-radius:10px;background:${isCollected?'#34c759':'#f2f2f6'};color:${isCollected?'white':'#007aff'};" ${disabled ? 'disabled' : ''} onclick="collectItem('${order.id}','${item.productId}')">Собрать</button>
-          <button class="btn small" style="padding:6px 12px;font-size:13px;border-radius:10px;background:${isRejected?'#ff3b30':'#f2f2f6'};color:${isRejected?'white':'#ff3b30'};" ${disabled ? 'disabled' : ''} onclick="rejectCollectionItem('${order.id}','${item.productId}')">Отменить</button>
-        </div>
-      </div>`;
-    }).join('');
-
-    document.getElementById('collectionItems').innerHTML = itemsHtml;
-
-    const allCollected = order.items.every(i => i.status === 'collected');
-    const allRejected = order.items.every(i => i.status === 'rejected' || i.status === 'cancelled');
-    let actionsHtml = '';
-    if (allCollected) {
-      actionsHtml = `<button class="btn primary" onclick="issueReadyOrder('${order.id}')">Выдать</button>
-                     <button class="btn danger" onclick="cancelReadyOrder('${order.id}')">Отменить заказ</button>`;
-    } else if (allRejected) {
-      actionsHtml = `<p style="text-align:center;color:#8e8e93;">Все товары отменены. Заказ будет перемещён в архив.</p>`;
-      setTimeout(() => { archiveRejectedOrder(order.id); }, 800);
-    } else {
-      actionsHtml = `<p style="text-align:center;color:#8e8e93;">Примите решение по каждому товару</p>`;
-    }
-    document.getElementById('collectionActions').innerHTML = actionsHtml;
-  }
-
-  window.collectItem = (orderId, productId) => {
-    const orders = STORAGE.orders();
-    const order = orders.find(o => o.id === orderId);
+  window.confirmIssueOrder = () => {
+    const order = STORAGE.orders().find(o => o.id === currentIssueOrderId);
     if (!order) return;
-    const item = order.items.find(i => i.productId === productId && i.status === 'approved');
-    if (!item) return;
-    item.status = 'collected';
-    STORAGE.saveOrders(orders);
-    renderCollectionModal(order);
-    renderAllOrders();
-  };
-
-  window.rejectCollectionItem = (orderId, productId) => {
-    const orders = STORAGE.orders();
-    const order = orders.find(o => o.id === orderId);
-    if (!order) return;
-    const item = order.items.find(i => i.productId === productId && i.status === 'approved');
-    if (!item) return;
-    const prod = STORAGE.products().find(p => p.id === productId);
-    if (prod) { prod.availableQuantity++; STORAGE.saveProducts(STORAGE.products()); }
-    item.status = 'rejected';
-    STORAGE.saveOrders(orders);
-    renderCollectionModal(order);
-    renderAllOrders();
-  };
-
-  function archiveRejectedOrder(orderId) {
-    const orders = STORAGE.orders();
-    const order = orders.find(o => o.id === orderId);
-    if (!order) return;
-    order.status = 'rejected';
-    order.archived = true;
-    STORAGE.saveOrders(orders);
-    closeModal('issueOrderModal');
-    renderAllOrders();
-  }
-
-  window.issueReadyOrder = (orderId) => {
-    const order = STORAGE.orders().find(o => o.id === orderId);
-    if (!order) return;
-    order.items.forEach(i => { if (i.status === 'collected') i.status = 'issued'; });
-    order.issued = true;
-    order.archived = true;
+    const checkboxes = document.querySelectorAll('#issueOrderItems input[type="checkbox"]');
+    const approvedItems = order.items.filter(i => i.status === 'approved');
+    const issuedIds = new Set();
+    checkboxes.forEach((cb, idx) => { if (cb.checked) issuedIds.add(approvedItems[idx].productId); });
+    order.items.forEach(i => { if (i.status === 'approved' && issuedIds.has(i.productId)) i.status = 'issued'; });
+    order.issued = true; order.archived = true;
     STORAGE.saveOrders(STORAGE.orders());
     const user = STORAGE.users().find(u => u.id === order.userId);
     const allReviews = STORAGE.reviews();
-    order.items.forEach(item => {
-      if (item.status === 'issued' && !allReviews.some(r => r.orderId === order.id && r.productId === item.productId)) {
+    issuedIds.forEach(productId => {
+      if (!allReviews.some(r => r.orderId === order.id && r.productId === productId)) {
+        const item = order.items.find(i => i.productId === productId);
         allReviews.push({
           id: 'rev-'+Date.now()+'-'+Math.random().toString(36).slice(2),
-          userId: order.userId, orderId: order.id, productId: item.productId,
+          userId: order.userId, orderId: order.id, productId,
           userName: `${order.recipient.firstName} ${order.recipient.lastName}`,
           userAvatar: user?.avatar || '', productName: item.name,
-          productPhoto: STORAGE.products().find(p => p.id === item.productId)?.photos?.[0] || '',
+          productPhoto: STORAGE.products().find(p => p.id === productId)?.photos?.[0] || '',
           link: '', status: 'pending'
         });
       }
     });
     STORAGE.saveReviews(allReviews);
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
-    closeModal('issueOrderModal');
-    renderAllOrders();
+    closeModal('issueOrderModal'); renderAllOrders();
     alert('Заказ выдан и перемещён в архив');
   };
-
-  window.cancelReadyOrder = (orderId) => {
+  window.cancelOrder = (orderId) => {
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
-    order.items.forEach(i => {
-      if (i.status === 'collected') {
-        const prod = STORAGE.products().find(p => p.id === i.productId);
-        if (prod) prod.availableQuantity++;
-        i.status = 'rejected';
-      }
-    });
-    STORAGE.saveProducts(STORAGE.products());
-    order.status = 'cancelled';
-    order.archived = true;
-    STORAGE.saveOrders(STORAGE.orders());
-    closeModal('issueOrderModal');
-    renderAllOrders();
-    alert('Заказ отменён и перемещён в архив');
+    order.items.forEach(i => { if (i.status === 'approved') { const prod = STORAGE.products().find(p => p.id === i.productId); if (prod) prod.availableQuantity++; } });
+    order.status = 'cancelled'; order.archived = true;
+    STORAGE.saveProducts(STORAGE.products()); STORAGE.saveOrders(STORAGE.orders());
+    renderAllOrders(); alert('Заказ отменён и перемещён в архив');
   };
+
   // Отзывы (админ)
   function renderAdminReviews() {
     document.getElementById('adminReviewsList').innerHTML = STORAGE.reviews().filter(r => r.status === 'pending').map(r => `
@@ -1717,83 +1043,12 @@ itemsForReview.push({ order, item, review: exists || null });
     if (user) { user.blocked = true; STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u)); }
     renderAdminReviews(); alert('Отзыв отклонён');
   };
-  function getDocTypeLabel(type) {
-  const map = { passport:'Паспорт', birth_cert:'Свид. о рожд.', income:'Справка о доходах', disability:'Справка об инвалидности', additional:'Доп. документ' };
-  return map[type] || type;
-}
 
-function renderVerificationList() {
-  const search = document.getElementById('verificationSearch').value.toLowerCase();
-  const users = STORAGE.users().filter(u => u.role === 'user' && !u.verified &&
-    (`${u.firstName} ${u.lastName}`).toLowerCase().includes(search));
-  document.getElementById('verificationList').innerHTML = users.map(user => {
-    const docsHtml = (user.documents||[]).map(doc => `
-      <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
-        <span>${getDocTypeLabel(doc.type)}</span>
-        <img src="${doc.image}" style="width:40px;height:40px;border-radius:8px;cursor:pointer;" onclick="openFullscreenPhoto('${doc.image}')" onerror="this.style.display='none'">
-        <span style="color:${doc.status==='approved'?'green':doc.status==='rejected'?'red':'orange'}">${doc.status}</span>
-        <button class="btn primary small" onclick="verifyDocument('${user.id}','${doc.type}','approved')">✓</button>
-        <button class="btn danger small" onclick="verifyDocument('${user.id}','${doc.type}','rejected')">✗</button>
-        <button class="btn secondary small" onclick="requestAdditionalDoc('${user.id}')">Запросить доп.</button>
-      </div>`).join('');
-    return `<div class="order-card">
-      <h4>${user.firstName} ${user.lastName}</h4>
-      <p>Категория: ${user.category||'—'}</p>
-      ${docsHtml}
-    </div>`;
-  }).join('') || '<p class="text-center">Нет пользователей на верификации</p>';
-}
-
-window.verifyDocument = (userId, docType, status) => {
-  const users = STORAGE.users();
-  const user = users.find(u => u.id === userId);
-  if (!user) return;
-  const doc = user.documents.find(d => d.type === docType);
-  if (doc) doc.status = status;
-  const mandatoryTypes = ['passport'];
-  (user.familyMembers||[]).forEach(m => {
-    if (m.type === 'child' && m.age < 18) mandatoryTypes.push('birth_cert');
-  });
-  user.verified = mandatoryTypes.every(t => user.documents.some(d => d.type === t && d.status === 'approved'));
-  STORAGE.saveUsers(users);
-  renderVerificationList();
-};
-
-window.requestAdditionalDoc = (userId) => {
-  const users = STORAGE.users();
-  const user = users.find(u => u.id === userId);
-  if (!user) return;
-  user.documents.push({ type: 'additional', image: '', status: 'requested', comment: 'Запрошен дополнительный документ' });
-  STORAGE.saveUsers(users);
-  renderVerificationList();
-};
-
-  function renderRecipientsTab() {
-  document.getElementById('maxItemsLimit').value = STORAGE.maxLimit();
-  populateUserSelectForLimit();
-}
+  function renderRecipientsTab() { document.getElementById('maxItemsLimit').value = STORAGE.maxLimit(); }
   window.saveMaxItemsLimit = () => {
     const v = parseInt(document.getElementById('maxItemsLimit').value);
     if (v > 0) { STORAGE.saveMaxLimit(v); renderRecipientsTab(); } else alert('Лимит должен быть больше 0');
   };
-  function populateUserSelectForLimit() {
-  const select = document.getElementById('userSelectForLimit');
-  const users = STORAGE.users().filter(u => u.role === 'user');
-  select.innerHTML = users.map(u => `<option value="${u.id}">${u.firstName} ${u.lastName} (${u.email})</option>`).join('');
-}
-
-window.saveIndividualLimit = () => {
-  const userId = document.getElementById('userSelectForLimit').value;
-  const limitVal = document.getElementById('individualLimitInput').value;
-  const limit = limitVal ? parseInt(limitVal) : null;
-  const users = STORAGE.users();
-  const user = users.find(u => u.id === userId);
-  if (user) {
-    user.individualLimit = limit;
-    STORAGE.saveUsers(users);
-    alert('Индивидуальный лимит сохранён');
-  }
-};
   window.openFullscreenPhoto = (src) => { if (!src) return; document.getElementById('fullscreenImage').src = src; document.getElementById('fullscreenPhotoModal').style.display = 'flex'; };
 
   function updateHeaderAvatar() {
@@ -1826,24 +1081,7 @@ window.saveIndividualLimit = () => {
       else if (cur) updateUIForUser();
     }
   });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.cart-item-wrapper')) resetSwipedCart();
-  });
-  const userTabContent = document.getElementById('userTabContent');
-if (userTabContent) {
-  userTabContent.addEventListener('scroll', () => {
-    const header = document.getElementById('mainHeader');
-    if (!header) return;
-    const homeTab = document.getElementById('homeTab');
-    if (homeTab && homeTab.style.display !== 'none') {
-      if (userTabContent.scrollTop > 0) {
-        header.classList.remove('header-gradient');
-      } else {
-        header.classList.add('header-gradient');
-      }
-    }
-  });
-}
+
   // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
