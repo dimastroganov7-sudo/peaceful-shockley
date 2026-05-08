@@ -89,10 +89,60 @@
     .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
-    .login-switch { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-.switch-btn { display: flex; align-items: center; gap: 8px; padding: 10px 24px; border: none; border-radius: 30px; font-size: 15px; font-weight: 500; cursor: pointer; background: #f2f2f6; color: #8e8e93; transition: 0.2s; }
-.switch-btn i { font-size: 16px; }
-.switch-btn.active { background: #007aff; color: white; }
+    .login-switch {
+    display: flex;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.switch-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 14px 0;
+    border: none;
+
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+
+    background: #f2f2f6;
+    color: #8e8e93;
+
+    transition: 0.2s;
+    margin: 0;
+    border-radius: 0;
+}
+
+.switch-btn i {
+    font-size: 16px;
+}
+
+/* Почта */
+#switchEmail {
+    border-top-left-radius: 16px;
+}
+
+/* Телефон */
+#switchPhone {
+    border-top-right-radius: 16px;
+}
+
+/* Активная */
+.switch-btn.active {
+    background: #007aff;
+    color: white;
+}
+
+/* Поле ввода соединяется с кнопками */
+#loginIdentifierGroup {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
   </style>
 </head>
 <body>
