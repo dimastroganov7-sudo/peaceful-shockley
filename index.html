@@ -2042,24 +2042,40 @@ window.confirmDeleteUser = (id) => {
     renderOwnerUsersTable();
   };
 };
-  // ===== Новые функции для работы с категориями-кубами =====
+  // ===== Новые функции для категорий-кубов (с переименованием) =====
+let isEditingCategories = false;
+let longPressTimer = null;
 
-// Отрисовка сетки категорий
 function renderCategories() {
   const grid = document.getElementById('ownerCategoriesGrid');
   if (!grid) return;
   const settings = STORAGE.fundSettings();
   grid.innerHTML = settings.categories.map(cat => `
     <div class="category-card ${isEditingCategories ? 'editing' : ''}" 
-         data-category="${escapeHtml(cat)}"
-         onmousedown="startLongPress(event, '${escapeHtml(cat)}')" 
-         ontouchstart="startLongPress(event, '${escapeHtml(cat)}')"
-         onmouseup="cancelLongPress()" 
-         ontouchend="cancelLongPress()">
-      ${isEditingCategories ? `<div class="delete-badge" onclick="event.stopPropagation(); confirmDeleteCategory('${escapeHtml(cat)}')">×</div>` : ''}
+         data-category="${escapeHtml(cat)}">
+      ${isEditingCategories ? `<div class="delete-badge">×</div>` : ''}
       <span>${cat}</span>
     </div>
   `).join('');
+  
+  const cards = grid.querySelectorAll('.category-card');
+  cards.forEach(card => {
+    const cat = card.dataset.category;
+    card.addEventListener('mousedown', startLongPress);
+    card.addEventListener('touchstart', startLongPress);
+    card.addEventListener('mouseup', cancelLongPress);
+    card.addEventListener('touchend', cancelLongPress);
+    card.addEventListener('mouseleave', cancelLongPress);
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isEditingCategories) return;
+      if (e.target.classList.contains('delete-badge')) {
+        confirmDeleteCategory(cat);
+      } else {
+        renameCategoryPrompt(cat);
+      }
+    });
+  });
   
   const editBtn = document.getElementById('editCategoriesBtn');
   if (editBtn) {
@@ -2067,8 +2083,7 @@ function renderCategories() {
   }
 }
 
-// Долгое нажатие для входа в режим редактирования
-function startLongPress(e, category) {
+function startLongPress(e) {
   if (isEditingCategories) return;
   longPressTimer = setTimeout(() => {
     isEditingCategories = true;
@@ -2083,21 +2098,18 @@ function cancelLongPress() {
   clearTimeout(longPressTimer);
 }
 
-// Кнопка "Изменить"/"Готово"
 window.toggleEditCategories = () => {
   isEditingCategories = !isEditingCategories;
   if (!isEditingCategories) cancelLongPress();
   renderCategories();
 };
 
-// Подтверждение удаления через confirm
 window.confirmDeleteCategory = (categoryName) => {
   if (confirm(`Удалить категорию «${categoryName}»?`)) {
     deleteCategory(categoryName);
   }
 };
 
-// Само удаление категории
 function deleteCategory(name) {
   const exists = STORAGE.products().some(p => p.category === name);
   if (exists) {
@@ -2110,7 +2122,6 @@ function deleteCategory(name) {
   renderCategories();
 }
 
-// Добавление категории (вызывается по плюсу)
 window.addCategory = () => {
   const name = prompt('Название новой категории');
   if (!name) return;
@@ -2121,6 +2132,26 @@ window.addCategory = () => {
   }
   settings.categories.push(name);
   STORAGE.saveFundSettings(settings);
+  renderCategories();
+};
+
+window.renameCategoryPrompt = (oldName) => {
+  const newName = prompt('Новое название категории', oldName);
+  if (!newName || newName.trim() === '' || newName === oldName) return;
+  const trimmed = newName.trim();
+  const settings = STORAGE.fundSettings();
+  if (settings.categories.includes(trimmed) && trimmed !== oldName) {
+    alert('Категория с таким названием уже существует');
+    return;
+  }
+  const index = settings.categories.indexOf(oldName);
+  if (index !== -1) settings.categories[index] = trimmed;
+  STORAGE.saveFundSettings(settings);
+  const products = STORAGE.products();
+  products.forEach(p => {
+    if (p.category === oldName) p.category = trimmed;
+  });
+  STORAGE.saveProducts(products);
   renderCategories();
 };
   })();
