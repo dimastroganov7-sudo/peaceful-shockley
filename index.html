@@ -89,6 +89,10 @@
     .back-btn, .share-btn { position: absolute; top: 16px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); border: none; }
     .back-btn { left: 16px; }
     .share-btn { right: 16px; }
+    .login-switch { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.switch-btn { display: flex; align-items: center; gap: 8px; padding: 10px 24px; border: none; border-radius: 30px; font-size: 15px; font-weight: 500; cursor: pointer; background: #f2f2f6; color: #8e8e93; transition: 0.2s; }
+.switch-btn i { font-size: 16px; }
+.switch-btn.active { background: #007aff; color: white; }
   </style>
 </head>
 <body>
@@ -103,12 +107,25 @@
         <h2>«Три сестры»</h2>
       </div>
       <div id="loginForm">
-        <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="loginEmail" placeholder="Email" value="user@test.com"></div>
-        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="loginPassword" placeholder="Пароль" value="123456"></div>
-        <button class="btn primary" onclick="appLogin()">Войти</button>
-        <p class="link" onclick="showRegister()">Зарегистрироваться</p>
-        <p class="link" style="font-size:12px; color:#8e8e93;">Админ: admin@fond.ru / admin123</p>
-      </div>
+    <!-- переключатель способа входа -->
+    <div class="login-switch">
+        <button class="switch-btn active" id="switchEmail" onclick="setLoginMode('email')">
+            <i class="far fa-envelope"></i> Почта
+        </button>
+        <button class="switch-btn" id="switchPhone" onclick="setLoginMode('phone')">
+            <i class="fas fa-phone"></i> Телефон
+        </button>
+    </div>
+
+    <div class="input-group" id="loginIdentifierGroup">
+        <i class="far fa-envelope" id="loginIcon"></i>
+        <input type="email" id="loginIdentifier" placeholder="Email" value="user@test.com">
+    </div>
+    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="loginPassword" placeholder="Пароль" value="123456"></div>
+    <button class="btn primary" onclick="appLogin()">Войти</button>
+    <p class="link" onclick="showRegister()">Зарегистрироваться</p>
+    <p class="link" style="font-size:12px; color:#8e8e93;">Админ: admin@fond.ru / admin123</p>
+</div>
       <div id="registerForm" style="display:none;">
         <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
         <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
@@ -332,15 +349,47 @@
   // Глобальные функции
   window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
+    let loginMode = 'email';
+
+  window.setLoginMode = (mode) => {
+    loginMode = mode;
+    const emailBtn = document.getElementById('switchEmail');
+    const phoneBtn = document.getElementById('switchPhone');
+    const icon = document.getElementById('loginIcon');
+    const input = document.getElementById('loginIdentifier');
+
+    if (mode === 'email') {
+      emailBtn.classList.add('active');
+      phoneBtn.classList.remove('active');
+      icon.className = 'far fa-envelope';
+      input.type = 'email';
+      input.placeholder = 'Email';
+      input.value = 'user@test.com';
+    } else {
+      phoneBtn.classList.add('active');
+      emailBtn.classList.remove('active');
+      icon.className = 'fas fa-phone';
+      input.type = 'tel';
+      input.placeholder = 'Номер телефона';
+      input.value = '+7';
+    }
+  };
   window.closeModal = (id) => {
     document.getElementById(id).style.display = 'none';
     if (id === 'fullscreenPhotoModal') document.getElementById('fullscreenImage').src = '';
   };
-  window.appLogin = async () => {
-    const email = document.getElementById('loginEmail').value.trim();
+    window.appLogin = async () => {
+    const identifier = document.getElementById('loginIdentifier').value.trim();
     const pass = document.getElementById('loginPassword').value;
     const hashed = await hashPassword(pass);
-    const user = STORAGE.users().find(u => u.email === email && u.password === hashed);
+
+    let user;
+    if (loginMode === 'email') {
+      user = STORAGE.users().find(u => u.email === identifier && u.password === hashed);
+    } else {
+      user = STORAGE.users().find(u => u.phone === identifier && u.password === hashed);
+    }
+
     if (!user) { alert('Неверные данные'); return; }
     STORAGE.setCurrentUser(user);
     if (user.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
