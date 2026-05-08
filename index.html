@@ -224,6 +224,81 @@ input:checked + .slider:before { transform: translateX(22px); }
   min-width: 700px;        /* подберите под свою таблицу, или оставьте так */
   /* остальные стили .users-table уже есть в вашем коде – их не трогайте */
 }
+    /* Анимация тряски */
+@keyframes jiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-1.5deg); }
+  75% { transform: rotate(1.5deg); }
+}
+
+/* Карточка в режиме редактирования */
+.category-card.editing {
+  animation: jiggle 0.2s ease-in-out infinite;
+  position: relative;
+}
+
+/* Кружок удаления (скрыт по умолчанию) */
+.category-card .delete-badge {
+  display: none;
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 24px;
+  height: 24px;
+  background: #ff3b30;
+  border-radius: 50%;
+  color: white;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Показываем кружок в режиме редактирования */
+.category-card.editing .delete-badge {
+  display: block;
+}
+
+/* Сетка для категорий */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Стиль одной карточки */
+.category-card {
+  background: #ffffff;
+  border-radius: 20px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  position: relative;
+  transition: 0.2s;
+  word-break: break-word;
+  text-align: center;
+  padding: 12px;
+  font-size: 15px;
+  user-select: none;
+}
+
+/* Прозрачная карточка с плюсом */
+.category-card.add-card {
+  background: rgba(0,122,255,0.08);
+  border: 2px dashed #007aff;
+  color: #007aff;
+  font-size: 32px;
+}
+
+.category-card.add-card .add-icon {
+  font-size: 40px;
+  font-weight: 300;
+}
   </style>
 </head>
 <body>
@@ -341,12 +416,16 @@ input:checked + .slider:before { transform: translateX(22px); }
       <button class="owner-subtab" data-owner-settings="funds">Фонды</button>
     </div>
     <div id="ownerProductsSettings" class="owner-settings-pane active">
-      <div class="owner-header-row">
-        <h3>Категории товаров</h3>
-        <button class="btn-primary" onclick="addCategory()">+ Добавить категорию</button>
-      </div>
-      <div id="ownerCategoriesList"></div>
-    </div>
+  <div class="owner-header-row">
+    <h3>Категории товаров</h3>
+    <button class="btn-primary" id="editCategoriesBtn" onclick="toggleEditCategories()">Изменить</button>
+  </div>
+  <div id="ownerCategoriesGrid" class="categories-grid"></div>
+  <!-- прозрачная карточка добавления (показывается всегда) -->
+  <div class="category-card add-card" onclick="addCategory()">
+    <div class="add-icon">+</div>
+  </div>
+</div>
     <div id="ownerFundsSettings" class="owner-settings-pane">
       <div class="owner-header-row">
         <h3>Адреса фондов</h3>
@@ -584,6 +663,8 @@ input:checked + .slider:before { transform: translateX(22px); }
   'use strict';
   let pendingUserData = null;
 let editingUserId = null;
+  let isEditingCategories = false;
+let longPressTimer = null;
   function escapeHtml(str) { return String(str).replace(/[&<>"'/]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;'})[m]); }
 
   function STORAGE() { /* инициализация при первом вызове */ }
@@ -1960,6 +2041,87 @@ window.confirmDeleteUser = (id) => {
     closeModal('confirmDeleteModal');
     renderOwnerUsersTable();
   };
+};
+  // ===== Новые функции для работы с категориями-кубами =====
+
+// Отрисовка сетки категорий
+function renderCategories() {
+  const grid = document.getElementById('ownerCategoriesGrid');
+  if (!grid) return;
+  const settings = STORAGE.fundSettings();
+  grid.innerHTML = settings.categories.map(cat => `
+    <div class="category-card ${isEditingCategories ? 'editing' : ''}" 
+         data-category="${escapeHtml(cat)}"
+         onmousedown="startLongPress(event, '${escapeHtml(cat)}')" 
+         ontouchstart="startLongPress(event, '${escapeHtml(cat)}')"
+         onmouseup="cancelLongPress()" 
+         ontouchend="cancelLongPress()">
+      ${isEditingCategories ? `<div class="delete-badge" onclick="event.stopPropagation(); confirmDeleteCategory('${escapeHtml(cat)}')">×</div>` : ''}
+      <span>${cat}</span>
+    </div>
+  `).join('');
+  
+  const editBtn = document.getElementById('editCategoriesBtn');
+  if (editBtn) {
+    editBtn.textContent = isEditingCategories ? 'Готово' : 'Изменить';
+  }
+}
+
+// Долгое нажатие для входа в режим редактирования
+function startLongPress(e, category) {
+  if (isEditingCategories) return;
+  longPressTimer = setTimeout(() => {
+    isEditingCategories = true;
+    renderCategories();
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(50);
+    }
+  }, 600);
+}
+
+function cancelLongPress() {
+  clearTimeout(longPressTimer);
+}
+
+// Кнопка "Изменить"/"Готово"
+window.toggleEditCategories = () => {
+  isEditingCategories = !isEditingCategories;
+  if (!isEditingCategories) cancelLongPress();
+  renderCategories();
+};
+
+// Подтверждение удаления через confirm
+window.confirmDeleteCategory = (categoryName) => {
+  if (confirm(`Удалить категорию «${categoryName}»?`)) {
+    deleteCategory(categoryName);
+  }
+};
+
+// Само удаление категории
+function deleteCategory(name) {
+  const exists = STORAGE.products().some(p => p.category === name);
+  if (exists) {
+    alert('Нельзя удалить: есть товары этой категории');
+    return;
+  }
+  const settings = STORAGE.fundSettings();
+  settings.categories = settings.categories.filter(c => c !== name);
+  STORAGE.saveFundSettings(settings);
+  renderCategories();
+}
+
+// Добавление категории (вызывается по плюсу)
+window.addCategory = () => {
+  const name = prompt('Название новой категории');
+  if (!name) return;
+  const settings = STORAGE.fundSettings();
+  if (settings.categories.includes(name)) {
+    alert('Такая категория уже есть');
+    return;
+  }
+  settings.categories.push(name);
+  STORAGE.saveFundSettings(settings);
+  renderCategories();
 };
   })();
 </script>
