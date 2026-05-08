@@ -215,6 +215,15 @@ input:checked + .slider:before { transform: translateX(22px); }
   font-size: 12px;
   cursor: pointer;
 }
+    .users-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;               /* можно оставить 0 */
+}
+.users-table {
+  min-width: 700px;        /* подберите под свою таблицу, или оставьте так */
+  /* остальные стили .users-table уже есть в вашем коде – их не трогайте */
+}
   </style>
 </head>
 <body>
@@ -356,7 +365,9 @@ input:checked + .slider:before { transform: translateX(22px); }
     <div class="access-description">
       Владелец может ограничить доступ к некоторым разделам для пользователей. При добавлении нового пользователя, доступ будет открыт ко всем разделам по умолчанию.
     </div>
-    <div id="ownerUsersTableContainer"></div>
+    <div class="users-table-wrapper">
+  <div id="ownerUsersTableContainer"></div>
+</div>
   </div>
   <div id="ownerAnalytics" class="owner-pane">
     <div class="analytics-box">Аналитика скоро появится</div>
