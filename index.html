@@ -243,140 +243,159 @@
 <!-- ПАНЕЛЬ ВЛАДЕЛЬЦА -->
 <div id="ownerScreen" class="screen">
 
-  <header>
-    <h3>Владелец фонда</h3>
+  <div class="topbar">
 
-    <i class="fas fa-sign-out-alt"
-       onclick="logout()"
-       style="cursor:pointer;font-size:20px;">
-    </i>
-  </header>
+    <div>
 
-  <div class="admin-tabs">
-    <button class="tab-btn active" data-owner-tab="settings">
-      Настройка фонда
+      <div class="title">
+        Владелец фонда
+      </div>
+
+      <div class="subtitle">
+        Управление фондом
+      </div>
+
+    </div>
+
+    <button class="ghost-btn"
+      onclick="logout()">
+
+      Выйти
+
     </button>
 
-    <button class="tab-btn" data-owner-tab="access">
-      Доступ
-    </button>
-
-    <button class="tab-btn" data-owner-tab="analytics">
-      Аналитика
-    </button>
   </div>
 
-  <div style="flex:1;overflow-y:auto;background:#f2f2f6;">
+  <div class="admin-tabs">
 
-    <!-- НАСТРОЙКА ФОНДА -->
-    <div id="ownerSettings" class="admin-pane active">
+    <button class="tab-btn active"
+      data-owner-tab="settings">
 
-      <div class="admin-tabs" style="margin-bottom:20px;">
-        <button class="tab-btn active"
-                onclick="switchOwnerSettingsTab('categories')">
-          Товары
-        </button>
+      Настройка фонда
 
-        <button class="tab-btn"
-                onclick="switchOwnerSettingsTab('funds')">
-          Фонды
-        </button>
-      </div>
+    </button>
 
-      <!-- КАТЕГОРИИ -->
-      <div id="ownerCategoriesTab">
+    <button class="tab-btn"
+      data-owner-tab="access">
 
-        <button class="btn primary"
-                onclick="addNewCategory()">
-          + Добавить категорию
-        </button>
+      Доступ
 
-        <div id="categoriesList"></div>
+    </button>
 
-      </div>
+    <button class="tab-btn"
+      data-owner-tab="analytics">
 
-      <!-- АДРЕСА -->
-      <div id="ownerFundsTab" style="display:none;">
+      Аналитика
 
-        <button class="btn primary"
-                onclick="addFundAddress()">
-          + Добавить новый адрес
-        </button>
+    </button>
 
-        <div id="fundAddressesList"></div>
+  </div>
 
-      </div>
+  <div id="ownerSettings"
+    class="admin-pane active">
+
+    <div class="owner-subtabs">
+
+      <button class="owner-subtab active"
+        data-owner-settings="products">
+
+        Товары
+
+      </button>
+
+      <button class="owner-subtab"
+        data-owner-settings="funds">
+
+        Фонды
+
+      </button>
 
     </div>
 
-    <!-- ДОСТУП -->
-    <div id="ownerAccess"
-         class="admin-pane">
+    <div id="ownerProductsSettings"
+      class="owner-settings-pane active">
 
-      <div style="
-        background:white;
-        border-radius:24px;
-        padding:24px;
-      ">
+      <div class="owner-header-row">
 
-        <h2 style="margin-bottom:24px;">
+        <h3>Категории товаров</h3>
+
+        <button class="btn-primary"
+          onclick="addCategory()">
+
+          + Добавить категорию
+
+        </button>
+
+      </div>
+
+      <div id="ownerCategoriesList"></div>
+
+    </div>
+
+    <div id="ownerFundsSettings"
+      class="owner-settings-pane">
+
+      <div class="owner-header-row">
+
+        <h3>Адреса фондов</h3>
+
+        <button class="btn-primary"
+          onclick="addFundAddress()">
+
+          + Добавить адрес
+
+        </button>
+
+      </div>
+
+      <div id="fundAddressesList"></div>
+
+    </div>
+
+  </div>
+
+  <div id="ownerAccess"
+    class="admin-pane">
+
+    <div class="access-header">
+
+      <div>
+
+        <div class="fund-title">
           Три сестры
-        </h2>
-
-        <div style="
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          margin-bottom:20px;
-        ">
-
-          <h3>
-            Пользователи
-            (<span id="adminsCount">0</span>)
-          </h3>
-
         </div>
 
-        <button class="btn primary"
-                onclick="openInviteUserModal()">
-          + Добавить пользователя
-        </button>
-
-        <p style="
-          color:#8e8e93;
-          font-size:13px;
-          margin-bottom:20px;
-        ">
-          Владелец может ограничить доступ
-          к некоторым разделам для пользователей.
-          При добавлении нового пользователя,
-          доступ будет открыт ко всем разделам
-          по умолчанию.
-        </p>
-
-        <div id="ownerUsersTable"></div>
-
       </div>
+
+      <button class="btn-primary"
+        onclick="openCreateUserModal()">
+
+        + Добавить пользователя
+
+      </button>
 
     </div>
 
-    <!-- АНАЛИТИКА -->
-    <div id="ownerAnalytics"
-         class="admin-pane">
+    <div class="access-description">
 
-      <div style="
-        background:white;
-        border-radius:24px;
-        padding:24px;
-      ">
+      Владелец может ограничить доступ
+      к некоторым разделам для пользователей.
+      При добавлении нового пользователя,
+      доступ будет открыт ко всем разделам
+      по умолчанию.
 
-        <h3>Аналитика</h3>
+    </div>
 
-        <p style="color:#8e8e93;margin-top:12px;">
-          Раздел в разработке
-        </p>
+    <div id="usersTable"></div>
 
-      </div>
+  </div>
+
+  <div id="ownerAnalytics"
+    class="admin-pane">
+
+    <div class="analytics-box">
+
+      Аналитика скоро появится
 
     </div>
 
@@ -497,6 +516,17 @@
   STORAGE.saveCart = c => localStorage.setItem('f_cart',JSON.stringify(c));
   STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
   STORAGE.saveMaxLimit = v => localStorage.setItem('f_maxLimit',v);
+  STORAGE.fundSettings = () =>
+  JSON.parse(
+    localStorage.getItem('f_fundSettings')
+    || '{}'
+  );
+
+STORAGE.saveFundSettings = data =>
+  localStorage.setItem(
+    'f_fundSettings',
+    JSON.stringify(data)
+  );
 
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[]; let selectedPhotoFilters = new Set();
 
@@ -529,6 +559,14 @@
     email:'admin@fond.ru',
     password:await hashPassword('admin123'),
     role:'admin',
+
+permissions:{
+  products:true,
+  requests:true,
+  calendar:true,
+  orders:true,
+  reviews:true
+},
     phone:'+79000000000',
     avatar:'',
     permissions:{
@@ -559,6 +597,27 @@
   }
 ]);
     }
+    if (!localStorage.getItem('f_fundSettings')) {
+
+  STORAGE.saveFundSettings({
+
+    name:'Три сестры',
+
+    addresses:[
+      'г. Москва, ул. Ленина 15'
+    ],
+
+    categories:[
+      'Продукты',
+      'Одежда',
+      'Гигиена',
+      'Прочее'
+    ]
+
+  });
+
+}
+    
     if (!STORAGE.products().length) {
       STORAGE.saveProducts([
         {id:'p1',article:'GR001',name:'Гречка 1кг',category:'Продукты',photos:[],quantity:10,availableQuantity:10,isPlaced:true,sizes:[],description:'Качественная гречка'},
@@ -632,26 +691,31 @@
 
   showScreen('ownerScreen');
 
-  renderOwnerUsers();
+  initOwnerTabs();
 
   renderCategories();
 
-  initOwnerTabs();
+  renderFundAddresses();
+
+  renderUsersTable();
 
 }
-      if (user.role === 'owner') {
 
-  showScreen('ownerScreen');
+else if (user.role === 'admin') {
 
-  renderOwnerUsers();
+  showScreen('adminScreen');
 
-  renderCategories();
-
-  initOwnerTabs();
+  renderAdmin();
 
 }
-else if (user.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
-    else { showScreen('mainScreen'); updateUIForUser(); }
+
+else {
+
+  showScreen('mainScreen');
+
+  updateUIForUser();
+
+}
   };
   window.appRegister = async () => {
     const fn = document.getElementById('regFirstName').value.trim();
@@ -1684,18 +1748,37 @@ window.renderCategories = () => {
 
 window.renameCategory = (oldName,newName) => {
 
-  const products = STORAGE.products();
+  const settings =
+    STORAGE.fundSettings();
+
+  settings.categories =
+    settings.categories.map(c =>
+      c === oldName
+        ? newName
+        : c
+    );
+STORAGE.saveFundSettings(settings);
+
+  const products =
+    STORAGE.products();
 
   products.forEach(p => {
+
     if (p.category === oldName) {
+
       p.category = newName;
+
     }
+
   });
 
   STORAGE.saveProducts(products);
 
   renderCategories();
+
 };
+
+
 
 window.deleteCategory = (name) => {
 
@@ -1704,42 +1787,225 @@ window.deleteCategory = (name) => {
       .some(p => p.category === name);
 
   if (exists) {
-    alert('Есть товары данной категории');
+
+    alert(
+      'Есть товары данной категории'
+    );
+
     return;
+
   }
 
+  const settings =
+    STORAGE.fundSettings();
+
+  settings.categories =
+    settings.categories.filter(
+      c => c !== name
+    );
+
+  STORAGE.saveFundSettings(settings);
+
   renderCategories();
+
 };
 
-window.addNewCategory = () => {
 
-  const name = prompt('Название категории');
+
+window.addCategory = () => {
+
+  const name =
+    prompt('Название категории');
 
   if (!name) return;
 
-  const products = STORAGE.products();
+  const settings =
+    STORAGE.fundSettings();
 
-  products.push({
-    id:'cat_'+Date.now(),
-    article:'',
-    name:'Категория',
-    category:name,
-    photos:[],
-    quantity:0,
-    availableQuantity:0,
-    isPlaced:false,
-    sizes:[]
-  });
+  settings.categories.push(name);
 
-  STORAGE.saveProducts(products);
+  STORAGE.saveFundSettings(settings);
 
   renderCategories();
+
 };
 
+
+
 window.addFundAddress = () => {
-  alert('Добавление адреса фонда');
+
+  const addr =
+    prompt('Введите адрес');
+
+  if (!addr) return;
+
+  const settings =
+    STORAGE.fundSettings();
+
+  settings.addresses.push(addr);
+
+  STORAGE.saveFundSettings(settings);
+
+  renderFundAddresses();
+
 };
-})();
+
+
+
+function initOwnerTabs() {
+
+  document
+    .querySelectorAll('[data-owner-tab]')
+    .forEach(btn => {
+
+      btn.onclick = () => {
+
+        document
+          .querySelectorAll('[data-owner-tab]')
+          .forEach(b =>
+            b.classList.remove('active')
+          );
+
+        btn.classList.add('active');
+
+        document
+          .querySelectorAll('#ownerScreen .admin-pane')
+          .forEach(p =>
+            p.classList.remove('active')
+          );
+
+        const tab =
+          btn.dataset.ownerTab;
+
+        document
+          .getElementById(
+            'owner' +
+            tab.charAt(0)
+              .toUpperCase() +
+            tab.slice(1)
+          )
+          .classList.add('active');
+
+      };
+
+    });
+
+}
+
+
+
+function renderCategories() {
+
+  const box =
+    document.getElementById(
+      'ownerCategoriesList'
+    );
+
+  if (!box) return;
+
+  const settings =
+    STORAGE.fundSettings();
+
+  box.innerHTML = '';
+
+  settings.categories.forEach(cat => {
+
+    const row =
+      document.createElement('div');
+
+    row.className = 'category-row';
+
+    row.innerHTML = `
+
+      <input
+        value="${cat}"
+        class="input">
+
+      <button class="danger-btn">
+
+        Удалить
+
+      </button>
+
+    `;
+
+    const input =
+      row.querySelector('input');
+
+    input.onchange = () => {
+
+      renameCategory(
+        cat,
+        input.value
+      );
+
+    };
+
+    const btn =
+      row.querySelector('button');
+
+    btn.onclick = () =>
+      deleteCategory(cat);
+
+    box.appendChild(row);
+
+  });
+
+}
+
+
+
+function renderFundAddresses() {
+
+  const box =
+    document.getElementById(
+      'fundAddressesList'
+    );
+
+  if (!box) return;
+
+  const settings =
+    STORAGE.fundSettings();
+
+  box.innerHTML = '';
+
+  settings.addresses.forEach(
+    (addr,index) => {
+
+      const row =
+        document.createElement('div');
+
+      row.className =
+        'address-row';
+
+      row.innerHTML = `
+
+        <input
+          value="${addr}"
+          class="input">
+
+      `;
+
+      const input =
+        row.querySelector('input');
+
+      input.onchange = () => {
+
+        settings.addresses[index] =
+          input.value;
+
+        STORAGE.saveFundSettings(
+          settings
+        );
+
+      };
+
+      box.appendChild(row);
+
+    }
+  );
+
+}  
 </script>
 </body>
 </html>
