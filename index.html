@@ -636,6 +636,19 @@
 
   renderCategories();
 
+  initOwnerTabs();
+
+}
+      if (user.role === 'owner') {
+
+  showScreen('ownerScreen');
+
+  renderOwnerUsers();
+
+  renderCategories();
+
+  initOwnerTabs();
+
 }
 else if (user.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
     else { showScreen('mainScreen'); updateUIForUser(); }
