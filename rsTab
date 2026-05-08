@@ -206,6 +206,15 @@ input:checked + .slider:before { transform: translateX(22px); }
 .topbar .title { font-size: 20px; font-weight: 600; }
 .topbar .subtitle { font-size: 12px; color: #8e8e93; }
 .ghost-btn { background: none; border: none; color: #007aff; font-size: 15px; cursor: pointer; }
+    .danger-btn {
+  background: #ff3b30;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
   </style>
 </head>
 <body>
@@ -1737,6 +1746,47 @@ function renderFundAddresses() {
   );
 
 }
+  window.addCategory = () => {
+  const name = prompt('Название категории');
+  if (!name) return;
+  const settings = STORAGE.fundSettings();
+  settings.categories.push(name);
+  STORAGE.saveFundSettings(settings);
+  renderCategories();
+};
+
+window.deleteCategory = (name) => {
+  const exists = STORAGE.products().some(p => p.category === name);
+  if (exists) {
+    alert('Есть товары данной категории');
+    return;
+  }
+  const settings = STORAGE.fundSettings();
+  settings.categories = settings.categories.filter(c => c !== name);
+  STORAGE.saveFundSettings(settings);
+  renderCategories();
+};
+
+window.renameCategory = (oldName, newName) => {
+  const settings = STORAGE.fundSettings();
+  settings.categories = settings.categories.map(c => c === oldName ? newName : c);
+  STORAGE.saveFundSettings(settings);
+  const products = STORAGE.products();
+  products.forEach(p => {
+    if (p.category === oldName) p.category = newName;
+  });
+  STORAGE.saveProducts(products);
+  renderCategories();
+};
+
+window.addFundAddress = () => {
+  const addr = prompt('Введите адрес');
+  if (!addr) return;
+  const settings = STORAGE.fundSettings();
+  settings.addresses.push(addr);
+  STORAGE.saveFundSettings(settings);
+  renderFundAddresses();
+};
   function renderOwnerUsersTable() {
   const container = document.getElementById('ownerUsersTableContainer');
   if (!container) return;
