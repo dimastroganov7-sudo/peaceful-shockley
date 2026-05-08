@@ -1773,39 +1773,6 @@ function renderFundAddresses() {
   );
 
 }
-  window.addCategory = () => {
-  const name = prompt('Название категории');
-  if (!name) return;
-  const settings = STORAGE.fundSettings();
-  settings.categories.push(name);
-  STORAGE.saveFundSettings(settings);
-  renderCategories();
-};
-
-window.deleteCategory = (name) => {
-  const exists = STORAGE.products().some(p => p.category === name);
-  if (exists) {
-    alert('Есть товары данной категории');
-    return;
-  }
-  const settings = STORAGE.fundSettings();
-  settings.categories = settings.categories.filter(c => c !== name);
-  STORAGE.saveFundSettings(settings);
-  renderCategories();
-};
-
-window.renameCategory = (oldName, newName) => {
-  const settings = STORAGE.fundSettings();
-  settings.categories = settings.categories.map(c => c === oldName ? newName : c);
-  STORAGE.saveFundSettings(settings);
-  const products = STORAGE.products();
-  products.forEach(p => {
-    if (p.category === oldName) p.category = newName;
-  });
-  STORAGE.saveProducts(products);
-  renderCategories();
-};
-
 window.addFundAddress = () => {
   const addr = prompt('Введите адрес');
   if (!addr) return;
