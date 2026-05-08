@@ -289,7 +289,7 @@
   STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
   STORAGE.saveMaxLimit = v => localStorage.setItem('f_maxLimit',v);
 
-  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[];
+  let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[]; let selectedPhotoFilters = new Set();
 
   // Хеширование
   async function hashPassword(pwd) {
