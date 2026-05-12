@@ -1065,11 +1065,8 @@ if (user.role === 'admin') {
   renderAdmin();
   return;
 }
-
 showScreen('mainScreen');
-
-if (typeof renderMain === 'function') {
-  renderMain();
+updateUIForUser();
 }
 
 if (typeof renderAdmin === 'function') {
@@ -1272,7 +1269,6 @@ window.submitRegistration = async () => {
     if (tabEl) tabEl.style.display = 'block';
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
     if (tabId === 'cart') { renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
-    if (tabId === 'profile') renderProfile();
     if (tabId === 'orders') { 
       document.getElementById('ordersListView').style.display = 'block'; 
       document.getElementById('orderDetailsView').style.display = 'none'; 
@@ -1652,30 +1648,39 @@ window.submitRegistration = async () => {
   };
 
   // Скрываем/показываем вкладки по правам
-  document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
+    document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
     const tab = btn.dataset.adminTab;
     const permKey = tabToPerm[tab];
     if (permKey && perms[permKey]) {
       btn.style.display = '';
- } else {
-  btn.style.display = 'none';
-  if (btn.classList.contains('active')) {
-    btn.classList.remove('active');
-    // Ищем любую другую видимую вкладку
-    const anyVisible = document.querySelector('#adminScreen .admin-tabs .tab-btn:not([style*="display: none"])');
-    if (anyVisible) {
-      anyVisible.classList.add('active');
+    } else {
+      btn.style.display = 'none';
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+      }
+    }
+  });
+
+  // Если ни одна вкладка не активна, активируем первую видимую
+  const anyActive = document.querySelector('#adminScreen .admin-tabs .tab-btn.active');
+  if (!anyActive) {
+    const firstVisible = document.querySelector('#adminScreen .admin-tabs .tab-btn:not([style*="display: none"])');
+    if (firstVisible) {
+      firstVisible.classList.add('active');
       document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
-      const visibleTabId = 'admin' + anyVisible.dataset.adminTab.charAt(0).toUpperCase() + anyVisible.dataset.adminTab.slice(1);
+      const visibleTabId = 'admin' + firstVisible.dataset.adminTab.charAt(0).toUpperCase() + firstVisible.dataset.adminTab.slice(1);
       const visiblePane = document.getElementById(visibleTabId);
       if (visiblePane) visiblePane.classList.add('active');
     } else {
-      // Если не осталось ни одной видимой вкладки — убираем все панели
+      // Совсем нет доступных разделов – показываем предупреждение
       document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+      const firstPane = document.querySelector('#adminScreen .admin-pane');
+      if (firstPane) {
+        firstPane.classList.add('active');
+        firstPane.innerHTML = '<p>Нет доступных разделов. Обратитесь к владельцу фонда.</p>';
+      }
     }
   }
-}
-  });
 
   renderAdminProducts();
   renderAdminSlots();
