@@ -1104,45 +1104,57 @@ else {
     const bottomNav = document.querySelector('.bottom-nav');
     if (bottomNav) {
         bottomNav.style.display = (id === 'mainScreen') ? 'flex' : 'none';
+        if (id === 'mainScreen') {
+            // Перевешиваем обработчики лупы после того, как панель стала видимой
+            initLoupe();
+        }
     }
 }
 
   // Навигация
 // Навигация с эффектом лупы
-  const bottomNav = document.querySelector('.bottom-nav');
-  const loupe = document.getElementById('navLoupe');
-  let loupeActive = false;
-  let currentLoupeTab = null;
+  function initLoupe() {
+    const bottomNav = document.querySelector('.bottom-nav');
+    const loupe = document.getElementById('navLoupe');
+    if (!bottomNav || !loupe) return;
 
-  function moveLoupeToTab(tabElement) {
-    if (!tabElement || !loupe) return;
-    const rect = tabElement.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2 + 4; // чуть ниже иконки
-    loupe.style.left = centerX + 'px';
-    loupe.style.top = centerY + 'px';
-    loupe.style.opacity = '1';
-  }
+    let loupeActive = false;
+    let currentLoupeTab = null;
 
-  function hideLoupe() {
-    if (loupe) loupe.style.opacity = '0';
-    loupeActive = false;
-    currentLoupeTab = null;
-  }
-
-  function getNavItemFromPoint(x, y) {
-    const items = document.querySelectorAll('.bottom-nav .nav-item');
-    for (let item of items) {
-      const rect = item.getBoundingClientRect();
-      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-        return item;
-      }
+    function moveLoupeToTab(tabElement) {
+      if (!tabElement || !loupe) return;
+      const rect = tabElement.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2 + 4; // чуть ниже иконки
+      loupe.style.left = centerX + 'px';
+      loupe.style.top = centerY + 'px';
+      loupe.style.opacity = '1';
     }
-    return null;
-  }
 
-  if (bottomNav && loupe) {
-    bottomNav.addEventListener('touchstart', (e) => {
+    function hideLoupe() {
+      if (loupe) loupe.style.opacity = '0';
+      loupeActive = false;
+      currentLoupeTab = null;
+    }
+
+    function getNavItemFromPoint(x, y) {
+      const items = document.querySelectorAll('.bottom-nav .nav-item');
+      for (let item of items) {
+        const rect = item.getBoundingClientRect();
+        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+          return item;
+        }
+      }
+      return null;
+    }
+
+    // Удаляем старые обработчики, чтобы не дублировались
+    bottomNav.removeEventListener('touchstart', onTouchStart);
+    bottomNav.removeEventListener('touchmove', onTouchMove);
+    bottomNav.removeEventListener('touchend', onTouchEnd);
+    bottomNav.removeEventListener('touchcancel', hideLoupe);
+
+    function onTouchStart(e) {
       const touch = e.touches[0];
       const item = getNavItemFromPoint(touch.clientX, touch.clientY);
       if (item) {
@@ -1150,9 +1162,9 @@ else {
         currentLoupeTab = item;
         moveLoupeToTab(item);
       }
-    });
+    }
 
-    bottomNav.addEventListener('touchmove', (e) => {
+    function onTouchMove(e) {
       if (!loupeActive) return;
       e.preventDefault();
       const touch = e.touches[0];
@@ -1161,18 +1173,24 @@ else {
         currentLoupeTab = item;
         moveLoupeToTab(item);
       }
-    });
+    }
 
-    bottomNav.addEventListener('touchend', (e) => {
+    function onTouchEnd(e) {
       if (!loupeActive) return;
       if (currentLoupeTab) {
         switchTab(currentLoupeTab.dataset.tab);
       }
       hideLoupe();
-    });
+    }
 
+    bottomNav.addEventListener('touchstart', onTouchStart);
+    bottomNav.addEventListener('touchmove', onTouchMove);
+    bottomNav.addEventListener('touchend', onTouchEnd);
     bottomNav.addEventListener('touchcancel', hideLoupe);
   }
+
+  // Вызвать при старте, если панель уже видна (но она скрыта, поэтому не критично)
+  initLoupe();
   window.switchTab = (tabId) => {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const ni = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
