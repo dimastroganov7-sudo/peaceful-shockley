@@ -2458,13 +2458,13 @@ window.renderFamilyProfile = () => {
   if (!user) return;
   document.getElementById('familyProfileMembers').innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-      <div class="initials-circle">${user.firstName.charAt(0)}${user.lastName.charAt(0)}</div>
-      <div><strong>${user.firstName} ${user.lastName}</strong><br>Вы (владелец профиля)</div>
+      <div class="initials-circle">${(user.firstName||'?').charAt(0)}${(user.lastName||'?').charAt(0)}</div>
+      <div><strong>${user.firstName || ''} ${user.lastName || ''}</strong><br>Вы (владелец профиля)</div>
     </div>
     ${(user.family||[]).map(m => `
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        <div class="initials-circle">${m.firstName.charAt(0)}${m.lastName.charAt(0)}</div>
-        <div><strong>${m.firstName} ${m.lastName}</strong><br>${m.type} · ${m.age} лет</div>
+        <div class="initials-circle">${(m.firstName||'?').charAt(0)}${(m.lastName||'?').charAt(0)}</div>
+        <div><strong>${m.firstName || ''} ${m.lastName || ''}</strong><br>${m.type} · ${m.age} лет</div>
       </div>
     `).join('')}
   `;
