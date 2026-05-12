@@ -316,18 +316,18 @@ input:checked + .slider:before { transform: translateX(22px); }
 .category-card.add-card .add-icon {
   font-size: 40px;
   font-weight: 300;
-}/* Стеклянная квадратная лупа */
+}/* Стеклянная квадратная лупа – эффект капли */
 .glass-loupe {
   position: fixed;
-  width: 62px;
-  height: 62px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(12px) saturate(160%);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(4px) saturate(120%);
+  -webkit-backdrop-filter: blur(4px) saturate(120%);
   box-shadow: 
-    0 8px 28px rgba(0,0,0,0.12),
-    inset 0 0 0 1.5px rgba(255,255,255,0.7);
+    0 8px 28px rgba(0,0,0,0.08),
+    inset 0 0 0 1px rgba(255,255,255,0.6);
   pointer-events: none;
   z-index: 101;
   opacity: 0;
@@ -346,13 +346,13 @@ input:checked + .slider:before { transform: translateX(22px); }
   height: 200%;
   background: conic-gradient(
     from 0deg,
-    rgba(255,0,0,0.25),
-    rgba(255,255,0,0.2),
-    rgba(0,255,0,0.25),
-    rgba(0,255,255,0.2),
-    rgba(0,0,255,0.25),
-    rgba(255,0,255,0.2),
-    rgba(255,0,0,0.25)
+    rgba(255,0,0,0.12),
+    rgba(255,255,0,0.1),
+    rgba(0,255,0,0.12),
+    rgba(0,255,255,0.1),
+    rgba(0,0,255,0.12),
+    rgba(255,0,255,0.1),
+    rgba(255,0,0,0.12)
   );
   animation: rainbowSpin 4s linear infinite;
   z-index: 0;
@@ -366,14 +366,14 @@ input:checked + .slider:before { transform: translateX(22px); }
   left: 6px;
   right: 6px;
   bottom: 6px;
-  border-radius: 14px;
+  border-radius: 16px;
   background: linear-gradient(
     135deg,
-    rgba(255,255,255,0.5) 0%,
+    rgba(255,255,255,0.45) 0%,
     rgba(255,255,255,0.1) 40%,
     rgba(255,255,255,0.0) 60%
   );
-  box-shadow: inset 0 0 12px rgba(255,255,255,0.25);
+  box-shadow: inset 0 0 12px rgba(255,255,255,0.3);
   z-index: 1;
   pointer-events: none;
 }
@@ -381,6 +381,18 @@ input:checked + .slider:before { transform: translateX(22px); }
 @keyframes rainbowSpin {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Увеличение иконки под лупой */
+.nav-item.loupe-active {
+  transform: scale(1.2);
+  transition: transform 0.12s ease;
+  color: #007aff;
+}
+
+.nav-item.loupe-active i {
+  transform: scale(1.15);
+  transition: transform 0.12s ease;
 }
   </style>
 </head>
@@ -1175,6 +1187,12 @@ else {
 
     function moveLoupeToTab(tabElement) {
       if (!tabElement || !loupe) return;
+      // Снимаем класс с предыдущей вкладки
+      if (currentLoupeTab && currentLoupeTab !== tabElement) {
+        currentLoupeTab.classList.remove('loupe-active');
+      }
+      // Добавляем класс на новую
+      tabElement.classList.add('loupe-active');
       const rect = tabElement.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2 + 4; // чуть ниже иконки
@@ -1185,6 +1203,9 @@ else {
 
     function hideLoupe() {
       if (loupe) loupe.style.opacity = '0';
+      if (currentLoupeTab) {
+        currentLoupeTab.classList.remove('loupe-active');
+      }
       loupeActive = false;
       currentLoupeTab = null;
     }
