@@ -1274,15 +1274,24 @@ else {
   const user = STORAGE.currentUser();
   const perms = user?.permissions || {};
 
+  // Сопоставление: значение data-admin-tab → ключ в объекте прав доступа
+  const tabToPerm = {
+    products: 'products',
+    petitions: 'petitions',
+    calendar: 'calendar',
+    history: 'orders',      // ← «Заказы»
+    recipients: 'reviews'   // ← «Лимиты/Отзывы»
+  };
+
   // Скрываем/показываем вкладки по правам
   document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
     const tab = btn.dataset.adminTab;
     if (tab === 'products') return;                         // Товары видны всегда
-    if (perms[tab]) {
-      btn.style.display = '';                               // показываем
+    const permKey = tabToPerm[tab];
+    if (permKey && perms[permKey]) {
+      btn.style.display = '';
     } else {
-      btn.style.display = 'none';                           // прячем
-      // если вкладка была активна – переключаем на «Товары»
+      btn.style.display = 'none';
       if (btn.classList.contains('active')) {
         btn.classList.remove('active');
         const prodBtn = document.querySelector('#adminScreen .tab-btn[data-admin-tab="products"]');
