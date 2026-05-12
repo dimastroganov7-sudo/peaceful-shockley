@@ -293,10 +293,6 @@ input:checked + .slider:before { transform: translateX(22px); }
   font-size: 40px;
   font-weight: 300;
 }
-@keyframes ballPulse {
-  0% { background: radial-gradient(circle at 30% 30%, #fff, #007aff); }
-  100% { background: radial-gradient(circle at 30% 30%, #fff, #5856d6); }
-}
   </style>
 </head>
 <body>
@@ -338,23 +334,29 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
         <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
         <button class="btn primary" onclick="appRegister()">Зарегистрироваться</button>
-        <div id="loginBall" style="
-  position: absolute;
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #007aff);
-  box-shadow: 0 4px 15px rgba(0,122,255,0.4);
-  cursor: pointer;
-  z-index: 50;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  color: white;
-  user-select: none;
-  touch-action: none;
-  animation: ballPulse 2s infinite alternate;
-" onclick="showLogin()">
-  <i class="fas fa-door-open"></i>
-</div>
+        <div style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 20px; margin-bottom: 16px;">
+          <!-- Сам шарик -->
+          <div id="loginBall" style="
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: #007aff;
+            box-shadow: 0 8px 20px rgba(0,122,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.2);
+            cursor: grab;
+            z-index: 50;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            color: white;
+            user-select: none;
+            touch-action: none;
+            transition: none;
+          ">
+            <i class="fas fa-door-open"></i>
+          </div>
+          <!-- Подпись -->
+          <div style="margin-top: 8px; font-size: 14px; font-weight: 600; color: #007aff; pointer-events: none;">
+            Войти
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -818,46 +820,156 @@ STORAGE.saveFundSettings = data =>
   }
 
   // Глобальные функции
-  window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; // Шарик для входа: перетаскивание
-const ball = document.getElementById('loginBall');
-if (ball) {
-  let isDragging = false;
-  let startX, startY, ballX = 0, ballY = 0;
-  ball.style.position = 'absolute';
+  window.showRegister = () => {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('registerForm').style.display = 'block';
 
-  ball.addEventListener('touchstart', e => {
+  const ball = document.getElementById('loginBall');
+  if (!ball) return;
+
+  // Параметры физики
+  let ballX = 0, ballY = 0;          // текущее положение (translate)
+  let velocityX = 0, velocityY = 0;  // скорость
+  const friction = 0.96;            // трение
+  const bounce = 0.6;               // упругость отскока
+  const minVelocity = 0.1;
+  let animationId = null;
+  let isDragging = false;
+  let startX, startY, startBallX, startBallY;
+  let lastMoveTime = 0;
+  let lastMoveX = 0, lastMoveY = 0;
+
+  const container = document.getElementById('registerForm');
+
+  function getContainerBounds() {
+    const rect = container.getBoundingClientRect();
+    return {
+      minX: 0,
+      maxX: rect.width - 64,
+      minY: 0,
+      maxY: rect.height - 64
+    };
+  }
+
+  function animate() {
+    const bounds = getContainerBounds();
+    ballX += velocityX;
+    ballY += velocityY;
+
+    if (ballX < bounds.minX) {
+      ballX = bounds.minX;
+      velocityX = -velocityX * bounce;
+    } else if (ballX > bounds.maxX) {
+      ballX = bounds.maxX;
+      velocityX = -velocityX * bounce;
+    }
+
+    if (ballY < bounds.minY) {
+      ballY = bounds.minY;
+      velocityY = -velocityY * bounce;
+    } else if (ballY > bounds.maxY) {
+      ballY = bounds.maxY;
+      velocityY = -velocityY * bounce;
+    }
+
+    velocityX *= friction;
+    velocityY *= friction;
+
+    if (Math.abs(velocityX) < minVelocity && Math.abs(velocityY) < minVelocity) {
+      velocityX = 0;
+      velocityY = 0;
+      stopAnimation();
+    }
+
+    ball.style.transform = `translate(${ballX}px, ${ballY}px)`;
+
+    if (animationId) {
+      animationId = requestAnimationFrame(animate);
+    }
+  }
+
+  function startAnimation() {
+    if (animationId) return;
+    animationId = requestAnimationFrame(animate);
+  }
+
+  function stopAnimation() {
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+  }
+
+  function resetBall() {
+    stopAnimation();
+    ballX = 0;
+    ballY = 0;
+    velocityX = 0;
+    velocityY = 0;
+    ball.style.transform = 'translate(0px, 0px)';
+  }
+
+  // Тач-события
+  ball.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    stopAnimation();
+    isDragging = false;
     const touch = e.touches[0];
     startX = touch.clientX;
     startY = touch.clientY;
-    const rect = ball.getBoundingClientRect();
-    ballX = rect.left;
-    ballY = rect.top;
-    isDragging = false;
+    const style = window.getComputedStyle(ball);
+    const matrix = new DOMMatrixReadOnly(style.transform);
+    startBallX = matrix.m41;
+    startBallY = matrix.m42;
+    lastMoveTime = Date.now();
+    lastMoveX = touch.clientX;
+    lastMoveY = touch.clientY;
     ball.style.transition = 'none';
   });
 
-  ball.addEventListener('touchmove', e => {
+  ball.addEventListener('touchmove', (e) => {
     e.preventDefault();
     if (!isDragging) {
-      isDragging = true;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        isDragging = true;
+      }
     }
-    const touch = e.touches[0];
-    const dx = touch.clientX - startX;
-    const dy = touch.clientY - startY;
-    ball.style.left = (ballX + dx) + 'px';
-    ball.style.top = (ballY + dy) + 'px';
+    if (isDragging) {
+      const touch = e.touches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      ballX = startBallX + dx;
+      ballY = startBallY + dy;
+      const bounds = getContainerBounds();
+      ballX = Math.min(Math.max(ballX, bounds.minX), bounds.maxX);
+      ballY = Math.min(Math.max(ballY, bounds.minY), bounds.maxY);
+      ball.style.transform = `translate(${ballX}px, ${ballY}px)`;
+
+      const now = Date.now();
+      const dt = now - lastMoveTime;
+      if (dt > 0) {
+        velocityX = (touch.clientX - lastMoveX) / dt * 10;
+        velocityY = (touch.clientY - lastMoveY) / dt * 10;
+      }
+      lastMoveX = touch.clientX;
+      lastMoveY = touch.clientY;
+      lastMoveTime = now;
+    }
   });
 
-  ball.addEventListener('touchend', e => {
+  ball.addEventListener('touchend', (e) => {
     if (!isDragging) {
-      // тап, а не перетаскивание — открываем вход
       showLogin();
+      return;
     }
+    startAnimation();
     isDragging = false;
-    ball.style.transition = 'transform 0.1s';
   });
-}};
+
+  resetBall();
+};
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
     let loginMode = 'email';
 
