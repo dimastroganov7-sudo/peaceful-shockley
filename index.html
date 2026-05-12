@@ -293,6 +293,10 @@ input:checked + .slider:before { transform: translateX(22px); }
   font-size: 40px;
   font-weight: 300;
 }
+@keyframes ballPulse {
+  0% { background: radial-gradient(circle at 30% 30%, #fff, #007aff); }
+  100% { background: radial-gradient(circle at 30% 30%, #fff, #5856d6); }
+}
   </style>
 </head>
 <body>
@@ -334,7 +338,23 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
         <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
         <button class="btn primary" onclick="appRegister()">Зарегистрироваться</button>
-        <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
+        <div id="loginBall" style="
+  position: absolute;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #007aff);
+  box-shadow: 0 4px 15px rgba(0,122,255,0.4);
+  cursor: pointer;
+  z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  color: white;
+  user-select: none;
+  touch-action: none;
+  animation: ballPulse 2s infinite alternate;
+" onclick="showLogin()">
+  <i class="fas fa-door-open"></i>
+</div>
       </div>
     </div>
   </div>
