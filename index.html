@@ -424,28 +424,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
   </div>
 </div>
-<!-- Экран ожидания модерации -->
-<div id="pendingScreen" class="screen">
-  <div style="padding:40px; text-align:center;">
-    <i class="fas fa-clock" style="font-size:64px; color:#ffcc00; margin-bottom:20px;"></i>
-    <h2>Ваш профиль на модерации</h2>
-    <p style="color:#8e8e93; margin-top:12px;">Владелец фонда проверит данные и откроет вам доступ к помощи.</p>
-    <button class="btn primary" style="margin-top:30px;" onclick="logout()">Выйти</button>
-  </div>
-</div>
 
-<!-- Экран профиля семьи -->
-<div id="familyProfileScreen" class="screen">
-  <header>
-   <button class="ghost-btn" onclick="showScreen('mainScreen');
-try { updateUIForUser(); } catch(e) { console.error(e); }">
-      <i class="fas fa-chevron-left"></i> Назад
-    </button>
-    <h3>Моя семья</h3>
-    <div></div>
-  </header>
-  <div class="tab-content" id="familyProfileMembers"></div>
-</div>
   <!-- ОСНОВНОЙ ЭКРАН ПОЛЬЗОВАТЕЛЯ -->
   <div id="mainScreen" class="screen">
     <header>
@@ -460,14 +439,13 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         </div>
         <div class="products-grid" id="productsContainer"></div>
       </div>
-           <div id="cartTab" class="tab-pane">
+      <div id="cartTab" class="tab-pane">
         <h4 style="margin-bottom:14px;">Корзина помощи</h4>
         <div id="cartItems"></div>
         <div class="map-container" id="cartMap"></div>
         <div class="slot-select"><select id="timeSlotSelect"></select></div>
         <button class="btn primary" onclick="createOrder()">Отправить на согласование</button>
       </div>
-      <div id="ordersTab" class="tab-pane">
         <div id="ordersListView"></div>
         <div id="orderDetailsView" style="display:none;"></div>
       </div>
@@ -805,17 +783,12 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
 </div>
 <script>
 (function(){
-  'use strict'; window.onerror = function(msg, url, line) {
-  alert('Ошибка в строке ' + line + ': ' + msg);
-  return false;
-};
+  'use strict';
   let pendingUserData = null;
-  let editingUserId = null;
+let editingUserId = null;
   let editingFamilyId = null;
-
-  STORAGE.families = () => JSON.parse(localStorage.getItem('f_families')||'[]');
-  STORAGE.saveFamilies = f => localStorage.setItem('f_families', JSON.stringify(f));
-
+STORAGE.families = () => JSON.parse(localStorage.getItem('f_families')||'[]');
+STORAGE.saveFamilies = f => localStorage.setItem('f_families', JSON.stringify(f));
   function escapeHtml(str) { return String(str).replace(/[&<>"'/]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;'})[m]); }
 
   function STORAGE() { /* инициализация при первом вызове */ }
@@ -829,64 +802,106 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
   STORAGE.saveOrders = o => localStorage.setItem('f_orders',JSON.stringify(o));
   STORAGE.reviews = () => JSON.parse(localStorage.getItem('f_reviews')||'[]');
   STORAGE.saveReviews = r => localStorage.setItem('f_reviews',JSON.stringify(r));
-  STORAGE.currentUser = () => {
-    try {
-      return JSON.parse(sessionStorage.getItem('f_curUser') || 'null');
-    } catch (e) {
-      console.error(e);
-      sessionStorage.removeItem('f_curUser');
-      return null;
-    }
-  };
-  STORAGE.setCurrentUser = u => {
-    if (!u) {
-      sessionStorage.removeItem('f_curUser');
-      return;
-    }
-    sessionStorage.setItem('f_curUser', JSON.stringify(u));
-  };
+  STORAGE.currentUser = () => JSON.parse(sessionStorage.getItem('f_curUser')||'null');
+  STORAGE.setCurrentUser = u => sessionStorage.setItem('f_curUser',JSON.stringify(u));
   STORAGE.cart = () => JSON.parse(localStorage.getItem('f_cart')||'[]');
   STORAGE.saveCart = c => localStorage.setItem('f_cart',JSON.stringify(c));
   STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
   STORAGE.saveMaxLimit = v => localStorage.setItem('f_maxLimit',v);
-  STORAGE.fundSettings = () => JSON.parse(localStorage.getItem('f_fundSettings') || '{}');
-  STORAGE.saveFundSettings = data => localStorage.setItem('f_fundSettings', JSON.stringify(data));
+  STORAGE.fundSettings = () =>
+  JSON.parse(
+    localStorage.getItem('f_fundSettings')
+    || '{}'
+  );
+
+STORAGE.saveFundSettings = data =>
+  localStorage.setItem(
+    'f_fundSettings',
+    JSON.stringify(data)
+  );
 
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[]; let selectedPhotoFilters = new Set();
 
+  // Хеширование
   async function hashPassword(pwd) {
-    // Временный простой хеш для теста, если crypto.subtle недоступен
-    try {
-        const enc = new TextEncoder().encode(pwd);
-        const hash = await crypto.subtle.digest('SHA-256', enc);
-        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
-    } catch (e) {
-        // Fallback: простой хеш, небезопасный, только для проверки
-        let hash = 0;
-        for (let i = 0; i < pwd.length; i++) {
-            const char = pwd.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash |= 0;
-        }
-        return 'fb_' + Math.abs(hash).toString(16).padStart(8, '0');
-    }
-}
+    const enc = new TextEncoder().encode(pwd);
+    const hash = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
 
+  // Инициализация данных
   async function initData() {
     if (!STORAGE.users().length) {
       STORAGE.saveUsers([
-        { id:'1', firstName:'Иван', lastName:'Иванов', email:'user@test.com', password:await hashPassword('123456'), phone:'+79161234567', role:'user', avatar:'' },
-        { id:'adm', firstName:'Админ', lastName:'Фонда', email:'admin@fond.ru', password:await hashPassword('admin123'), role:'admin', phone:'+79000000000', avatar:'', permissions:{ products:true, petitions:true, calendar:true, orders:true, reviews:true } },
-        { id:'owner_1', firstName:'Владелец', lastName:'Фонда', email:'stroganova@fond.ru', password:await hashPassword('231599'), phone:'+79055706269', role:'owner', avatar:'', permissions:{ products:true, petitions:true, calendar:true, orders:true, reviews:true } }
-      ]);
+  {
+    id:'1',
+    firstName:'Иван',
+    lastName:'Иванов',
+    email:'user@test.com',
+    password:await hashPassword('123456'),
+    phone:'+79161234567',
+    role:'user',
+    avatar:''
+  },
+
+  {
+    id:'adm',
+    firstName:'Админ',
+    lastName:'Фонда',
+    email:'admin@fond.ru',
+    password:await hashPassword('admin123'),
+    role:'admin',
+    phone:'+79000000000',
+    avatar:'',
+    permissions:{
+      products:true,
+      petitions:true,
+      calendar:true,
+      orders:true,
+      reviews:true
+    }
+  },
+
+  {
+    id:'owner_1',
+    firstName:'Владелец',
+    lastName:'Фонда',
+    email:'stroganova@fond.ru',
+    password:await hashPassword('231599'),
+    phone:'+79055706269',
+    role:'owner',
+    avatar:'',
+    permissions:{
+      products:true,
+      petitions:true,
+      calendar:true,
+      orders:true,
+      reviews:true
+    }
+  }
+]);
     }
     if (!localStorage.getItem('f_fundSettings')) {
-      STORAGE.saveFundSettings({
-        name:'Три сестры',
-        addresses:['г. Москва, ул. Ленина 15'],
-        categories:['Продукты','Одежда','Гигиена','Прочее']
-      });
-    }
+
+  STORAGE.saveFundSettings({
+
+    name:'Три сестры',
+
+    addresses:[
+      'г. Москва, ул. Ленина 15'
+    ],
+
+    categories:[
+      'Продукты',
+      'Одежда',
+      'Гигиена',
+      'Прочее'
+    ]
+
+  });
+
+}
+    
     if (!STORAGE.products().length) {
       STORAGE.saveProducts([
         {id:'p1',article:'GR001',name:'Гречка 1кг',category:'Продукты',photos:[],quantity:10,availableQuantity:10,isPlaced:true,sizes:[],description:'Качественная гречка'},
@@ -908,17 +923,17 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         issued:false,archived:false
       }]);
     }
+  }
     if (!STORAGE.families().length) {
       STORAGE.saveFamilies([
         { id:'fam1', firstName:'Иван', lastName:'Иванов', phone:'+79161112233', email:'ivanov@example.com', status:'Многодетная', childrenCount:3, familySize:5, totalVisits:12, monthlyVisits:2, visitLimit:4 },
         { id:'fam2', firstName:'Мария', lastName:'Петрова', phone:'+79265554455', email:'petrova@example.com', status:'Малоимущая', childrenCount:1, familySize:3, totalVisits:5, monthlyVisits:1, visitLimit:4 }
       ]);
     }
-  }
-
+  // Глобальные функции
   window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
-  let loginMode = 'email';
+    let loginMode = 'email';
 
   window.setLoginMode = (mode) => {
     loginMode = mode;
@@ -926,6 +941,7 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     const phoneBtn = document.getElementById('switchPhone');
     const icon = document.getElementById('loginIcon');
     const input = document.getElementById('loginIdentifier');
+
     if (mode === 'email') {
       emailBtn.classList.add('active');
       phoneBtn.classList.remove('active');
@@ -942,230 +958,214 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
       input.value = '+7';
     }
   };
-
   window.closeModal = (id) => {
     document.getElementById(id).style.display = 'none';
     if (id === 'fullscreenPhotoModal') document.getElementById('fullscreenImage').src = '';
-  };try {
-  // проверка, что всё работает
-  console.log('Скрипт загружен');
-} catch(e) {
-  alert('Ошибка до входа: ' + e.message);
-}
-
-  window.appLogin = async () => {
+  };
+    window.appLogin = async () => {
     const identifier = document.getElementById('loginIdentifier').value.trim();
     const pass = document.getElementById('loginPassword').value;
     const hashed = await hashPassword(pass);
+
     let user;
     if (loginMode === 'email') {
       user = STORAGE.users().find(u => u.email === identifier && u.password === hashed);
     } else {
       user = STORAGE.users().find(u => u.phone === identifier && u.password === hashed);
     }
+
     if (!user) { alert('Неверные данные'); return; }
     STORAGE.setCurrentUser(user);
-    if (user.role === 'user' && user.status === 'pending') {
-  showScreen('pendingScreen');
-  return;
-}
     if (user.role === 'owner') {
   showScreen('ownerScreen');
-  try { initOwnerTabs(); } catch(e) { console.error(e); }
-  try { renderCategories(); } catch(e) { console.error(e); }
-  try { renderFundAddresses(); } catch(e) { console.error(e); }
-  try { renderOwnerUsersTable(); } catch(e) { console.error(e); }
-  return;
+  initOwnerTabs();
+  renderCategories();
+  renderFundAddresses();
+  renderOwnerUsersTable();
 }
-    if (user.role === 'admin') {
+
+else if (user.role === 'admin') {
+
   showScreen('adminScreen');
-  try { renderAdmin(); } catch(e) { console.error(e); }
-  return;
+
+  renderAdmin();
+
 }
+
+else {
+  if (user.status === 'pending') {
+    STORAGE.setCurrentUser(user);
+    showScreen('pendingScreen');
+  } else {
     showScreen('mainScreen');
     updateUIForUser();
+  }
+}
   };
-
   let regCurrentStep = 1;
-  let selectedCategories = new Set();
-  let familyMembers = [];
+let selectedCategories = new Set();
+let familyMembers = [];
 
-  window.nextRegStep = (step) => {
-    if (step === 2) {
-      const fn = document.getElementById('regFirstName').value.trim();
-      const ln = document.getElementById('regLastName').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const pass = document.getElementById('regPassword').value;
-      const conf = document.getElementById('regConfirm').value;
-      const phone = document.getElementById('regPhone').value.trim();
-      if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return; }
-      if (pass !== conf) { alert('Пароли не совпадают'); return; }
-    }
-    if (step === 3) {
-      if (selectedCategories.size === 0) { alert('Выберите хотя бы одну категорию'); return; }
-    }
-    regCurrentStep = step;
-    document.getElementById('regStepNumber').textContent = step;
-    document.getElementById('regProgressBar').style.width = (step/3*100)+'%';
-    document.querySelectorAll('[id^="regStep"]').forEach(el => el.style.display = 'none');
-    document.getElementById('regStep'+step).style.display = 'block';
-    if (step === 3) initFamilyMembers();
-  };
-
-  window.prevRegStep = (step) => {
-    regCurrentStep = step;
-    document.getElementById('regStepNumber').textContent = step;
-    document.getElementById('regProgressBar').style.width = (step / 3 * 100) + '%';
-    document.querySelectorAll('[id^="regStep"]').forEach(el => el.style.display = 'none');
-    document.getElementById('regStep' + step).style.display = 'block';
-  };
-
-  (function initCategoryButtons() {
-    document.querySelectorAll('.category-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const cat = btn.dataset.category;
-        if (selectedCategories.has(cat)) {
-          selectedCategories.delete(cat);
-          btn.classList.remove('selected');
-        } else {
-          selectedCategories.add(cat);
-          btn.classList.add('selected');
-        }
-        document.getElementById('step2NextBtn').disabled = selectedCategories.size === 0;
-      });
-    });
-  })();
-
-  function initFamilyMembers() {
+window.nextRegStep = (step) => {
+  if (step === 2) {
     const fn = document.getElementById('regFirstName').value.trim();
     const ln = document.getElementById('regLastName').value.trim();
-    document.getElementById('selfInitials').textContent =
-      (fn.charAt(0) || '?').toUpperCase() +
-      (ln.charAt(0) || '?').toUpperCase();
-    document.getElementById('selfName').textContent = fn + ' ' + ln;
-    renderFamilyMembersList();
-    document.getElementById('addMemberBtn').onclick = () => {
-      document.getElementById('addMemberForm').style.display = 'block';
-    };
+    const email = document.getElementById('regEmail').value.trim();
+    const pass = document.getElementById('regPassword').value;
+    const conf = document.getElementById('regConfirm').value;
+    const phone = document.getElementById('regPhone').value.trim();
+    if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return; }
+    if (pass !== conf) { alert('Пароли не совпадают'); return; }
   }
+  if (step === 3) {
+    if (selectedCategories.size === 0) { alert('Выберите хотя бы одну категорию'); return; }
+  }
+  regCurrentStep = step;
+  document.getElementById('regStepNumber').textContent = step;
+  document.getElementById('regProgressBar').style.width = (step/3*100)+'%';
+  document.querySelectorAll('[id^="regStep"]').forEach(el => el.style.display = 'none');
+  document.getElementById('regStep'+step).style.display = 'block';
+  if (step === 3) initFamilyMembers();
+};
 
+window.prevRegStep = (step) => { nextRegStep(step); };
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.category;
+      if (selectedCategories.has(cat)) {
+        selectedCategories.delete(cat);
+        btn.classList.remove('selected');
+      } else {
+        selectedCategories.add(cat);
+        btn.classList.add('selected');
+      }
+      document.getElementById('step2NextBtn').disabled = selectedCategories.size === 0;
+    });
+  });
+});
+
+function initFamilyMembers() {
+  const fn = document.getElementById('regFirstName').value.trim();
+  const ln = document.getElementById('regLastName').value.trim();
+  document.getElementById('selfInitials').textContent = fn.charAt(0).toUpperCase() + ln.charAt(0).toUpperCase();
+  document.getElementById('selfName').textContent = fn + ' ' + ln;
+  renderFamilyMembersList();
+  document.getElementById('addMemberBtn').onclick = () => {
+    document.getElementById('addMemberForm').style.display = 'block';
+  };
+}
+
+window.saveFamilyMember = () => {
+  const fn = document.getElementById('memberFirstName').value.trim();
+  const ln = document.getElementById('memberLastName').value.trim();
+  if (!fn || !ln) { alert('Укажите имя и фамилию'); return; }
+  if (familyMembers.length >= 20) { alert('Максимум 20 членов семьи'); return; }
+  const member = {
+    firstName: fn,
+    lastName: ln,
+    type: document.getElementById('memberType').value,
+    gender: document.getElementById('memberGender').value,
+    age: document.getElementById('memberAge').value,
+    relation: document.getElementById('memberRelation').value
+  };
+  familyMembers.push(member);
+  document.getElementById('addMemberForm').style.display = 'none';
+  // очистка полей
+  document.getElementById('memberFirstName').value = '';
+  document.getElementById('memberLastName').value = '';
+  document.getElementById('memberAge').value = '';
+  renderFamilyMembersList();
+};
+
+function renderFamilyMembersList() {
+  const container = document.getElementById('familyMembersContainer');
+  container.querySelectorAll('.added-member').forEach(el => el.remove());
+  familyMembers.forEach((m, idx) => {
+    const div = document.createElement('div');
+    div.className = 'family-member-card added-member';
+    div.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:12px;';
+    div.innerHTML = `
+      <div class="initials-circle">${m.firstName.charAt(0)}${m.lastName.charAt(0)}</div>
+      <div style="flex:1;">
+        <strong>${m.firstName} ${m.lastName}</strong><br>
+        <span style="color:#8e8e93;">${m.type} · ${m.age} лет</span>
+      </div>
+      <i class="fas fa-pen" onclick="editFamilyMember(${idx})" style="color:#007aff;cursor:pointer;margin-right:8px;"></i>
+      <i class="fas fa-trash" onclick="deleteFamilyMember(${idx})" style="color:#ff3b30;cursor:pointer;"></i>
+    `;
+    container.appendChild(div);
+  });
+}
+
+window.editFamilyMember = (idx) => {
+  const m = familyMembers[idx];
+  document.getElementById('memberFirstName').value = m.firstName;
+  document.getElementById('memberLastName').value = m.lastName;
+  document.getElementById('memberType').value = m.type;
+  document.getElementById('memberGender').value = m.gender;
+  document.getElementById('memberAge').value = m.age;
+  document.getElementById('memberRelation').value = m.relation;
+  document.getElementById('addMemberForm').style.display = 'block';
+  // временно переопределяем кнопку сохранения
+  const oldSave = window.saveFamilyMember;
   window.saveFamilyMember = () => {
-    const fn = document.getElementById('memberFirstName').value.trim();
-    const ln = document.getElementById('memberLastName').value.trim();
-    if (!fn || !ln) { alert('Укажите имя и фамилию'); return; }
-    if (familyMembers.length >= 20) { alert('Максимум 20 членов семьи'); return; }
-    const member = {
-      firstName: fn,
-      lastName: ln,
+    familyMembers[idx] = {
+      firstName: document.getElementById('memberFirstName').value.trim(),
+      lastName: document.getElementById('memberLastName').value.trim(),
       type: document.getElementById('memberType').value,
       gender: document.getElementById('memberGender').value,
       age: document.getElementById('memberAge').value,
       relation: document.getElementById('memberRelation').value
     };
-    familyMembers.push(member);
     document.getElementById('addMemberForm').style.display = 'none';
-    document.getElementById('memberFirstName').value = '';
-    document.getElementById('memberLastName').value = '';
-    document.getElementById('memberAge').value = '';
     renderFamilyMembersList();
+    window.saveFamilyMember = oldSave; // восстановить
   };
+};
 
-  function renderFamilyMembersList() {
-    const container = document.getElementById('familyMembersContainer');
-    container.querySelectorAll('.added-member').forEach(el => el.remove());
-    familyMembers.forEach((m, idx) => {
-      const div = document.createElement('div');
-      div.className = 'family-member-card added-member';
-      div.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:12px;';
-      div.innerHTML = `
-        <div class="initials-circle">${m.firstName.charAt(0)}${m.lastName.charAt(0)}</div>
-        <div style="flex:1;">
-          <strong>${m.firstName} ${m.lastName}</strong><br>
-          <span style="color:#8e8e93;">${m.type} · ${m.age} лет</span>
-        </div>
-        <i class="fas fa-pen" onclick="editFamilyMember(${idx})" style="color:#007aff;cursor:pointer;margin-right:8px;"></i>
-        <i class="fas fa-trash" onclick="deleteFamilyMember(${idx})" style="color:#ff3b30;cursor:pointer;"></i>
-      `;
-      container.appendChild(div);
-    });
-  }
+window.deleteFamilyMember = (idx) => {
+  familyMembers.splice(idx,1);
+  renderFamilyMembersList();
+};
 
-  window.editFamilyMember = (idx) => {
-    const m = familyMembers[idx];
-    document.getElementById('memberFirstName').value = m.firstName;
-    document.getElementById('memberLastName').value = m.lastName;
-    document.getElementById('memberType').value = m.type;
-    document.getElementById('memberGender').value = m.gender;
-    document.getElementById('memberAge').value = m.age;
-    document.getElementById('memberRelation').value = m.relation;
-    document.getElementById('addMemberForm').style.display = 'block';
-    const oldSave = window.saveFamilyMember;
-    window.saveFamilyMember = () => {
-      familyMembers[idx] = {
-        firstName: document.getElementById('memberFirstName').value.trim(),
-        lastName: document.getElementById('memberLastName').value.trim(),
-        type: document.getElementById('memberType').value,
-        gender: document.getElementById('memberGender').value,
-        age: document.getElementById('memberAge').value,
-        relation: document.getElementById('memberRelation').value
-      };
-      document.getElementById('addMemberForm').style.display = 'none';
-      renderFamilyMembersList();
-      window.saveFamilyMember = oldSave;
-    };
+window.submitRegistration = async () => {
+  const fn = document.getElementById('regFirstName').value.trim();
+  const ln = document.getElementById('regLastName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPassword').value;
+  const phone = document.getElementById('regPhone').value.trim();
+  const code = document.getElementById('countryCode').value;
+  const hashed = await hashPassword(pass);
+  const user = {
+    id: Date.now()+'',
+    firstName: fn,
+    lastName: ln,
+    email,
+    password: hashed,
+    phone: code+phone,
+    role: 'user',
+    avatar: '',
+    categories: Array.from(selectedCategories),
+    family: familyMembers,
+    status: 'pending'     // на модерации
   };
-
-  window.deleteFamilyMember = (idx) => {
-    familyMembers.splice(idx,1);
-    renderFamilyMembersList();
-  };
-
-  window.submitRegistration = async () => {
-    const fn = document.getElementById('regFirstName').value.trim();
-    const ln = document.getElementById('regLastName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const pass = document.getElementById('regPassword').value;
-    const phone = document.getElementById('regPhone').value.trim();
-    const code = document.getElementById('countryCode').value;
-    const hashed = await hashPassword(pass);
-    const user = {
-      id: Date.now()+'',
-      firstName: fn,
-      lastName: ln,
-      email,
-      password: hashed,
-      phone: code+phone,
-      role: 'user',
-      avatar: '',
-      categories: Array.from(selectedCategories),
-      family: familyMembers,
-      status: 'pending'
-    };
-    STORAGE.saveUsers([...STORAGE.users(), user]);
-    STORAGE.setCurrentUser(user);
-    showScreen('pendingScreen');
-  };
-
-  window.logout = () => {
-    STORAGE.setCurrentUser(null);
-    STORAGE.saveCart([]);
-    showScreen('authScreen');
-  };
+  STORAGE.saveUsers([...STORAGE.users(), user]);
+  STORAGE.setCurrentUser(user);
+  showScreen('pendingScreen');
+};
+  window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); };
 
   function showScreen(id) {
-    const screenEl = document.getElementById(id);
-    if (!screenEl) {
-      console.error('Экран не найден:', id);
-      return;
-    }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    screenEl.classList.add('active');
+    document.getElementById(id).classList.add('active');
   }
 
+  // Навигация
   document.querySelectorAll('.bottom-nav .nav-item').forEach(el => {
     el.addEventListener('click', () => switchTab(el.dataset.tab));
   });
-
   window.switchTab = (tabId) => {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const ni = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
@@ -1175,6 +1175,7 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     if (tabEl) tabEl.style.display = 'block';
     if (tabId === 'home') { renderProducts(); populateCategoryFilter(); }
     if (tabId === 'cart') { renderCart(); setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); else initMap(); }, 100); }
+    if (tabId === 'profile') renderProfile();
     if (tabId === 'orders') { 
       document.getElementById('ordersListView').style.display = 'block'; 
       document.getElementById('orderDetailsView').style.display = 'none'; 
@@ -1183,18 +1184,17 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     if (tabId === 'reviews') renderUserReviews();
   };
 
+  // Главная
   function getProductRequestCount(productId) {
     return STORAGE.orders()
       .filter(o => o.status === 'pending' || o.status === 'partially_approved')
       .flatMap(o => o.items)
       .filter(i => i.productId === productId && i.status === 'pending').length;
   }
-
   function populateCategoryFilter() {
     const cats = [...new Set(STORAGE.products().map(p => p.category))];
     document.getElementById('categoryFilter').innerHTML = '<option value="">Все категории</option>' + cats.map(c => `<option>${escapeHtml(c)}</option>`).join('');
   }
-
   window.renderProducts = () => {
     let prods = STORAGE.products().filter(p => p.isPlaced && p.availableQuantity > 0);
     const cat = document.getElementById('categoryFilter')?.value;
@@ -1214,7 +1214,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         <button class="btn primary small" style="margin-top:8px;" onclick="event.stopPropagation();addToCart('${p.id}')">В корзину</button>
       </div>`).join('');
   };
-
   window.addToCart = (prodId) => {
     const user = STORAGE.currentUser();
     if (user.blocked) { alert('Вы заблокированы до отправки всех отзывов'); return; }
@@ -1228,7 +1227,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     STORAGE.saveCart(cart);
     updateCartBadge();
   };
-
   function showSizeSelector(prodId) {
     const p = STORAGE.products().find(p => p.id === prodId);
     if (!p) return;
@@ -1238,7 +1236,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
       <button class="btn secondary" style="margin-top:16px;" onclick="closeSizeModal()">Отмена</button>`;
     document.getElementById('sizeSelectModal').style.display = 'flex';
   }
-
   window.selectSizeAndAddToCart = (prodId, size) => {
     const cart = STORAGE.cart();
     const p = STORAGE.products().find(p => p.id === prodId);
@@ -1249,9 +1246,7 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     updateCartBadge();
     closeSizeModal();
   };
-
   window.closeSizeModal = () => { document.getElementById('sizeSelectModal').style.display = 'none'; };
-
   function updateCartBadge() {
     const count = STORAGE.cart().length;
     const badge = document.getElementById('navCartBadge');
@@ -1259,6 +1254,7 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     badge.style.display = count > 0 ? 'flex' : 'none';
   }
 
+  // Корзина
   window.renderCart = () => {
     const cart = STORAGE.cart();
     document.getElementById('cartItems').innerHTML = cart.length ? cart.map((item, idx) => `
@@ -1271,7 +1267,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     const slots = STORAGE.slots().filter(s => new Date(s.datetime) > now && s.used < s.capacity);
     document.getElementById('timeSlotSelect').innerHTML = slots.map(s => `<option value="${s.id}">${new Date(s.datetime).toLocaleString('ru-RU')}</option>`).join('');
   };
-
   window.removeFromCart = (idx) => {
     let cart = STORAGE.cart();
     cart.splice(idx, 1);
@@ -1279,7 +1274,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     renderCart();
     updateCartBadge();
   };
-
   function initMap() {
     const mapEl = document.getElementById('cartMap');
     if (!mapEl || mapEl.offsetParent === null) return;
@@ -1288,7 +1282,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
     L.marker([55.531570, 37.498393]).addTo(leafletMap).bindPopup('Южное Бутово, Остафьевская ул, 44').openPopup();
   }
-
   window.createOrder = () => {
     const user = STORAGE.currentUser();
     if (user.blocked) { alert('Сначала оставьте отзывы на все полученные товары'); return; }
@@ -1317,6 +1310,49 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     switchTab('orders');
   };
 
+  // Профиль
+  function renderProfile() {
+    const u = STORAGE.currentUser();
+    if (!u) return;
+    document.getElementById('profileName').textContent = `${u.firstName} ${u.lastName||''}`;
+    document.getElementById('profilePhone').textContent = u.phone;
+    if (u.avatar) {
+      document.getElementById('profileAvatar').src = u.avatar;
+      document.getElementById('profileAvatar').style.display = 'block';
+      document.getElementById('defaultAvatar').style.display = 'none';
+    } else {
+      document.getElementById('profileAvatar').style.display = 'none';
+      document.getElementById('defaultAvatar').style.display = 'block';
+    }
+  }
+  window.saveAvatar = () => {
+    const file = document.getElementById('avatarInput').files[0];
+    if (!file) return;
+    if (file.size > 200*1024) { alert('Фото должно быть до 200 КБ'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 300; canvas.height = 300;
+        canvas.getContext('2d').drawImage(img, 0, 0, 300, 300);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const users = STORAGE.users();
+        const cur = STORAGE.currentUser();
+        const idx = users.findIndex(u => u.id === cur.id);
+        if (idx === -1) return;
+        users[idx].avatar = dataUrl;
+        STORAGE.saveUsers(users);
+        STORAGE.setCurrentUser(users[idx]);
+        renderProfile();
+        updateHeaderAvatar();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Заказы пользователя - АКТИВНЫЕ, с фото сразу
   window.renderUserOrders = () => {
     const user = STORAGE.currentUser();
     if (!user) return;
@@ -1350,7 +1386,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
       </div>`;
     }).join('');
   };
-
   window.openOrderDetails = (orderId) => {
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
@@ -1360,7 +1395,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     document.getElementById('orderDetailsView').style.display = 'block';
     renderOrderDetail();
   };
-
   function renderOrderDetail() {
     const order = STORAGE.orders().find(o => o.id === currentDetailOrderId);
     if (!order) return;
@@ -1391,17 +1425,16 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         <div class="text-center" style="color:#8e8e93;">${escapeHtml(order.address)}<br>Плановая дата: ${new Date(order.slotTime).toLocaleDateString('ru-RU')}</div>
       </div>`;
   }
-
   window.selectDetailItem = (productId) => {
     selectedDetailItemId = productId;
     renderOrderDetail();
   };
-
   window.closeOrderDetails = () => {
     document.getElementById('ordersListView').style.display = 'block';
     document.getElementById('orderDetailsView').style.display = 'none';
   };
 
+  // Карточка товара
   window.openProductDetail = (prodId, returnScreen) => {
     const prod = STORAGE.products().find(p => p.id === prodId);
     if (!prod) return;
@@ -1420,15 +1453,13 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         <p style="color:#8e8e93;">${escapeHtml(prod.article)}</p>
         <p>${escapeHtml(prod.description || 'Описание отсутствует')}</p>
       </div>
-      <button class="btn primary" style="margin:0 18px 18px;width:calc(100% - 36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
+      <button class="btn primary" style="margin:0 18px 18px;width:calc(100%-36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
   };
-
   window.switchDetailPhoto = (src, el) => {
     document.getElementById('detailMainPhoto').src = src;
     document.querySelectorAll('#productDetailContent img').forEach(i => i.style.borderColor = 'transparent');
     el.style.borderColor = '#007aff';
   };
-
   window.addToCartWithSize = (prodId, size) => {
     const cart = STORAGE.cart();
     const p = STORAGE.products().find(p => p.id === prodId);
@@ -1439,25 +1470,23 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     updateCartBadge();
     closeModal('productDetailModal');
   };
-
   window.addToCartFromDetail = (prodId) => {
     const p = STORAGE.products().find(p => p.id === prodId);
     if (!p) return;
-    if (p.sizes && p.sizes.length) return;
+    if (p.sizes && p.sizes.length) { /* размеры уже показаны */ return; }
     addToCart(prodId);
     closeModal('productDetailModal');
   };
-
   window.closeProductDetail = () => {
     document.getElementById('productDetailModal').style.display = 'none';
     if (returnToScreen === 'cart') switchTab('cart');
   };
-
   window.shareProduct = () => {
     if (navigator.share) navigator.share({ title: 'Товар', url: window.location.href });
     else alert('Поделиться');
   };
 
+  // Отзывы
   window.renderUserReviews = () => {
     const user = STORAGE.currentUser();
     if (!user) return;
@@ -1484,7 +1513,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
       </div>`;
     }).join('') || '<p class="text-center" style="color:#8e8e93;">Нет товаров для отзыва</p>';
   };
-
   window.submitReview = (orderId, productId) => {
     const linkEl = document.getElementById(`link-${orderId}-${productId}`);
     if (!linkEl) return;
@@ -1512,71 +1540,68 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     STORAGE.saveUsers(STORAGE.users().map(u => u.id === user.id ? user : u));
   }
 
-  function renderAdmin() {
-    const user = STORAGE.currentUser();
-    const perms = user?.permissions || {};
-    const tabToPerm = {
-      products: 'products',
-      petitions: 'petitions',
-      calendar: 'calendar',
-      history: 'orders',
-      recipients: 'reviews'
-    };
-    document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
-      const tab = btn.dataset.adminTab;
-      const permKey = tabToPerm[tab];
-      if (permKey && perms[permKey]) {
-        btn.style.display = '';
-      } else {
-        btn.style.display = 'none';
-        if (btn.classList.contains('active')) {
-          btn.classList.remove('active');
-        }
-      }
-    });
-    const anyActive = document.querySelector('#adminScreen .admin-tabs .tab-btn.active');
-    if (!anyActive) {
-      const firstVisible = document.querySelector('#adminScreen .admin-tabs .tab-btn:not([style*="display: none"])');
-      if (firstVisible) {
-        firstVisible.classList.add('active');
-        document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
-        const visibleTabId = 'admin' + firstVisible.dataset.adminTab.charAt(0).toUpperCase() + firstVisible.dataset.adminTab.slice(1);
-        const visiblePane = document.getElementById(visibleTabId);
-        if (visiblePane) visiblePane.classList.add('active');
-      } else {
-        document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
-        const firstPane = document.querySelector('#adminScreen .admin-pane');
-        if (firstPane) {
-          firstPane.classList.add('active');
-          firstPane.innerHTML = '<p>Нет доступных разделов. Обратитесь к владельцу фонда.</p>';
-        }
-      }
-    }
-    renderAdminProducts();
-    renderAdminSlots();
-    renderCalendar();
-    renderAllOrders();
-    renderRecipientsTab();
-    renderPetitions();
-    renderAdminReviews();
-    document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
-        const target = document.getElementById('admin' + btn.dataset.adminTab.charAt(0).toUpperCase() + btn.dataset.adminTab.slice(1));
-        if (target) target.classList.add('active');
-        if (btn.dataset.adminTab === 'petitions') renderPetitions();
-        if (btn.dataset.adminTab === 'calendar') renderCalendar();
-        if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
-      });
-    });
-    const orderSearch = document.getElementById('orderSearchInput');
-    if (orderSearch && !orderSearch.dataset.listenerAttached) {
-      orderSearch.addEventListener('input', renderAllOrders);
-      orderSearch.dataset.listenerAttached = 'true';
+  // Админка
+ function renderAdmin() {
+  const user = STORAGE.currentUser();
+  const perms = user?.permissions || {};
+
+  // Сопоставление: значение data-admin-tab → ключ в объекте прав доступа
+  const tabToPerm = {
+    products: 'products',
+    petitions: 'petitions',
+    calendar: 'calendar',
+    history: 'orders',      // ← «Заказы»
+    recipients: 'reviews'   // ← «Лимиты/Отзывы»
+  };
+
+  // Скрываем/показываем вкладки по правам
+  document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
+    const tab = btn.dataset.adminTab;
+    const permKey = tabToPerm[tab];
+    if (permKey && perms[permKey]) {
+      btn.style.display = '';
+ } else {
+  btn.style.display = 'none';
+  if (btn.classList.contains('active')) {
+    btn.classList.remove('active');
+    // Ищем любую другую видимую вкладку
+    const anyVisible = document.querySelector('#adminScreen .admin-tabs .tab-btn:not([style*="display: none"])');
+    if (anyVisible) {
+      anyVisible.classList.add('active');
+      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+      const visibleTabId = 'admin' + anyVisible.dataset.adminTab.charAt(0).toUpperCase() + anyVisible.dataset.adminTab.slice(1);
+      const visiblePane = document.getElementById(visibleTabId);
+      if (visiblePane) visiblePane.classList.add('active');
+    } else {
+      // Если не осталось ни одной видимой вкладки — убираем все панели
+      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
     }
   }
+}
+  });
+
+  renderAdminProducts();
+  renderAdminSlots();
+  renderCalendar();
+  renderAllOrders();
+  renderRecipientsTab();
+  renderPetitions();
+  renderAdminReviews();
+
+  document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('admin' + btn.dataset.adminTab.charAt(0).toUpperCase() + btn.dataset.adminTab.slice(1));
+      if (target) target.classList.add('active');
+      if (btn.dataset.adminTab === 'petitions') renderPetitions();
+      if (btn.dataset.adminTab === 'calendar') renderCalendar();
+      if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
+    });
+  });
+  document.getElementById('orderSearchInput').addEventListener('input', renderAllOrders);
+}
 
   function renderAdminProducts() {
     document.getElementById('adminProductsList').innerHTML = STORAGE.products().map(p => `
@@ -1588,24 +1613,20 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         <i class="fas fa-trash" style="float:right;cursor:pointer;color:#ff3b30;" onclick="deleteProduct('${p.id}')"></i>
       </div>`).join('');
   }
-
   window.placeProduct = (id) => {
     const prods = STORAGE.products();
     const p = prods.find(p => p.id === id);
     if (p) { p.isPlaced = true; STORAGE.saveProducts(prods); renderAdminProducts(); }
   };
-
   window.deleteProduct = (id) => {
     STORAGE.saveProducts(STORAGE.products().filter(p => p.id !== id));
     renderAdminProducts();
   };
-
   window.openAddProductModal = () => {
     document.getElementById('addProductModal').style.display = 'flex';
     tempProductPhotos = [];
     document.getElementById('photoPreviewContainer').innerHTML = '';
   };
-
   document.getElementById('productPhotosInput').addEventListener('change', function() {
     const files = Array.from(this.files).slice(0, 3);
     const preview = document.getElementById('photoPreviewContainer');
@@ -1623,7 +1644,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
       reader.readAsDataURL(f);
     });
   });
-
   window.addProduct = () => {
     const name = document.getElementById('prodName').value.trim();
     const article = document.getElementById('prodArticle').value.trim();
@@ -1651,15 +1671,12 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         <i class="fas fa-trash" style="color:#ff3b30;cursor:pointer;" onclick="deleteSlot('${s.id}')"></i>
       </div>`).join('');
   }
-
   window.deleteSlot = (id) => {
     STORAGE.saveSlots(STORAGE.slots().filter(s => s.id !== id));
     renderAdminSlots();
     renderCalendar();
   };
-
   window.openAddSlotModal = () => { document.getElementById('addSlotModal').style.display = 'flex'; };
-
   window.addSlot = () => {
     const dt = document.getElementById('slotDateTime').value;
     const cap = parseInt(document.getElementById('slotCapacity').value);
@@ -1686,12 +1703,10 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     }
     document.getElementById('calendarGrid').innerHTML = html;
   }
-
   window.changeCalendarMonth = (d) => {
     currentCalendarDate.setMonth(currentCalendarDate.getMonth() + d);
     renderCalendar();
   };
-
   window.selectCalendarDate = (dateStr) => {
     selectedCalendarDate = dateStr;
     renderCalendar();
@@ -1713,6 +1728,7 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
       </div>`).join('') || '<p>Нет одобренных товаров на эту дату</p>';
   };
 
+  // Прошения
   function getPetitionItems() {
     const result = [];
     STORAGE.orders().forEach(o => {
@@ -1732,7 +1748,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     });
     return result;
   }
-
   window.renderPetitions = () => {
     const search = document.getElementById('petitionSearch').value.toLowerCase();
     let petitions = getPetitionItems().filter(p => p.name.toLowerCase().includes(search) || p.userName.toLowerCase().includes(search));
@@ -1752,29 +1767,24 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     const available = STORAGE.products().filter(p => petitions.some(pt => pt.productId === p.id)).reduce((s,p) => s + p.availableQuantity, 0);
     document.getElementById('petitionStats').textContent = `🔍 Найдено позиций: ${petitions.length} | Остаток выбранных товаров: ${available}`;
   };
-
   window.togglePhotoFilter = (pid) => {
     selectedPhotoFilters.has(pid) ? selectedPhotoFilters.delete(pid) : selectedPhotoFilters.add(pid);
     renderPetitions();
   };
-
   window.togglePetitionSelectMode = () => {
     petitionSelectMode = !petitionSelectMode;
     selectedPetitionKeys.clear();
     document.getElementById('toggleSelectModeBtn').textContent = petitionSelectMode ? 'Готово' : 'Выбрать';
     renderPetitions();
   };
-
   window.togglePetitionSelection = (key) => {
     selectedPetitionKeys.has(key) ? selectedPetitionKeys.delete(key) : selectedPetitionKeys.add(key);
     renderPetitions();
   };
-
   window.selectAllPetitions = () => {
     getPetitionItems().forEach(p => selectedPetitionKeys.add(p.key));
     renderPetitions();
   };
-
   function processPetitionItem(orderId, itemIndex, approve) {
     const orders = STORAGE.orders();
     const order = orders.find(o => o.id === orderId);
@@ -1795,7 +1805,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     STORAGE.saveOrders(orders);
     return true;
   }
-
   window.approvePetitionItem = (oid, idx) => { processPetitionItem(oid, idx, true); selectedPetitionKeys.clear(); renderPetitions(); renderAdminProducts(); };
   window.rejectPetitionItem = (oid, idx) => { processPetitionItem(oid, idx, false); selectedPetitionKeys.clear(); renderPetitions(); };
   window.bulkApprovePetitions = () => {
@@ -1816,17 +1825,16 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     renderPetitions();
   };
 
+  // Заказы (админ)
   window.switchOrderView = (view) => {
     currentOrderView = view;
     document.getElementById('adminOrderDateFilter').style.display = view === 'all' ? 'block' : 'none';
     renderAllOrders();
   };
-
   function populateAdminOrderDateFilter() {
     const dates = [...new Set(STORAGE.orders().map(o => o.slotTime?.split('T')[0]).filter(Boolean))].sort();
     document.getElementById('adminOrderDateFilter').innerHTML = '<option value="">Все даты</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
   }
-
   window.renderAllOrders = () => {
     let orders = STORAGE.orders();
     if (currentOrderView === 'today') {
@@ -1848,7 +1856,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         ${!o.archived && o.status === 'approved' ? `<div style="margin-top:8px;"><button class="btn primary small" onclick="openIssueModal('${o.id}')">Выдать</button><button class="btn danger small" onclick="cancelOrder('${o.id}')">Отменить</button></div>` : `<div style="margin-top:8px;color:#8e8e93;">${o.status === 'cancelled' ? 'Отменён' : 'Выдан'}</div>`}
       </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет заказов</p>';
   };
-
   window.openIssueModal = (orderId) => {
     currentIssueOrderId = orderId;
     const order = STORAGE.orders().find(o => o.id === orderId);
@@ -1860,7 +1867,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
       </div>`).join('');
     document.getElementById('issueOrderModal').style.display = 'flex';
   };
-
   window.confirmIssueOrder = () => {
     const order = STORAGE.orders().find(o => o.id === currentIssueOrderId);
     if (!order) return;
@@ -1894,7 +1900,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     renderAllOrders();
     alert('Заказ выдан и перемещён в архив');
   };
-
   window.cancelOrder = (orderId) => {
     const order = STORAGE.orders().find(o => o.id === orderId);
     if (!order) return;
@@ -1912,6 +1917,7 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     alert('Заказ отменён и перемещён в архив');
   };
 
+  // Отзывы (админ)
   function renderAdminReviews() {
     document.getElementById('adminReviewsList').innerHTML = STORAGE.reviews().filter(r => r.status === 'pending').map(r => `
       <div class="review-item">
@@ -1922,7 +1928,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         <button class="btn danger small" onclick="rejectReview('${r.id}')">✗</button>
       </div>`).join('') || '<p class="text-center" style="color:#8e8e93;">Нет отзывов на модерации</p>';
   }
-
   window.approveReview = (reviewId) => {
     const reviews = STORAGE.reviews();
     const review = reviews.find(r => r.id === reviewId);
@@ -1934,7 +1939,6 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     renderAdminReviews();
     alert('Отзыв одобрен');
   };
-
   window.rejectReview = (reviewId) => {
     const reviews = STORAGE.reviews();
     const review = reviews.find(r => r.id === reviewId);
@@ -1950,26 +1954,24 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
   function renderRecipientsTab() {
     document.getElementById('maxItemsLimit').value = STORAGE.maxLimit();
   }
-
   window.saveMaxItemsLimit = () => {
     const v = parseInt(document.getElementById('maxItemsLimit').value);
     if (v > 0) { STORAGE.saveMaxLimit(v); renderRecipientsTab(); }
     else alert('Лимит должен быть больше 0');
   };
-
   window.openFullscreenPhoto = (src) => {
     if (!src) return;
     document.getElementById('fullscreenImage').src = src;
     document.getElementById('fullscreenPhotoModal').style.display = 'flex';
   };
 
+  // Вспомогательные функции
   function updateHeaderAvatar() {
     const u = STORAGE.currentUser();
     const icon = document.getElementById('headerProfileIcon');
     if (u?.avatar) icon.innerHTML = `<img src="${u.avatar}" alt="">`;
     else icon.innerHTML = '<i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i>';
   }
-
   function updateUIForUser() {
     updateCartBadge();
     renderProducts();
@@ -1979,16 +1981,18 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     checkUserBlock();
   }
 
+  // Закрытие модалок по фону
   document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', e => { if (e.target === modal) closeModal(modal.id); });
   });
-
   document.getElementById('sizeSelectModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSizeModal(); });
 
+  // Синхронизация между вкладами
   window.addEventListener('storage', e => {
     if (e.key?.startsWith('f_')) {
       const cur = STORAGE.currentUser();
       if (cur?.role === 'admin') {
+        // Подхватываем изменения прав, если владелец изменил их в другой вкладке
         const updatedUser = STORAGE.users().find(u => u.id === cur.id);
         if (updatedUser) STORAGE.setCurrentUser(updatedUser);
         renderAdmin();
@@ -1998,523 +2002,571 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
     }
   });
 
+   // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
-    if (!cur) {
-      showScreen('authScreen');
-      return;
-    }
-    if (cur.status === 'pending') {
-      showScreen('pendingScreen');
-      return;
-    }
-    if (cur.role === 'owner') {
-      showScreen('ownerScreen');
-      initOwnerTabs();
-      renderCategories();
-      renderFundAddresses();
-      renderOwnerUsersTable();
-      return;
-    }
-    if (cur.role === 'admin') {
-      showScreen('adminScreen');
-      renderAdmin();
-      return;
-    }
-    showScreen('mainScreen');
-    updateUIForUser();
-  });
-
-  function initOwnerTabs() {
-    document.querySelectorAll('[data-owner-tab]').forEach(btn => {
-      if (btn.dataset.initialized) return;
-      btn.dataset.initialized = '1';
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-owner-tab]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('#ownerScreen .owner-pane').forEach(p => p.classList.remove('active'));
-        const target = document.getElementById('owner' + btn.dataset.ownerTab.charAt(0).toUpperCase() + btn.dataset.ownerTab.slice(1));
-        if (target) target.classList.add('active');
-      });
-    });
-    document.querySelectorAll('[data-owner-settings]').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('[data-owner-settings]').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        const targetId = 'owner' + this.dataset.ownerSettings.charAt(0).toUpperCase() + this.dataset.ownerSettings.slice(1) + 'Settings';
-        document.getElementById('ownerProductsSettings').classList.remove('active');
-        document.getElementById('ownerFundsSettings').classList.remove('active');
-        document.getElementById(targetId).classList.add('active');
-      });
-    });
-    document.querySelectorAll('[data-access-tab]').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('[data-access-tab]').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const target = tab.dataset.accessTab;
-        document.getElementById('ownerStaffPane').classList.toggle('active', target === 'staff');
-        document.getElementById('ownerFamiliesPane').classList.toggle('active', target === 'families');
-        if (target === 'families') renderFamiliesTable();
-      });
-    });
-  }
-
-  function renderFundAddresses() {
-    const box = document.getElementById('fundAddressesList');
-    if (!box) return;
-    const settings = STORAGE.fundSettings();
-    box.innerHTML = '';
-    settings.addresses.forEach((addr,index) => {
-      const row = document.createElement('div');
-      row.className = 'address-row';
-      row.innerHTML = `<input value="${addr}" class="input">`;
-      const input = row.querySelector('input');
-      input.onchange = () => {
-        settings.addresses[index] = input.value;
-        STORAGE.saveFundSettings(settings);
-      };
-      box.appendChild(row);
-    });
-  }
-
-  window.addFundAddress = () => {
-    const addr = prompt('Введите адрес');
-    if (!addr) return;
-    const settings = STORAGE.fundSettings();
-    settings.addresses.push(addr);
-    STORAGE.saveFundSettings(settings);
-    renderFundAddresses();
-  };
-
-  function renderOwnerUsersTable() {
-    const container = document.getElementById('ownerUsersTableContainer');
-    if (!container) return;
-    const users = STORAGE.users().filter(u => u.role === 'admin' || u.role === 'owner');
-    let html = `<table class="users-table">
-      <thead>
-        <tr>
-          <th>Пользователи (${users.length})</th>
-          <th>Товары</th>
-          <th>Прошения</th>
-          <th>Календарь</th>
-          <th>Заказы</th>
-          <th>Лимиты/Отзывы</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>`;
-    users.forEach(u => {
-      const perms = u.permissions || {};
-      const fullAccess = (key) => perms[key] ? 'full-access' : 'no-access';
-      const fullAccessText = (key) => perms[key] ? 'Полный доступ' : 'Недоступно';
-      html += `<tr>
-        <td class="user-info-cell">
-          <div class="user-name">${escapeHtml(u.firstName)} ${escapeHtml(u.lastName)}</div>
-          <div class="user-detail">${escapeHtml(u.phone)}</div>
-          <div class="user-detail">${escapeHtml(u.email)}</div>
-          <span class="role-badge ${u.role === 'owner' ? 'role-owner' : 'role-admin'}">${u.role === 'owner' ? 'Владелец' : 'Менеджер'}</span>
-        </td>
-        <td><span class="access-badge ${fullAccess('products')}">${fullAccessText('products')}</span></td>
-        <td><span class="access-badge ${fullAccess('petitions')}">${fullAccessText('petitions')}</span></td>
-        <td><span class="access-badge ${fullAccess('calendar')}">${fullAccessText('calendar')}</span></td>
-        <td><span class="access-badge ${fullAccess('orders')}">${fullAccessText('orders')}</span></td>
-        <td><span class="access-badge ${fullAccess('reviews')}">${fullAccessText('reviews')}</span></td>
-        <td class="action-icons">
-          <i class="fas fa-pen" onclick="editUser('${u.id}')"></i>
-          <i class="fas fa-trash" onclick="confirmDeleteUser('${u.id}')"></i>
-        </td>
-      </tr>`;
-    });
-    html += '</tbody></table>';
-    container.innerHTML = html;
-  }
-
-  window.openInviteUserModal = () => {
-    editingUserId = null;
-    document.getElementById('inviteModalTitle').textContent = 'Пригласить пользователя';
-    document.getElementById('invitePhone').value = '';
-    document.getElementById('inviteEmail').value = '';
-    document.getElementById('inviteRole').value = 'admin';
-    document.getElementById('invitePassword').value = '';
-    document.getElementById('inviteUserModal').style.display = 'flex';
-  };
-
-  window.goToPermissionsSetup = () => {
-    const phone = document.getElementById('invitePhone').value.trim();
-    const email = document.getElementById('inviteEmail').value.trim();
-    const role = document.getElementById('inviteRole').value;
-    const password = document.getElementById('invitePassword').value.trim();
-    if (!phone || !email) {
-      alert('Заполните телефон и email');
-      return;
-    }
-    pendingUserData = { phone, email, role, password };
-    if (editingUserId) {
-      const user = STORAGE.users().find(u => u.id === editingUserId);
-      if (user) {
-        const perms = user.permissions || {};
-        document.getElementById('perm-products').checked = !!perms.products;
-        document.getElementById('perm-petitions').checked = !!perms.petitions;
-        document.getElementById('perm-calendar').checked = !!perms.calendar;
-        document.getElementById('perm-orders').checked = !!perms.orders;
-        document.getElementById('perm-reviews').checked = !!perms.reviews;
+    if (cur) {
+      if (cur.role === 'admin') {
+        showScreen('adminScreen');
+        renderAdmin();
+      } else {
+        if (cur.status === 'pending') {
+          showScreen('pendingScreen');
+        } else {
+          showScreen('mainScreen');
+          updateUIForUser();
+        }
       }
     } else {
-      document.getElementById('perm-products').checked = true;
-      document.getElementById('perm-petitions').checked = true;
-      document.getElementById('perm-calendar').checked = true;
-      document.getElementById('perm-orders').checked = true;
-      document.getElementById('perm-reviews').checked = true;
+      showScreen('authScreen');
     }
-    document.getElementById('createUserBtn').style.display = editingUserId ? 'none' : 'inline-block';
-    document.getElementById('saveUserBtn').style.display = editingUserId ? 'inline-block' : 'none';
-    document.getElementById('inviteUserModal').style.display = 'none';
-    document.getElementById('permissionsModal').style.display = 'flex';
-  };
-
-  window.backToInviteForm = () => {
-    document.getElementById('permissionsModal').style.display = 'none';
-    document.getElementById('inviteUserModal').style.display = 'flex';
-  };
-
-  window.createManagerUser = async () => {
-    if (!pendingUserData) return;
-    const { phone, email, role } = pendingUserData;
-    if (STORAGE.users().some(u => u.email === email)) {
-      alert('Пользователь с таким email уже существует');
-      return;
-    }
-    const permissions = {
-      products: document.getElementById('perm-products').checked,
-      petitions: document.getElementById('perm-petitions').checked,
-      calendar: document.getElementById('perm-calendar').checked,
-      orders: document.getElementById('perm-orders').checked,
-      reviews: document.getElementById('perm-reviews').checked
+    updateCartBadge();
+  });
+ 
+function initOwnerTabs() {
+  document.querySelectorAll('[data-owner-tab]').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('[data-owner-tab]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('#ownerScreen .owner-pane').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('owner' + btn.dataset.ownerTab.charAt(0).toUpperCase() + btn.dataset.ownerTab.slice(1));
+      if (target) target.classList.add('active');
     };
-    const finalPassword = pendingUserData.password || '123456';
-    const newUser = {
-      id: 'usr_' + Date.now(),
-      firstName: 'Новый',
-      lastName: 'Пользователь',
-      email,
-      password: await hashPassword(finalPassword),
-      phone,
-      role,
-      avatar: '',
-      permissions
-    };
-    STORAGE.saveUsers([...STORAGE.users(), newUser]);
-    closeModal('permissionsModal');
-    pendingUserData = null;
-    renderOwnerUsersTable();
-    alert('Пользователь создан. Временный пароль: 123456');
-  };
-
-  window.editUser = (id) => {
-    const user = STORAGE.users().find(u => u.id === id);
-    if (!user) return;
-    editingUserId = id;
-    document.getElementById('inviteModalTitle').textContent = 'Настройка пользователя';
-    document.getElementById('invitePhone').value = user.phone || '';
-    document.getElementById('inviteEmail').value = user.email || '';
-    document.getElementById('inviteRole').value = user.role;
-    document.getElementById('invitePassword').value = '';
-    document.getElementById('inviteUserModal').style.display = 'flex';
-  };
-
-  window.saveUserPermissions = async () => {
-    if (!editingUserId || !pendingUserData) return;
-    const users = STORAGE.users();
-    const user = users.find(u => u.id === editingUserId);
-    if (!user) return;
-    user.phone = pendingUserData.phone;
-    user.email = pendingUserData.email;
-    user.role = pendingUserData.role;
-    const newPassword = pendingUserData.password;
-    if (newPassword) user.password = await hashPassword(newPassword);
-    user.permissions = {
-      products: document.getElementById('perm-products').checked,
-      petitions: document.getElementById('perm-petitions').checked,
-      calendar: document.getElementById('perm-calendar').checked,
-      orders: document.getElementById('perm-orders').checked,
-      reviews: document.getElementById('perm-reviews').checked
-    };
-    STORAGE.saveUsers(users);
-    const cur = STORAGE.currentUser();
-    if (cur && cur.id === editingUserId) {
-      STORAGE.setCurrentUser(user);
-      if (user.role === 'admin') renderAdmin();
-    }
-    closeModal('permissionsModal');
-    editingUserId = null;
-    pendingUserData = null;
-    renderOwnerUsersTable();
-    alert('Изменения сохранены');
-  };
-
-  window.confirmDeleteUser = (id) => {
-    document.getElementById('confirmDeleteModal').style.display = 'flex';
-    document.getElementById('confirmDeleteBtn').onclick = () => {
-      STORAGE.saveUsers(STORAGE.users().filter(u => u.id !== id));
-      closeModal('confirmDeleteModal');
-      renderOwnerUsersTable();
-    };
-  };
-
-  let isEditingCategories = false;
-  let longPressTimer = null;
-
-  function renderCategories() {
-    const grid = document.getElementById('ownerCategoriesGrid');
-    if (!grid) return;
-    const settings = STORAGE.fundSettings();
-    grid.innerHTML = settings.categories.map(cat => `
-      <div class="category-card ${isEditingCategories ? 'editing' : ''}" data-category="${escapeHtml(cat)}">
-        ${isEditingCategories ? `<div class="delete-badge">×</div>` : ''}
-        <span>${cat}</span>
-      </div>`).join('');
-    const cards = grid.querySelectorAll('.category-card');
-    cards.forEach(card => {
-      const cat = card.dataset.category;
-      card.addEventListener('mousedown', startLongPress);
-      card.addEventListener('touchstart', startLongPress);
-      card.addEventListener('mouseup', cancelLongPress);
-      card.addEventListener('touchend', cancelLongPress);
-      card.addEventListener('mouseleave', cancelLongPress);
-      card.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (!isEditingCategories) return;
-        if (e.target.classList.contains('delete-badge')) {
-          confirmDeleteCategory(cat);
-        } else {
-          renameCategoryPrompt(cat);
-        }
-      });
+  });
+  document.querySelectorAll('[data-owner-settings]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('[data-owner-settings]').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const targetId = 'owner' + this.dataset.ownerSettings.charAt(0).toUpperCase() + this.dataset.ownerSettings.slice(1) + 'Settings';
+      document.getElementById('ownerProductsSettings').classList.remove('active');
+      document.getElementById('ownerFundsSettings').classList.remove('active');
+      document.getElementById(targetId).classList.add('active');
     });
-    const editBtn = document.getElementById('editCategoriesBtn');
-    if (editBtn) editBtn.textContent = isEditingCategories ? 'Готово' : 'Изменить';
-  }
+  });
+    // Подвкладки внутри Доступа (Сотрудники / Профили семей)
+  document.querySelectorAll('[data-access-tab]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('[data-access-tab]').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.dataset.accessTab;
+      document.getElementById('ownerStaffPane').classList.toggle('active', target === 'staff');
+      document.getElementById('ownerFamiliesPane').classList.toggle('active', target === 'families');
+      if (target === 'families') renderFamiliesTable();
+    });
+  });
+}
 
-  function startLongPress(e) {
-    if (isEditingCategories) return;
-    longPressTimer = setTimeout(() => {
-      isEditingCategories = true;
-      renderCategories();
-      if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
-    }, 600);
-  }
 
-  function cancelLongPress() {
-    clearTimeout(longPressTimer);
-  }
 
-  window.toggleEditCategories = () => {
-    isEditingCategories = !isEditingCategories;
-    if (!isEditingCategories) cancelLongPress();
-    renderCategories();
-  };
 
-  window.confirmDeleteCategory = (categoryName) => {
-    if (confirm(`Удалить категорию «${categoryName}»?`)) deleteCategory(categoryName);
-  };
 
-  function deleteCategory(name) {
-    const exists = STORAGE.products().some(p => p.category === name);
-    if (exists) {
-      alert('Нельзя удалить: есть товары этой категории');
-      return;
+
+
+function renderFundAddresses() {
+
+  const box =
+    document.getElementById(
+      'fundAddressesList'
+    );
+
+  if (!box) return;
+
+  const settings =
+    STORAGE.fundSettings();
+
+  box.innerHTML = '';
+
+  settings.addresses.forEach(
+    (addr,index) => {
+
+      const row =
+        document.createElement('div');
+
+      row.className =
+        'address-row';
+
+      row.innerHTML = `
+
+        <input
+          value="${addr}"
+          class="input">
+
+      `;
+
+      const input =
+        row.querySelector('input');
+
+      input.onchange = () => {
+
+        settings.addresses[index] =
+          input.value;
+
+        STORAGE.saveFundSettings(
+          settings
+        );
+
+      };
+
+      box.appendChild(row);
+
     }
-    const settings = STORAGE.fundSettings();
-    settings.categories = settings.categories.filter(c => c !== name);
-    STORAGE.saveFundSettings(settings);
-    renderCategories();
+  );
+
+}
+window.addFundAddress = () => {
+  const addr = prompt('Введите адрес');
+  if (!addr) return;
+  const settings = STORAGE.fundSettings();
+  settings.addresses.push(addr);
+  STORAGE.saveFundSettings(settings);
+  renderFundAddresses();
+};
+  function renderOwnerUsersTable() {
+  const container = document.getElementById('ownerUsersTableContainer');
+  if (!container) return;
+  const users = STORAGE.users().filter(u => u.role === 'admin' || u.role === 'owner');
+  let html = `<table class="users-table">
+    <thead>
+      <tr>
+        <th>Пользователи (${users.length})</th>
+        <th>Товары</th>
+        <th>Прошения</th>
+        <th>Календарь</th>
+        <th>Заказы</th>
+        <th>Лимиты/Отзывы</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>`;
+  users.forEach(u => {
+    const perms = u.permissions || {};
+    const fullAccess = (key) => perms[key] ? 'full-access' : 'no-access';
+    const fullAccessText = (key) => perms[key] ? 'Полный доступ' : 'Недоступно';
+    html += `<tr>
+      <td class="user-info-cell">
+        <div class="user-name">${escapeHtml(u.firstName)} ${escapeHtml(u.lastName)}</div>
+        <div class="user-detail">${escapeHtml(u.phone)}</div>
+        <div class="user-detail">${escapeHtml(u.email)}</div>
+        <span class="role-badge ${u.role === 'owner' ? 'role-owner' : 'role-admin'}">${u.role === 'owner' ? 'Владелец' : 'Менеджер'}</span>
+      </td>
+      <td><span class="access-badge ${fullAccess('products')}">${fullAccessText('products')}</span></td>
+      <td><span class="access-badge ${fullAccess('petitions')}">${fullAccessText('petitions')}</span></td>
+      <td><span class="access-badge ${fullAccess('calendar')}">${fullAccessText('calendar')}</span></td>
+      <td><span class="access-badge ${fullAccess('orders')}">${fullAccessText('orders')}</span></td>
+      <td><span class="access-badge ${fullAccess('reviews')}">${fullAccessText('reviews')}</span></td>
+      <td class="action-icons">
+        <i class="fas fa-pen" onclick="editUser('${u.id}')"></i>
+        <i class="fas fa-trash" onclick="confirmDeleteUser('${u.id}')"></i>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+window.openInviteUserModal = () => {
+  editingUserId = null;
+  document.getElementById('inviteModalTitle').textContent = 'Пригласить пользователя';
+  document.getElementById('invitePhone').value = '';
+  document.getElementById('inviteEmail').value = '';
+  document.getElementById('inviteRole').value = 'admin';
+  document.getElementById('invitePassword').value = '';   // очистка
+  document.getElementById('inviteUserModal').style.display = 'flex';
+};
+
+window.goToPermissionsSetup = () => {
+  const phone = document.getElementById('invitePhone').value.trim();
+  const email = document.getElementById('inviteEmail').value.trim();
+  const role = document.getElementById('inviteRole').value;
+  const password = document.getElementById('invitePassword').value.trim();
+  if (!phone || !email) {
+    alert('Заполните телефон и email');
+    return;
   }
-
-  window.addCategory = () => {
-    const name = prompt('Название новой категории');
-    if (!name) return;
-    const settings = STORAGE.fundSettings();
-    if (settings.categories.includes(name)) {
-      alert('Такая категория уже есть');
-      return;
+  pendingUserData = { phone, email, role, password };
+  if (editingUserId) {
+    const user = STORAGE.users().find(u => u.id === editingUserId);
+    if (user) {
+      const perms = user.permissions || {};
+      document.getElementById('perm-products').checked = !!perms.products;
+      document.getElementById('perm-petitions').checked = !!perms.petitions;
+      document.getElementById('perm-calendar').checked = !!perms.calendar;
+      document.getElementById('perm-orders').checked = !!perms.orders;
+      document.getElementById('perm-reviews').checked = !!perms.reviews;
     }
-    settings.categories.push(name);
-    STORAGE.saveFundSettings(settings);
-    renderCategories();
-  };
+  } else {
+    document.getElementById('perm-products').checked = true;
+    document.getElementById('perm-petitions').checked = true;
+    document.getElementById('perm-calendar').checked = true;
+    document.getElementById('perm-orders').checked = true;
+    document.getElementById('perm-reviews').checked = true;
+  }
+  document.getElementById('createUserBtn').style.display = editingUserId ? 'none' : 'inline-block';
+  document.getElementById('saveUserBtn').style.display = editingUserId ? 'inline-block' : 'none';
+  document.getElementById('inviteUserModal').style.display = 'none';
+  document.getElementById('permissionsModal').style.display = 'flex';
+};
 
-  window.renameCategoryPrompt = (oldName) => {
-    const newName = prompt('Новое название категории', oldName);
-    if (!newName || newName.trim() === '' || newName === oldName) return;
-    const trimmed = newName.trim();
-    const settings = STORAGE.fundSettings();
-    if (settings.categories.includes(trimmed) && trimmed !== oldName) {
-      alert('Категория с таким названием уже существует');
-      return;
+window.backToInviteForm = () => {
+  document.getElementById('permissionsModal').style.display = 'none';
+  document.getElementById('inviteUserModal').style.display = 'flex';
+};
+
+window.createManagerUser = async () => {
+  if (!pendingUserData) return;
+  const { phone, email, role } = pendingUserData;
+  if (STORAGE.users().some(u => u.email === email)) {
+    alert('Пользователь с таким email уже существует');
+    return;
+  }
+  const permissions = {
+    products: document.getElementById('perm-products').checked,
+    petitions: document.getElementById('perm-petitions').checked,
+    calendar: document.getElementById('perm-calendar').checked,
+    orders: document.getElementById('perm-orders').checked,
+    reviews: document.getElementById('perm-reviews').checked
+  };
+   const finalPassword = pendingUserData.password || '123456';
+  const newUser = {
+    id: 'usr_' + Date.now(),
+    firstName: 'Новый',
+    lastName: 'Пользователь',
+    email,
+    password: await hashPassword(finalPassword),
+    phone,
+    role,
+    avatar: '',
+    permissions
+  };
+  STORAGE.saveUsers([...STORAGE.users(), newUser]);
+  closeModal('permissionsModal');
+  pendingUserData = null;
+  renderOwnerUsersTable();
+  alert('Пользователь создан. Временный пароль: 123456');
+};
+
+window.editUser = (id) => {
+  const user = STORAGE.users().find(u => u.id === id);
+  if (!user) return;
+  editingUserId = id;
+  document.getElementById('inviteModalTitle').textContent = 'Настройка пользователя';
+  document.getElementById('invitePhone').value = user.phone || '';
+  document.getElementById('inviteEmail').value = user.email || '';
+  document.getElementById('inviteRole').value = user.role;
+  document.getElementById('invitePassword').value = '';   // пароль оставляем пустым (если не менять – останется старый)
+  document.getElementById('inviteUserModal').style.display = 'flex';
+};
+
+window.saveUserPermissions = async () => {
+  if (!editingUserId || !pendingUserData) return;
+  const users = STORAGE.users();
+  const user = users.find(u => u.id === editingUserId);
+  if (!user) return;
+  user.phone = pendingUserData.phone;
+  user.email = pendingUserData.email;
+  user.role = pendingUserData.role;
+  // Обновление пароля
+  const newPassword = pendingUserData.password;
+  if (newPassword) {
+    user.password = await hashPassword(newPassword);
+  }
+  user.permissions = {
+    products: document.getElementById('perm-products').checked,
+    petitions: document.getElementById('perm-petitions').checked,
+    calendar: document.getElementById('perm-calendar').checked,
+    orders: document.getElementById('perm-orders').checked,
+    reviews: document.getElementById('perm-reviews').checked
+  };
+  STORAGE.saveUsers(users);
+  // Если это текущий пользователь, обновляем сессию и админку
+  const cur = STORAGE.currentUser();
+  if (cur && cur.id === editingUserId) {
+    STORAGE.setCurrentUser(user);
+    if (user.role === 'admin') {
+      renderAdmin();
     }
-    const index = settings.categories.indexOf(oldName);
-    if (index !== -1) settings.categories[index] = trimmed;
-    STORAGE.saveFundSettings(settings);
-    const products = STORAGE.products();
-    products.forEach(p => { if (p.category === oldName) p.category = trimmed; });
-    STORAGE.saveProducts(products);
-    renderCategories();
-  };
+  }
+  closeModal('permissionsModal');
+  editingUserId = null;
+  pendingUserData = null;
+  renderOwnerUsersTable();
+  alert('Изменения сохранены');
+};
 
+window.confirmDeleteUser = (id) => {
+  document.getElementById('confirmDeleteModal').style.display = 'flex';
+  document.getElementById('confirmDeleteBtn').onclick = () => {
+    STORAGE.saveUsers(STORAGE.users().filter(u => u.id !== id));
+    closeModal('confirmDeleteModal');
+    renderOwnerUsersTable();
+  };
+};
+  // ===== Новые функции для категорий-кубов (с переименованием) =====
+let isEditingCategories = false;
+let longPressTimer = null;
+
+function renderCategories() {
+  const grid = document.getElementById('ownerCategoriesGrid');
+  if (!grid) return;
+  const settings = STORAGE.fundSettings();
+  grid.innerHTML = settings.categories.map(cat => `
+    <div class="category-card ${isEditingCategories ? 'editing' : ''}" 
+         data-category="${escapeHtml(cat)}">
+      ${isEditingCategories ? `<div class="delete-badge">×</div>` : ''}
+      <span>${cat}</span>
+    </div>
+  `).join('');
+  
+  const cards = grid.querySelectorAll('.category-card');
+  cards.forEach(card => {
+    const cat = card.dataset.category;
+    card.addEventListener('mousedown', startLongPress);
+    card.addEventListener('touchstart', startLongPress);
+    card.addEventListener('mouseup', cancelLongPress);
+    card.addEventListener('touchend', cancelLongPress);
+    card.addEventListener('mouseleave', cancelLongPress);
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isEditingCategories) return;
+      if (e.target.classList.contains('delete-badge')) {
+        confirmDeleteCategory(cat);
+      } else {
+        renameCategoryPrompt(cat);
+      }
+    });
+  });
+  
+  const editBtn = document.getElementById('editCategoriesBtn');
+  if (editBtn) {
+    editBtn.textContent = isEditingCategories ? 'Готово' : 'Изменить';
+  }
+}
+
+function startLongPress(e) {
+  if (isEditingCategories) return;
+  longPressTimer = setTimeout(() => {
+    isEditingCategories = true;
+    renderCategories();
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(50);
+    }
+  }, 600);
+}
+
+function cancelLongPress() {
+  clearTimeout(longPressTimer);
+}
+
+window.toggleEditCategories = () => {
+  isEditingCategories = !isEditingCategories;
+  if (!isEditingCategories) cancelLongPress();
+  renderCategories();
+};
+
+window.confirmDeleteCategory = (categoryName) => {
+  if (confirm(`Удалить категорию «${categoryName}»?`)) {
+    deleteCategory(categoryName);
+  }
+};
+
+function deleteCategory(name) {
+  const exists = STORAGE.products().some(p => p.category === name);
+  if (exists) {
+    alert('Нельзя удалить: есть товары этой категории');
+    return;
+  }
+  const settings = STORAGE.fundSettings();
+  settings.categories = settings.categories.filter(c => c !== name);
+  STORAGE.saveFundSettings(settings);
+  renderCategories();
+}
+
+window.addCategory = () => {
+  const name = prompt('Название новой категории');
+  if (!name) return;
+  const settings = STORAGE.fundSettings();
+  if (settings.categories.includes(name)) {
+    alert('Такая категория уже есть');
+    return;
+  }
+  settings.categories.push(name);
+  STORAGE.saveFundSettings(settings);
+  renderCategories();
+};
+
+window.renameCategoryPrompt = (oldName) => {
+  const newName = prompt('Новое название категории', oldName);
+  if (!newName || newName.trim() === '' || newName === oldName) return;
+  const trimmed = newName.trim();
+  const settings = STORAGE.fundSettings();
+  if (settings.categories.includes(trimmed) && trimmed !== oldName) {
+    alert('Категория с таким названием уже существует');
+    return;
+  }
+  const index = settings.categories.indexOf(oldName);
+  if (index !== -1) settings.categories[index] = trimmed;
+  STORAGE.saveFundSettings(settings);
+  const products = STORAGE.products();
+  products.forEach(p => {
+    if (p.category === oldName) p.category = trimmed;
+  });
+  STORAGE.saveProducts(products);
+  renderCategories();
+};
   window.showFamilyProfile = () => {
-    const user = STORAGE.currentUser();
-    if (!user) return;
-    if (user.status === 'pending') {
-      showScreen('pendingScreen');
-    } else {
-      showScreen('familyProfileScreen');
-      renderFamilyProfile();
-    }
-  };
-
-  window.renderFamilyProfile = () => {
-    const user = STORAGE.currentUser();
-    if (!user) return;
-    document.getElementById('familyProfileMembers').innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        <div class="initials-circle">${(user.firstName?.[0] || '?').toUpperCase()}${(user.lastName?.[0] || '?').toUpperCase()}</div>
-        <div><strong>${user.firstName || ''} ${user.lastName || ''}</strong><br>Вы (владелец профиля)</div>
-      </div>
-      ${(user.family||[]).map(m => `
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-          <div class="initials-circle">${(m.firstName||'?').charAt(0)}${(m.lastName||'?').charAt(0)}</div>
-          <div><strong>${m.firstName || ''} ${m.lastName || ''}</strong><br>${m.type} · ${m.age} лет</div>
-        </div>`).join('')}
-    `;
-  };
-
-  function renderFamiliesTable() {
-    const container = document.getElementById('familiesTableContainer');
-    if (!container) return;
-    const families = STORAGE.families();
-    let html = `<table class="users-table">
-      <thead><tr>
-        <th>Семья</th><th>Статус</th><th>Дети</th><th>Всего</th><th>Визитов всего</th><th>Визитов/мес</th><th>Лимит/мес</th><th></th>
-      </tr></thead><tbody>`;
-    families.forEach(f => {
-      html += `<tr>
-        <td class="user-info-cell">
-          <div class="user-name">${escapeHtml(f.firstName)} ${escapeHtml(f.lastName)}</div>
-          <div class="user-detail">${escapeHtml(f.phone)}</div>
-          <div class="user-detail">${escapeHtml(f.email)}</div>
-        </td>
-        <td>${escapeHtml(f.status||'')}</td>
-        <td>${f.childrenCount||0}</td>
-        <td>${f.familySize||1}</td>
-        <td>${f.totalVisits||0}</td>
-        <td>${f.monthlyVisits||0}</td>
-        <td>${f.visitLimit||5}</td>
-        <td class="action-icons">
-          <i class="fas fa-pen" onclick="editFamily('${f.id}')"></i>
-          <i class="fas fa-trash" onclick="deleteFamily('${f.id}')"></i>
-        </td>
-      </tr>`;
-    });
-    html += '</tbody></table>';
-    container.innerHTML = html;
+  const user = STORAGE.currentUser();
+  if (!user) return;
+  if (user.status === 'pending') {
+    showScreen('pendingScreen');
+  } else {
+    showScreen('familyProfileScreen');
+    renderFamilyProfile();
   }
+};
 
-  window.openAddFamilyModal = () => {
-    editingFamilyId = null;
-    document.getElementById('familyModalTitle').textContent = 'Добавить семью';
-    ['familyFirstName','familyLastName','familyPhone','familyEmail','familyStatus'].forEach(id => document.getElementById(id).value = '');
-    ['familyChildren','familySize','familyTotalVisits','familyMonthlyVisits','familyVisitLimit'].forEach(id => document.getElementById(id).value = id==='familySize'?1:id==='familyVisitLimit'?5:0);
-    document.getElementById('familyModal').style.display = 'flex';
+window.renderFamilyProfile = () => {
+  const user = STORAGE.currentUser();
+  if (!user) return;
+  document.getElementById('familyProfileMembers').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <div class="initials-circle">${user.firstName.charAt(0)}${user.lastName.charAt(0)}</div>
+      <div><strong>${user.firstName} ${user.lastName}</strong><br>Вы (владелец профиля)</div>
+    </div>
+    ${(user.family||[]).map(m => `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="initials-circle">${m.firstName.charAt(0)}${m.lastName.charAt(0)}</div>
+        <div><strong>${m.firstName} ${m.lastName}</strong><br>${m.type} · ${m.age} лет</div>
+      </div>
+    `).join('')}
+  `;
+};
+      function renderFamiliesTable() {
+  const container = document.getElementById('familiesTableContainer');
+  if (!container) return;
+  const families = STORAGE.families();
+  let html = `<table class="users-table">
+    <thead><tr>
+      <th>Семья</th><th>Статус</th><th>Дети</th><th>Всего</th><th>Визитов всего</th><th>Визитов/мес</th><th>Лимит/мес</th><th></th>
+    </tr></thead><tbody>`;
+  families.forEach(f => {
+    html += `<tr>
+      <td class="user-info-cell">
+        <div class="user-name">${escapeHtml(f.firstName)} ${escapeHtml(f.lastName)}</div>
+        <div class="user-detail">${escapeHtml(f.phone)}</div>
+        <div class="user-detail">${escapeHtml(f.email)}</div>
+      </td>
+      <td>${escapeHtml(f.status||'')}</td>
+      <td>${f.childrenCount||0}</td>
+      <td>${f.familySize||1}</td>
+      <td>${f.totalVisits||0}</td>
+      <td>${f.monthlyVisits||0}</td>
+      <td>${f.visitLimit||5}</td>
+      <td class="action-icons">
+        <i class="fas fa-pen" onclick="editFamily('${f.id}')"></i>
+        <i class="fas fa-trash" onclick="deleteFamily('${f.id}')"></i>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+window.openAddFamilyModal = () => {
+  editingFamilyId = null;
+  document.getElementById('familyModalTitle').textContent = 'Добавить семью';
+  ['familyFirstName','familyLastName','familyPhone','familyEmail','familyStatus'].forEach(id => document.getElementById(id).value = '');
+  ['familyChildren','familySize','familyTotalVisits','familyMonthlyVisits','familyVisitLimit'].forEach(id => document.getElementById(id).value = id==='familySize'?1:id==='familyVisitLimit'?5:0);
+  document.getElementById('familyModal').style.display = 'flex';
+};
+
+window.editFamily = (id) => {
+  const f = STORAGE.families().find(f => f.id === id);
+  if (!f) return;
+  editingFamilyId = id;
+  document.getElementById('familyModalTitle').textContent = 'Редактировать семью';
+  document.getElementById('familyFirstName').value = f.firstName;
+  document.getElementById('familyLastName').value = f.lastName;
+  document.getElementById('familyPhone').value = f.phone;
+  document.getElementById('familyEmail').value = f.email||'';
+  document.getElementById('familyStatus').value = f.status||'';
+  document.getElementById('familyChildren').value = f.childrenCount||0;
+  document.getElementById('familySize').value = f.familySize||1;
+  document.getElementById('familyTotalVisits').value = f.totalVisits||0;
+  document.getElementById('familyMonthlyVisits').value = f.monthlyVisits||0;
+  document.getElementById('familyVisitLimit').value = f.visitLimit||5;
+  document.getElementById('familyModal').style.display = 'flex';
+};
+
+window.saveFamily = () => {
+  const fn = document.getElementById('familyFirstName').value.trim();
+  const ln = document.getElementById('familyLastName').value.trim();
+  const phone = document.getElementById('familyPhone').value.trim();
+  if (!fn||!ln||!phone) { alert('Заполните обязательные поля'); return; }
+  const fam = {
+    id: editingFamilyId || 'fam_'+Date.now(),
+    firstName: fn, lastName: ln, phone,
+    email: document.getElementById('familyEmail').value.trim(),
+    status: document.getElementById('familyStatus').value.trim(),
+    childrenCount: +document.getElementById('familyChildren').value,
+    familySize: +document.getElementById('familySize').value,
+    totalVisits: +document.getElementById('familyTotalVisits').value,
+    monthlyVisits: +document.getElementById('familyMonthlyVisits').value,
+    visitLimit: +document.getElementById('familyVisitLimit').value
   };
+  const families = STORAGE.families();
+  if (editingFamilyId) {
+    const idx = families.findIndex(f => f.id === editingFamilyId);
+    if (idx !== -1) families[idx] = fam;
+  } else {
+    families.push(fam);
+  }
+  STORAGE.saveFamilies(families);
+  closeModal('familyModal');
+  renderFamiliesTable();
+};
 
-  window.editFamily = (id) => {
-    const f = STORAGE.families().find(f => f.id === id);
-    if (!f) return;
-    editingFamilyId = id;
-    document.getElementById('familyModalTitle').textContent = 'Редактировать семью';
-    document.getElementById('familyFirstName').value = f.firstName;
-    document.getElementById('familyLastName').value = f.lastName;
-    document.getElementById('familyPhone').value = f.phone;
-    document.getElementById('familyEmail').value = f.email||'';
-    document.getElementById('familyStatus').value = f.status||'';
-    document.getElementById('familyChildren').value = f.childrenCount||0;
-    document.getElementById('familySize').value = f.familySize||1;
-    document.getElementById('familyTotalVisits').value = f.totalVisits||0;
-    document.getElementById('familyMonthlyVisits').value = f.monthlyVisits||0;
-    document.getElementById('familyVisitLimit').value = f.visitLimit||5;
-    document.getElementById('familyModal').style.display = 'flex';
-  };
+window.deleteFamily = (id) => {
+  if (!confirm('Удалить эту семью?')) return;
+  STORAGE.saveFamilies(STORAGE.families().filter(f => f.id !== id));
+  renderFamiliesTable();
+};
 
-  window.saveFamily = () => {
-    const fn = document.getElementById('familyFirstName').value.trim();
-    const ln = document.getElementById('familyLastName').value.trim();
-    const phone = document.getElementById('familyPhone').value.trim();
-    if (!fn||!ln||!phone) { alert('Заполните обязательные поля'); return; }
-    const fam = {
-      id: editingFamilyId || 'fam_'+Date.now(),
-      firstName: fn, lastName: ln, phone,
-      email: document.getElementById('familyEmail').value.trim(),
-      status: document.getElementById('familyStatus').value.trim(),
-      childrenCount: +document.getElementById('familyChildren').value,
-      familySize: +document.getElementById('familySize').value,
-      totalVisits: +document.getElementById('familyTotalVisits').value,
-      monthlyVisits: +document.getElementById('familyMonthlyVisits').value,
-      visitLimit: +document.getElementById('familyVisitLimit').value
-    };
-    const families = STORAGE.families();
-    if (editingFamilyId) {
-      const idx = families.findIndex(f => f.id === editingFamilyId);
-      if (idx !== -1) families[idx] = fam;
-    } else {
-      families.push(fam);
-    }
-    STORAGE.saveFamilies(families);
-    closeModal('familyModal');
-    renderFamiliesTable();
-  };
+window.openPendingApplications = () => {
+  const users = STORAGE.users().filter(u => u.status === 'pending');
+  const content = document.getElementById('pendingAppsContent');
+  content.innerHTML = users.map(u => `
+    <div style="margin-bottom:12px; padding:12px; background:#f2f2f6; border-radius:12px;">
+      <strong>${escapeHtml(u.firstName)} ${escapeHtml(u.lastName)}</strong><br>
+      ${escapeHtml(u.email)} / ${escapeHtml(u.phone)}<br>
+      Категории: ${(u.categories||[]).join(', ') || 'не указаны'}<br>
+      Членов семьи: ${(u.family||[]).length + 1}
+      <div style="margin-top:8px;">
+        <button class="btn primary small" onclick="approveApplication('${u.id}')">✓ Одобрить</button>
+        <button class="btn danger small" onclick="rejectApplication('${u.id}')">✗ Отклонить</button>
+      </div>
+    </div>
+  `).join('') || '<p>Нет заявок на рассмотрении</p>';
+  document.getElementById('pendingAppsModal').style.display = 'flex';
+};
 
-  window.deleteFamily = (id) => {
-    if (!confirm('Удалить эту семью?')) return;
-    STORAGE.saveFamilies(STORAGE.families().filter(f => f.id !== id));
-    renderFamiliesTable();
-  };
+window.approveApplication = (userId) => {
+  const users = STORAGE.users();
+  const user = users.find(u => u.id === userId);
+  if (user) user.status = 'approved';
+  STORAGE.saveUsers(users);
+  closeModal('pendingAppsModal');
+  openPendingApplications();
+};
 
-  window.openPendingApplications = () => {
-    const users = STORAGE.users().filter(u => u.status === 'pending');
-    const content = document.getElementById('pendingAppsContent');
-    content.innerHTML = users.map(u => `
-      <div style="margin-bottom:12px; padding:12px; background:#f2f2f6; border-radius:12px;">
-        <strong>${escapeHtml(u.firstName)} ${escapeHtml(u.lastName)}</strong><br>
-        ${escapeHtml(u.email)} / ${escapeHtml(u.phone)}<br>
-        Категории: ${(u.categories||[]).join(', ') || 'не указаны'}<br>
-        Членов семьи: ${(u.family||[]).length + 1}
-        <div style="margin-top:8px;">
-          <button class="btn primary small" onclick="approveApplication('${u.id}')">✓ Одобрить</button>
-          <button class="btn danger small" onclick="rejectApplication('${u.id}')">✗ Отклонить</button>
-        </div>
-      </div>`).join('') || '<p>Нет заявок на рассмотрении</p>';
-    document.getElementById('pendingAppsModal').style.display = 'flex';
-  };
-
-  window.approveApplication = (userId) => {
-    const users = STORAGE.users();
-    const user = users.find(u => u.id === userId);
-    if (user) user.status = 'approved';
-    STORAGE.saveUsers(users);
-    closeModal('pendingAppsModal');
-    openPendingApplications();
-  };
-
-  window.rejectApplication = (userId) => {
-    const users = STORAGE.users();
-    const user = users.find(u => u.id === userId);
-    if (user) user.status = 'rejected';
-    STORAGE.saveUsers(users);
-    closeModal('pendingAppsModal');
-    openPendingApplications();
-  };
-
-})();
+window.rejectApplication = (userId) => {
+  const users = STORAGE.users();
+  const user = users.find(u => u.id === userId);
+  if (user) user.status = 'rejected';
+  STORAGE.saveUsers(users);
+  closeModal('pendingAppsModal');
+  openPendingApplications();
+};
+  })();
 </script>
 </body>
 </html>
