@@ -889,7 +889,13 @@ else {
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-  }
+
+    // Скрываем или показываем нижнюю панель навигации
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = (id === 'mainScreen') ? 'flex' : 'none';
+    }
+}
 
   // Навигация
   document.querySelectorAll('.bottom-nav .nav-item').forEach(el => {
