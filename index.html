@@ -1628,6 +1628,7 @@ window.submitRegistration = async () => {
     });
   });
         const orderSearch = document.getElementById('orderSearchInput');
+if (orderSearch) {
   orderSearch.removeEventListener('input', window.renderAllOrders);
   orderSearch.addEventListener('input', window.renderAllOrders);
 }
