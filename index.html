@@ -316,6 +316,71 @@ input:checked + .slider:before { transform: translateX(22px); }
 .category-card.add-card .add-icon {
   font-size: 40px;
   font-weight: 300;
+}/* Стеклянная квадратная лупа */
+.glass-loupe {
+  position: fixed;
+  width: 62px;
+  height: 62px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: 
+    0 8px 28px rgba(0,0,0,0.12),
+    inset 0 0 0 1.5px rgba(255,255,255,0.7);
+  pointer-events: none;
+  z-index: 101;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  transition: opacity 0.15s ease;
+}
+
+/* Радужный вращающийся блик */
+.glass-loupe::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255,0,0,0.25),
+    rgba(255,255,0,0.2),
+    rgba(0,255,0,0.25),
+    rgba(0,255,255,0.2),
+    rgba(0,0,255,0.25),
+    rgba(255,0,255,0.2),
+    rgba(255,0,0,0.25)
+  );
+  animation: rainbowSpin 4s linear infinite;
+  z-index: 0;
+}
+
+/* Внутренний глянцевый блик */
+.glass-loupe::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.5) 0%,
+    rgba(255,255,255,0.1) 40%,
+    rgba(255,255,255,0.0) 60%
+  );
+  box-shadow: inset 0 0 12px rgba(255,255,255,0.25);
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes rainbowSpin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
   </style>
 </head>
@@ -700,21 +765,8 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
   </div>
 </div>
-<!-- Стеклянная лупа для нижней панели -->
-<div id="navLoupe" style="
-  position: fixed;
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.7);
-  pointer-events: none;
-  z-index: 101;
-  opacity: 0;
-  transition: opacity 0.2s;
-  transform: translate(-50%, -50%);
-"></div>
+<!-- Стеклянная лупа (квадрат с радужным бликом) -->
+<div id="navLoupe" class="glass-loupe"></div>
 </div>
 
 <script>
