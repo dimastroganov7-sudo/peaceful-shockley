@@ -1627,9 +1627,9 @@ window.submitRegistration = async () => {
       if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
     });
   });
-    const orderSearch = document.getElementById('orderSearchInput');
-  orderSearch.removeEventListener('input', renderAllOrders);
-  orderSearch.addEventListener('input', renderAllOrders);
+        const orderSearch = document.getElementById('orderSearchInput');
+  orderSearch.removeEventListener('input', window.renderAllOrders);
+  orderSearch.addEventListener('input', window.renderAllOrders);
 }
 
   function renderAdminProducts() {
