@@ -424,7 +424,27 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
   </div>
 </div>
+<!-- Экран ожидания модерации -->
+<div id="pendingScreen" class="screen">
+  <div style="padding:40px; text-align:center;">
+    <i class="fas fa-clock" style="font-size:64px; color:#ffcc00; margin-bottom:20px;"></i>
+    <h2>Ваш профиль на модерации</h2>
+    <p style="color:#8e8e93; margin-top:12px;">Владелец фонда проверит данные и откроет вам доступ к помощи.</p>
+    <button class="btn primary" style="margin-top:30px;" onclick="logout()">Выйти</button>
+  </div>
+</div>
 
+<!-- Экран профиля семьи -->
+<div id="familyProfileScreen" class="screen">
+  <header>
+    <button class="ghost-btn" onclick="showScreen('mainScreen')">
+      <i class="fas fa-chevron-left"></i> Назад
+    </button>
+    <h3>Моя семья</h3>
+    <div></div>
+  </header>
+  <div class="tab-content" id="familyProfileMembers"></div>
+</div>
   <!-- ОСНОВНОЙ ЭКРАН ПОЛЬЗОВАТЕЛЯ -->
   <div id="mainScreen" class="screen">
     <header>
@@ -1031,7 +1051,8 @@ window.nextRegStep = (step) => {
 
 window.prevRegStep = (step) => { nextRegStep(step); };
 
-document.addEventListener('DOMContentLoaded', () => {
+// Обработчики кнопок категорий (DOM уже готов — подключаем сразу)
+(function initCategoryButtons() {
   document.querySelectorAll('.category-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const cat = btn.dataset.category;
@@ -1045,7 +1066,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('step2NextBtn').disabled = selectedCategories.size === 0;
     });
   });
-});
+})();
 
 function initFamilyMembers() {
   const fn = document.getElementById('regFirstName').value.trim();
@@ -1158,9 +1179,14 @@ window.submitRegistration = async () => {
 };
   window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); };
 
-  function showScreen(id) {
+   function showScreen(id) {
+    const screenEl = document.getElementById(id);
+    if (!screenEl) {
+      console.error('Экран не найден:', id);
+      return;
+    }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    screenEl.classList.add('active');
   }
 
   // Навигация
@@ -1601,7 +1627,9 @@ window.submitRegistration = async () => {
       if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
     });
   });
-  document.getElementById('orderSearchInput').addEventListener('input', renderAllOrders);
+    const orderSearch = document.getElementById('orderSearchInput');
+  orderSearch.removeEventListener('input', renderAllOrders);
+  orderSearch.addEventListener('input', renderAllOrders);
 }
 
   function renderAdminProducts() {
