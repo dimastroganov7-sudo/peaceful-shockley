@@ -699,6 +699,21 @@ input:checked + .slider:before { transform: translateX(22px); }
       <button class="btn danger" id="confirmDeleteBtn">Удалить</button>
     </div>
   </div>
+  <!-- Стеклянная лупа для нижней панели -->
+<div id="navLoupe" style="
+  position: fixed;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.7);
+  pointer-events: none;
+  z-index: 101;
+  opacity: 0;
+  transition: opacity 0.2s;
+  transform: translate(-50%, -50%);
+"></div>
 </div>
 </div>
 
@@ -1093,9 +1108,71 @@ else {
 }
 
   // Навигация
-  document.querySelectorAll('.bottom-nav .nav-item').forEach(el => {
-    el.addEventListener('click', () => switchTab(el.dataset.tab));
-  });
+// Навигация с эффектом лупы
+  const bottomNav = document.querySelector('.bottom-nav');
+  const loupe = document.getElementById('navLoupe');
+  let loupeActive = false;
+  let currentLoupeTab = null;
+
+  function moveLoupeToTab(tabElement) {
+    if (!tabElement || !loupe) return;
+    const rect = tabElement.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2 + 4; // чуть ниже иконки
+    loupe.style.left = centerX + 'px';
+    loupe.style.top = centerY + 'px';
+    loupe.style.opacity = '1';
+  }
+
+  function hideLoupe() {
+    if (loupe) loupe.style.opacity = '0';
+    loupeActive = false;
+    currentLoupeTab = null;
+  }
+
+  function getNavItemFromPoint(x, y) {
+    const items = document.querySelectorAll('.bottom-nav .nav-item');
+    for (let item of items) {
+      const rect = item.getBoundingClientRect();
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  if (bottomNav && loupe) {
+    bottomNav.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      const item = getNavItemFromPoint(touch.clientX, touch.clientY);
+      if (item) {
+        loupeActive = true;
+        currentLoupeTab = item;
+        moveLoupeToTab(item);
+      }
+    });
+
+    bottomNav.addEventListener('touchmove', (e) => {
+      if (!loupeActive) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const item = getNavItemFromPoint(touch.clientX, touch.clientY);
+      if (item && item !== currentLoupeTab) {
+        currentLoupeTab = item;
+        moveLoupeToTab(item);
+      }
+    });
+
+    bottomNav.addEventListener('touchend', (e) => {
+      if (!loupeActive) return;
+      if (currentLoupeTab) {
+        switchTab(currentLoupeTab.dataset.tab);
+      }
+      hideLoupe();
+    });
+
+    bottomNav.addEventListener('touchcancel', hideLoupe);
+  }
   window.switchTab = (tabId) => {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const ni = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
