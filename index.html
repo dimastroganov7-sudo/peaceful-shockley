@@ -823,8 +823,35 @@ STORAGE.saveFamilies = f => localStorage.setItem('f_families', JSON.stringify(f)
   STORAGE.saveOrders = o => localStorage.setItem('f_orders',JSON.stringify(o));
   STORAGE.reviews = () => JSON.parse(localStorage.getItem('f_reviews')||'[]');
   STORAGE.saveReviews = r => localStorage.setItem('f_reviews',JSON.stringify(r));
-  STORAGE.currentUser = () => JSON.parse(sessionStorage.getItem('f_curUser')||'null');
-  STORAGE.setCurrentUser = u => sessionStorage.setItem('f_curUser',JSON.stringify(u));
+  STORAGE.currentUser = () => {
+
+  try {
+
+    return JSON.parse(
+      sessionStorage.getItem('f_curUser') || 'null'
+    );
+
+  } catch (e) {
+
+    console.error(e);
+
+    sessionStorage.removeItem('f_curUser');
+
+    return null;
+  }
+};
+  STORAGE.setCurrentUser = u => {
+
+  if (!u) {
+    sessionStorage.removeItem('f_curUser');
+    return;
+  }
+
+  sessionStorage.setItem(
+    'f_curUser',
+    JSON.stringify(u)
+  );
+};
   STORAGE.cart = () => JSON.parse(localStorage.getItem('f_cart')||'[]');
   STORAGE.saveCart = c => localStorage.setItem('f_cart',JSON.stringify(c));
   STORAGE.maxLimit = () => parseInt(localStorage.getItem('f_maxLimit')||'10');
@@ -995,34 +1022,52 @@ STORAGE.saveFundSettings = data =>
       user = STORAGE.users().find(u => u.phone === identifier && u.password === hashed);
     }
 
-    if (!user) { alert('Неверные данные'); return; }
-    STORAGE.setCurrentUser(user);
-    if (user.role === 'owner') {
+    if (!user) {
+  alert('Неверные данные');
+  return;
+}
+
+STORAGE.setCurrentUser(user);
+
+if (user.status === 'pending') {
+  showScreen('pendingScreen');
+  return;
+}
+
+if (user.role === 'owner') {
+
   showScreen('ownerScreen');
+
   initOwnerTabs();
+
   renderCategories();
+
   renderFundAddresses();
+
   renderOwnerUsersTable();
+
+  return;
 }
 
-else if (user.role === 'admin') {
+return;
+}
 
+if (user.role === 'admin') {
   showScreen('adminScreen');
-
   renderAdmin();
-
+  return;
 }
 
-else {
-  if (user.status === 'pending') {
-    STORAGE.setCurrentUser(user);
-    showScreen('pendingScreen');
-  } else {
-    showScreen('mainScreen');
-    updateUIForUser();
-  }
+showScreen('mainScreen');
+
+if (typeof renderMain === 'function') {
+  renderMain();
 }
-  };
+
+if (typeof renderAdmin === 'function') {
+  renderAdmin();
+}
+};
   let regCurrentStep = 1;
 let selectedCategories = new Set();
 let familyMembers = [];
@@ -1049,7 +1094,18 @@ window.nextRegStep = (step) => {
   if (step === 3) initFamilyMembers();
 };
 
-window.prevRegStep = (step) => { nextRegStep(step); };
+window.prevRegStep = (step) => {
+  regCurrentStep = step;
+
+  document.getElementById('regStepNumber').textContent = step;
+  document.getElementById('regProgressBar').style.width = (step / 3 * 100) + '%';
+
+  document.querySelectorAll('[id^="regStep"]').forEach(el => {
+    el.style.display = 'none';
+  });
+
+  document.getElementById('regStep' + step).style.display = 'block';
+};
 
 // Обработчики кнопок категорий (DOM уже готов — подключаем сразу)
 (function initCategoryButtons() {
@@ -1071,7 +1127,9 @@ window.prevRegStep = (step) => { nextRegStep(step); };
 function initFamilyMembers() {
   const fn = document.getElementById('regFirstName').value.trim();
   const ln = document.getElementById('regLastName').value.trim();
-  document.getElementById('selfInitials').textContent = fn.charAt(0).toUpperCase() + ln.charAt(0).toUpperCase();
+  document.getElementById('selfInitials').textContent =
+  (fn.charAt(0) || '?').toUpperCase() +
+  (ln.charAt(0) || '?').toUpperCase();
   document.getElementById('selfName').textContent = fn + ' ' + ln;
   renderFamilyMembersList();
   document.getElementById('addMemberBtn').onclick = () => {
@@ -1177,7 +1235,11 @@ window.submitRegistration = async () => {
   STORAGE.setCurrentUser(user);
   showScreen('pendingScreen');
 };
-  window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); };
+ window.logout = () => {
+  STORAGE.setCurrentUser(null);
+  STORAGE.saveCart([]);
+  showScreen('loginScreen');
+};
 
    function showScreen(id) {
     const screenEl = document.getElementById(id);
@@ -1480,7 +1542,7 @@ window.submitRegistration = async () => {
         <p style="color:#8e8e93;">${escapeHtml(prod.article)}</p>
         <p>${escapeHtml(prod.description || 'Описание отсутствует')}</p>
       </div>
-      <button class="btn primary" style="margin:0 18px 18px;width:calc(100%-36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
+      <button class="btn primary" style="margin:0 18px 18px;width:calc(100% - 36px);" onclick="addToCartFromDetail('${prodId}')">В корзину</button>`;
   };
   window.switchDetailPhoto = (src, el) => {
     document.getElementById('detailMainPhoto').src = src;
@@ -2033,35 +2095,69 @@ if (orderSearch) {
   });
 
    // Запуск
-  initData().then(() => {
-    const cur = STORAGE.currentUser();
-    if (cur) {
-      if (cur.role === 'admin') {
-        showScreen('adminScreen');
-        renderAdmin();
-      } else {
-        if (cur.status === 'pending') {
-          showScreen('pendingScreen');
-        } else {
-          showScreen('mainScreen');
-          updateUIForUser();
-        }
-      }
-    } else {
-      showScreen('authScreen');
-    }
-    updateCartBadge();
-  });
+ initData().then(() => {
+
+  const cur = STORAGE.currentUser();
+
+  if (!cur) {
+    showScreen('loginScreen');
+    return;
+  }
+
+  if (cur.status === 'pending') {
+    showScreen('pendingScreen');
+    return;
+  }
+
+  if (cur.role === 'owner') {
+
+    showScreen('ownerScreen');
+
+    initOwnerTabs();
+
+    renderCategories();
+
+    renderFundAddresses();
+
+    renderOwnerUsersTable();
+
+    return;
+  }
+
+  if (cur.role === 'admin') {
+
+    showScreen('adminScreen');
+
+    renderAdmin();
+
+    return;
+  }
+
+  showScreen('mainScreen');
+
+  renderMain();
+
+});
  
 function initOwnerTabs() {
   document.querySelectorAll('[data-owner-tab]').forEach(btn => {
-    btn.onclick = () => {
+    if (btn.dataset.initialized) return;
+
+btn.dataset.initialized = '1';
+
+btn.addEventListener('click', () => {
       document.querySelectorAll('[data-owner-tab]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.querySelectorAll('#ownerScreen .owner-pane').forEach(p => p.classList.remove('active'));
-      const target = document.getElementById('owner' + btn.dataset.ownerTab.charAt(0).toUpperCase() + btn.dataset.ownerTab.slice(1));
+
+      const target = document.getElementById(
+        'owner' +
+        btn.dataset.ownerTab.charAt(0).toUpperCase() +
+        btn.dataset.ownerTab.slice(1)
+      );
+
       if (target) target.classList.add('active');
-    };
+    });
   });
   document.querySelectorAll('[data-owner-settings]').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -2443,7 +2539,7 @@ window.renameCategoryPrompt = (oldName) => {
   STORAGE.saveProducts(products);
   renderCategories();
 };
-  window.showFamilyProfile = () => {
+window.showFamilyProfile = () => {
   const user = STORAGE.currentUser();
   if (!user) return;
   if (user.status === 'pending') {
@@ -2459,7 +2555,8 @@ window.renderFamilyProfile = () => {
   if (!user) return;
   document.getElementById('familyProfileMembers').innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-      <div class="initials-circle">${(user.firstName||'?').charAt(0)}${(user.lastName||'?').charAt(0)}</div>
+      <div class="initials-circle">${(user.firstName?.[0] || '?').toUpperCase()}
+${(user.lastName?.[0] || '?').toUpperCase()}</div>
       <div><strong>${user.firstName || ''} ${user.lastName || ''}</strong><br>Вы (владелец профиля)</div>
     </div>
     ${(user.family||[]).map(m => `
