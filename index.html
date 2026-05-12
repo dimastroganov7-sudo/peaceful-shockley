@@ -1286,7 +1286,6 @@ else {
   // Скрываем/показываем вкладки по правам
   document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
     const tab = btn.dataset.adminTab;
-    if (tab === 'products') return;                         // Товары видны всегда
     const permKey = tabToPerm[tab];
     if (permKey && perms[permKey]) {
       btn.style.display = '';
