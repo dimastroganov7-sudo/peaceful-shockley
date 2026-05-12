@@ -872,10 +872,22 @@ STORAGE.saveFundSettings = data =>
 
   // Хеширование
   async function hashPassword(pwd) {
-    const enc = new TextEncoder().encode(pwd);
-    const hash = await crypto.subtle.digest('SHA-256', enc);
-    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
-  }
+    try {
+        const enc = new TextEncoder().encode(pwd);
+        const hash = await crypto.subtle.digest('SHA-256', enc);
+        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+    } catch (e) {
+        // Фолбэк, если crypto.subtle недоступен (например, file://)
+        let hash = 0;
+        for (let i = 0; i < pwd.length; i++) {
+            const char = pwd.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash |= 0; // конвертируем в 32-битное целое
+        }
+        // делаем вид шестнадцатеричной строки (только для теста)
+        return 'fb_' + Math.abs(hash).toString(16).padStart(8, '0');
+    }
+}
 
   // Инициализация данных
   async function initData() {
