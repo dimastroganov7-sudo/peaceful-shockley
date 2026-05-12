@@ -293,26 +293,6 @@ input:checked + .slider:before { transform: translateX(22px); }
   font-size: 40px;
   font-weight: 300;
 }
-    .category-btn {
-  background: #ffffff;
-  border: 2px solid #e5e5ea;
-  border-radius: 20px;
-  padding: 16px 8px;
-  font-size: 15px;
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.2s;
-  color: #1c1c1e;
-}
-.category-btn i { font-size: 24px; display: block; margin-bottom: 6px; }
-.category-btn.selected { background: #007aff; color: white; border-color: #007aff; }
-.category-btn:disabled { opacity: 0.5; pointer-events: none; }
-.initials-circle {
-  width: 44px; height: 44px; border-radius: 22px;
-  background: #007aff; color: white; display: flex;
-  align-items: center; justify-content: center; font-weight: 600; font-size: 16px;
-}
   </style>
 </head>
 <body>
@@ -346,90 +326,24 @@ input:checked + .slider:before { transform: translateX(22px); }
     <p class="link" onclick="showRegister()">Зарегистрироваться</p>
     <p class="link" style="font-size:12px; color:#8e8e93;">Админ: admin@fond.ru / admin123</p>
 </div>
-<div id="registerForm" style="display:none;">
-  <!-- индикатор прогресса -->
-  <div style="margin-bottom:24px;">
-    <div style="text-align:center;color:#8e8e93;font-size:13px;">ШАГ <span id="regStepNumber">1</span> из 3</div>
-    <div style="background:#e5e5ea;border-radius:8px;height:6px;margin-top:8px;">
-      <div id="regProgressBar" style="background:#007aff;height:6px;border-radius:8px;width:33%;"></div>
-    </div>
-  </div>
-
-  <!-- ШАГ 1 – Контактные данные -->
-  <div id="regStep1">
-    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
-    <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
-    <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
-    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
-    <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
-    <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
-    <button class="btn primary" onclick="nextRegStep(2)">Далее</button>
-    <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
-  </div>
-
-  <!-- ШАГ 2 – Категории семьи -->
-  <div id="regStep2" style="display:none;">
-    <h4 style="margin-bottom:16px;">Категория семьи</h4>
-    <p style="color:#8e8e93;font-size:14px;margin-bottom:20px;">Выберите одну или несколько. От этого зависит объем помощи и нужные документы.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <button class="category-btn" data-category="Многодетная"><i class="fas fa-heart"></i><br>Многодетная</button>
-      <button class="category-btn" data-category="Малоимущая"><i class="fas fa-ruble-sign"></i><br>Малоимущая</button>
-      <button class="category-btn" data-category="Инвалидность"><i class="fas fa-wheelchair"></i><br>Инвалидность</button>
-      <button class="category-btn" data-category="Переселенцы"><i class="fas fa-home"></i><br>Переселенцы</button>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:24px;">
-      <button class="btn secondary" onclick="prevRegStep(1)">← Назад</button>
-      <button class="btn primary" id="step2NextBtn" disabled onclick="nextRegStep(3)">Далее →</button>
-    </div>
-  </div>
-
-  <!-- ШАГ 3 – Состав семьи -->
-  <div id="regStep3" style="display:none;">
-    <h4 style="margin-bottom:8px;">Члены семьи</h4>
-    <p style="color:#8e8e93;font-size:14px;margin-bottom:16px;">Добавьте всех, кто живёт с вами. На каждого ребёнка понадобятся документы.</p>
-    <div id="familyMembersContainer">
-      <!-- автоматически показан сам пользователь -->
-      <div class="family-member-card" style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        <div class="initials-circle" id="selfInitials"></div>
-        <div style="flex:1;"><strong id="selfName"></strong><br><span style="color:#8e8e93;">Вы (владелец профиля)</span></div>
+      <div id="registerForm" style="display:none;">
+        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regFirstName" placeholder="Имя"></div>
+        <div class="input-group"><i class="far fa-user"></i><input type="text" id="regLastName" placeholder="Фамилия"></div>
+        <div class="input-group"><i class="far fa-envelope"></i><input type="email" id="regEmail" placeholder="Email"></div>
+        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regPassword" placeholder="Пароль"></div>
+        <div class="input-group"><i class="far fa-lock"></i><input type="password" id="regConfirm" placeholder="Подтвердите пароль"></div>
+        <div class="input-group phone-group"><select id="countryCode"><option value="+7">🇷🇺 +7</option></select><input type="tel" id="regPhone" placeholder="Номер"></div>
+        <button class="btn primary" onclick="appRegister()">Зарегистрироваться</button>
+        <p class="link" onclick="showLogin()">Уже есть аккаунт? Войти</p>
       </div>
     </div>
-    <button class="btn secondary" style="border:1px dashed #007aff;color:#007aff;background:transparent;" id="addMemberBtn">+ Добавить члена семьи</button>
-    <!-- панель добавления (скрыта) -->
-    <div id="addMemberForm" style="display:none;margin-top:16px;background:#f2f2f6;border-radius:16px;padding:16px;">
-      <input type="text" id="memberFirstName" placeholder="Имя" style="width:100%;margin-bottom:8px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;">
-      <input type="text" id="memberLastName" placeholder="Фамилия" style="width:100%;margin-bottom:8px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;">
-      <select id="memberType" style="width:100%;margin-bottom:8px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;">
-        <option value="Взрослый">Взрослый</option>
-        <option value="Ребенок">Ребенок</option>
-      </select>
-      <select id="memberGender" style="width:100%;margin-bottom:8px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;">
-        <option value="М">М</option>
-        <option value="Ж">Ж</option>
-      </select>
-      <input type="number" id="memberAge" placeholder="Возраст (0-120)" min="0" max="120" style="width:100%;margin-bottom:8px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;">
-      <select id="memberRelation" style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:1px solid #e5e5ea;">
-        <option value="Дочь">Дочь</option>
-        <option value="Сын">Сын</option>
-        <option value="Отец">Отец</option>
-        <option value="Мать">Мать</option>
-        <option value="Муж">Муж</option>
-        <option value="Жена">Жена</option>
-      </select>
-      <button class="btn primary small" onclick="saveFamilyMember()">Сохранить</button>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:24px;">
-      <button class="btn secondary" onclick="prevRegStep(2)">← Назад</button>
-      <button class="btn primary" id="registerFinalBtn" onclick="submitRegistration()">Зарегистрироваться</button>
-    </div>
   </div>
-</div>
 
   <!-- ОСНОВНОЙ ЭКРАН ПОЛЬЗОВАТЕЛЯ -->
   <div id="mainScreen" class="screen">
     <header>
       <h3>Три сестры</h3>
-      <div class="header-icons"><div class="profile-icon-header" onclick="showFamilyProfile()" id="headerProfileIcon"><i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i></div></div>
+      <div class="header-icons"><div class="profile-icon-header" onclick="switchTab('profile')" id="headerProfileIcon"><i class="far fa-user-circle" style="font-size:28px;color:#007aff;"></i></div></div>
     </header>
     <div class="tab-content" id="userTabContent">
       <div id="homeTab" class="tab-pane active">
@@ -446,6 +360,18 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="slot-select"><select id="timeSlotSelect"></select></div>
         <button class="btn primary" onclick="createOrder()">Отправить на согласование</button>
       </div>
+      <div id="profileTab" class="tab-pane">
+        <div style="text-align:center; padding:20px;">
+          <img id="profileAvatar" style="width:72px;height:72px;border-radius:36px;display:none;">
+          <i id="defaultAvatar" class="far fa-user-circle" style="font-size:72px;color:#007aff;display:none;"></i>
+          <h3 id="profileName" style="margin-top:12px;"></h3>
+          <p id="profilePhone" style="color:#8e8e93;"></p>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="saveAvatar()">
+        <button class="btn secondary" onclick="document.getElementById('avatarInput').click()">Изменить фото</button>
+        <button class="btn secondary" onclick="logout()">Выйти</button>
+      </div>
+      <div id="ordersTab" class="tab-pane">
         <div id="ordersListView"></div>
         <div id="orderDetailsView" style="display:none;"></div>
       </div>
@@ -502,15 +428,7 @@ input:checked + .slider:before { transform: translateX(22px); }
       <div id="fundAddressesList"></div>
     </div>
   </div>
- <div id="ownerAccess" class="owner-pane">
-  <!-- Подвкладки: Сотрудники / Профили семей -->
-  <div class="owner-subtabs" style="margin-bottom:16px;">
-    <button class="owner-subtab active" data-access-tab="staff">Сотрудники</button>
-    <button class="owner-subtab" data-access-tab="families">Профили семей</button>
-  </div>
-
-  <!-- Панель Сотрудники -->
-  <div id="ownerStaffPane" class="owner-settings-pane active">
+  <div id="ownerAccess" class="owner-pane">
     <div class="access-header">
       <div>
         <div class="fund-title">Три сестры</div>
@@ -521,27 +439,13 @@ input:checked + .slider:before { transform: translateX(22px); }
       Владелец может ограничить доступ к некоторым разделам для пользователей. При добавлении нового пользователя, доступ будет открыт ко всем разделам по умолчанию.
     </div>
     <div class="users-table-wrapper">
-      <div id="ownerUsersTableContainer"></div>
-    </div>
-  </div>
-
-  <!-- Панель Профили семей -->
-  <div id="ownerFamiliesPane" class="owner-settings-pane" style="display:none;">
-    <div class="owner-header-row">
-      <h3>Профили семей (получатели помощи)</h3>
-      <button class="btn-primary" onclick="openAddFamilyModal()">+ Добавить семью</button>
-      <button class="btn-primary" style="margin-left:8px;" onclick="openPendingApplications()">Заявки на модерацию</button>
-    </div>
-    <div class="users-table-wrapper">
-      <div id="familiesTableContainer"></div>
-    </div>
-    <!-- Список заявок на модерацию (будет заполняться динамически) -->
-    <div id="pendingApplicationsList" style="margin-top:20px;"></div>
-  </div>
+  <div id="ownerUsersTableContainer"></div>
 </div>
-    <div id="ownerAnalytics" class="owner-pane">
+  </div>
+  <div id="ownerAnalytics" class="owner-pane">
     <div class="analytics-box">Аналитика скоро появится</div>
   </div>
+</div>
   <!-- АДМИН-ПАНЕЛЬ -->
   <div id="adminScreen" class="screen">
     <header><h3>Администратор</h3><i class="fas fa-sign-out-alt" onclick="logout()" style="cursor:pointer;font-size:20px;"></i></header>
@@ -751,44 +655,12 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </div>
 </div>
-<!-- Модалка семьи -->
-<div id="familyModal" class="modal">
-  <div class="modal-content" style="max-width:400px;">
-    <i class="fas fa-times" onclick="closeModal('familyModal')" style="float:right;cursor:pointer;"></i>
-    <h3 id="familyModalTitle">Добавить семью</h3>
-    <div class="input-group"><label>Имя <span class="required-star">*</span></label><input type="text" id="familyFirstName"></div>
-    <div class="input-group"><label>Фамилия <span class="required-star">*</span></label><input type="text" id="familyLastName"></div>
-    <div class="input-group"><label>Телефон <span class="required-star">*</span></label><input type="tel" id="familyPhone"></div>
-    <div class="input-group"><label>Email</label><input type="email" id="familyEmail"></div>
-    <div class="input-group"><label>Статус</label><input type="text" id="familyStatus" placeholder="Многодетная, малоимущая…"></div>
-    <div class="input-group"><label>Дети</label><input type="number" id="familyChildren" min="0" value="0"></div>
-    <div class="input-group"><label>Всего членов</label><input type="number" id="familySize" min="1" value="1"></div>
-    <div class="input-group"><label>Визитов всего</label><input type="number" id="familyTotalVisits" min="0" value="0"></div>
-    <div class="input-group"><label>Визитов в месяц</label><input type="number" id="familyMonthlyVisits" min="0" value="0"></div>
-    <div class="input-group"><label>Лимит/мес</label><input type="number" id="familyVisitLimit" min="1" value="5"></div>
-    <div class="modal-actions">
-      <button class="btn secondary" onclick="closeModal('familyModal')">Отмена</button>
-      <button class="btn primary" onclick="saveFamily()">Сохранить</button>
-    </div>
-  </div>
-</div>
 
-<!-- Модалка заявок на модерацию -->
-<div id="pendingAppsModal" class="modal">
-  <div class="modal-content" style="max-width:400px;">
-    <i class="fas fa-times" onclick="closeModal('pendingAppsModal')" style="float:right;cursor:pointer;"></i>
-    <h3>Заявки на модерацию</h3>
-    <div id="pendingAppsContent"></div>
-  </div>
-</div>
 <script>
 (function(){
   'use strict';
   let pendingUserData = null;
 let editingUserId = null;
-  let editingFamilyId = null;
-STORAGE.families = () => JSON.parse(localStorage.getItem('f_families')||'[]');
-STORAGE.saveFamilies = f => localStorage.setItem('f_families', JSON.stringify(f));
   function escapeHtml(str) { return String(str).replace(/[&<>"'/]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;'})[m]); }
 
   function STORAGE() { /* инициализация при первом вызове */ }
@@ -924,12 +796,7 @@ STORAGE.saveFundSettings = data =>
       }]);
     }
   }
-    if (!STORAGE.families().length) {
-      STORAGE.saveFamilies([
-        { id:'fam1', firstName:'Иван', lastName:'Иванов', phone:'+79161112233', email:'ivanov@example.com', status:'Многодетная', childrenCount:3, familySize:5, totalVisits:12, monthlyVisits:2, visitLimit:4 },
-        { id:'fam2', firstName:'Мария', lastName:'Петрова', phone:'+79265554455', email:'petrova@example.com', status:'Малоимущая', childrenCount:1, familySize:3, totalVisits:5, monthlyVisits:1, visitLimit:4 }
-      ]);
-    }
+
   // Глобальные функции
   window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
@@ -993,168 +860,30 @@ else if (user.role === 'admin') {
 }
 
 else {
-  if (user.status === 'pending') {
-    STORAGE.setCurrentUser(user);
-    showScreen('pendingScreen');
-  } else {
-    showScreen('mainScreen');
-    updateUIForUser();
-  }
+
+  showScreen('mainScreen');
+
+  updateUIForUser();
+
 }
   };
-  let regCurrentStep = 1;
-let selectedCategories = new Set();
-let familyMembers = [];
-
-window.nextRegStep = (step) => {
-  if (step === 2) {
+  window.appRegister = async () => {
     const fn = document.getElementById('regFirstName').value.trim();
     const ln = document.getElementById('regLastName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const pass = document.getElementById('regPassword').value;
     const conf = document.getElementById('regConfirm').value;
     const phone = document.getElementById('regPhone').value.trim();
+    const code = document.getElementById('countryCode').value;
     if (!fn || !ln || !email || !pass || !phone) { alert('Заполните все поля'); return; }
     if (pass !== conf) { alert('Пароли не совпадают'); return; }
-  }
-  if (step === 3) {
-    if (selectedCategories.size === 0) { alert('Выберите хотя бы одну категорию'); return; }
-  }
-  regCurrentStep = step;
-  document.getElementById('regStepNumber').textContent = step;
-  document.getElementById('regProgressBar').style.width = (step/3*100)+'%';
-  document.querySelectorAll('[id^="regStep"]').forEach(el => el.style.display = 'none');
-  document.getElementById('regStep'+step).style.display = 'block';
-  if (step === 3) initFamilyMembers();
-};
-
-window.prevRegStep = (step) => { nextRegStep(step); };
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.category-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const cat = btn.dataset.category;
-      if (selectedCategories.has(cat)) {
-        selectedCategories.delete(cat);
-        btn.classList.remove('selected');
-      } else {
-        selectedCategories.add(cat);
-        btn.classList.add('selected');
-      }
-      document.getElementById('step2NextBtn').disabled = selectedCategories.size === 0;
-    });
-  });
-});
-
-function initFamilyMembers() {
-  const fn = document.getElementById('regFirstName').value.trim();
-  const ln = document.getElementById('regLastName').value.trim();
-  document.getElementById('selfInitials').textContent = fn.charAt(0).toUpperCase() + ln.charAt(0).toUpperCase();
-  document.getElementById('selfName').textContent = fn + ' ' + ln;
-  renderFamilyMembersList();
-  document.getElementById('addMemberBtn').onclick = () => {
-    document.getElementById('addMemberForm').style.display = 'block';
+    if (STORAGE.users().some(u => u.email === email)) { alert('Email занят'); return; }
+    const hashed = await hashPassword(pass);
+    const user = { id: Date.now()+'', firstName:fn, lastName:ln, email, password:hashed, phone:code+phone, role:'user', avatar:'' };
+    STORAGE.saveUsers([...STORAGE.users(), user]);
+    STORAGE.setCurrentUser(user);
+    showScreen('mainScreen'); updateUIForUser();
   };
-}
-
-window.saveFamilyMember = () => {
-  const fn = document.getElementById('memberFirstName').value.trim();
-  const ln = document.getElementById('memberLastName').value.trim();
-  if (!fn || !ln) { alert('Укажите имя и фамилию'); return; }
-  if (familyMembers.length >= 20) { alert('Максимум 20 членов семьи'); return; }
-  const member = {
-    firstName: fn,
-    lastName: ln,
-    type: document.getElementById('memberType').value,
-    gender: document.getElementById('memberGender').value,
-    age: document.getElementById('memberAge').value,
-    relation: document.getElementById('memberRelation').value
-  };
-  familyMembers.push(member);
-  document.getElementById('addMemberForm').style.display = 'none';
-  // очистка полей
-  document.getElementById('memberFirstName').value = '';
-  document.getElementById('memberLastName').value = '';
-  document.getElementById('memberAge').value = '';
-  renderFamilyMembersList();
-};
-
-function renderFamilyMembersList() {
-  const container = document.getElementById('familyMembersContainer');
-  container.querySelectorAll('.added-member').forEach(el => el.remove());
-  familyMembers.forEach((m, idx) => {
-    const div = document.createElement('div');
-    div.className = 'family-member-card added-member';
-    div.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:12px;';
-    div.innerHTML = `
-      <div class="initials-circle">${m.firstName.charAt(0)}${m.lastName.charAt(0)}</div>
-      <div style="flex:1;">
-        <strong>${m.firstName} ${m.lastName}</strong><br>
-        <span style="color:#8e8e93;">${m.type} · ${m.age} лет</span>
-      </div>
-      <i class="fas fa-pen" onclick="editFamilyMember(${idx})" style="color:#007aff;cursor:pointer;margin-right:8px;"></i>
-      <i class="fas fa-trash" onclick="deleteFamilyMember(${idx})" style="color:#ff3b30;cursor:pointer;"></i>
-    `;
-    container.appendChild(div);
-  });
-}
-
-window.editFamilyMember = (idx) => {
-  const m = familyMembers[idx];
-  document.getElementById('memberFirstName').value = m.firstName;
-  document.getElementById('memberLastName').value = m.lastName;
-  document.getElementById('memberType').value = m.type;
-  document.getElementById('memberGender').value = m.gender;
-  document.getElementById('memberAge').value = m.age;
-  document.getElementById('memberRelation').value = m.relation;
-  document.getElementById('addMemberForm').style.display = 'block';
-  // временно переопределяем кнопку сохранения
-  const oldSave = window.saveFamilyMember;
-  window.saveFamilyMember = () => {
-    familyMembers[idx] = {
-      firstName: document.getElementById('memberFirstName').value.trim(),
-      lastName: document.getElementById('memberLastName').value.trim(),
-      type: document.getElementById('memberType').value,
-      gender: document.getElementById('memberGender').value,
-      age: document.getElementById('memberAge').value,
-      relation: document.getElementById('memberRelation').value
-    };
-    document.getElementById('addMemberForm').style.display = 'none';
-    renderFamilyMembersList();
-    window.saveFamilyMember = oldSave; // восстановить
-  };
-};
-
-window.deleteFamilyMember = (idx) => {
-  familyMembers.splice(idx,1);
-  renderFamilyMembersList();
-};
-
-window.submitRegistration = async () => {
-  const fn = document.getElementById('regFirstName').value.trim();
-  const ln = document.getElementById('regLastName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const pass = document.getElementById('regPassword').value;
-  const phone = document.getElementById('regPhone').value.trim();
-  const code = document.getElementById('countryCode').value;
-  const hashed = await hashPassword(pass);
-  const user = {
-    id: Date.now()+'',
-    firstName: fn,
-    lastName: ln,
-    email,
-    password: hashed,
-    phone: code+phone,
-    role: 'user',
-    avatar: '',
-    categories: Array.from(selectedCategories),
-    family: familyMembers,
-    status: 'pending'     // на модерации
-  };
-  STORAGE.saveUsers([...STORAGE.users(), user]);
-  STORAGE.setCurrentUser(user);
-  showScreen('pendingScreen');
-};
   window.logout = () => { STORAGE.setCurrentUser(null); STORAGE.saveCart([]); showScreen('authScreen'); };
 
   function showScreen(id) {
@@ -1560,24 +1289,17 @@ window.submitRegistration = async () => {
     const permKey = tabToPerm[tab];
     if (permKey && perms[permKey]) {
       btn.style.display = '';
- } else {
-  btn.style.display = 'none';
-  if (btn.classList.contains('active')) {
-    btn.classList.remove('active');
-    // Ищем любую другую видимую вкладку
-    const anyVisible = document.querySelector('#adminScreen .admin-tabs .tab-btn:not([style*="display: none"])');
-    if (anyVisible) {
-      anyVisible.classList.add('active');
-      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
-      const visibleTabId = 'admin' + anyVisible.dataset.adminTab.charAt(0).toUpperCase() + anyVisible.dataset.adminTab.slice(1);
-      const visiblePane = document.getElementById(visibleTabId);
-      if (visiblePane) visiblePane.classList.add('active');
     } else {
-      // Если не осталось ни одной видимой вкладки — убираем все панели
-      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+      btn.style.display = 'none';
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        const prodBtn = document.querySelector('#adminScreen .tab-btn[data-admin-tab="products"]');
+        if (prodBtn) prodBtn.classList.add('active');
+        document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+        const prodPane = document.getElementById('adminProducts');
+        if (prodPane) prodPane.classList.add('active');
+      }
     }
-  }
-}
   });
 
   renderAdminProducts();
@@ -2002,21 +1724,12 @@ window.submitRegistration = async () => {
     }
   });
 
-   // Запуск
+  // Запуск
   initData().then(() => {
     const cur = STORAGE.currentUser();
     if (cur) {
-      if (cur.role === 'admin') {
-        showScreen('adminScreen');
-        renderAdmin();
-      } else {
-        if (cur.status === 'pending') {
-          showScreen('pendingScreen');
-        } else {
-          showScreen('mainScreen');
-          updateUIForUser();
-        }
-      }
+      if (cur.role === 'admin') { showScreen('adminScreen'); renderAdmin(); }
+      else { showScreen('mainScreen'); updateUIForUser(); }
     } else {
       showScreen('authScreen');
     }
@@ -2041,17 +1754,6 @@ function initOwnerTabs() {
       document.getElementById('ownerProductsSettings').classList.remove('active');
       document.getElementById('ownerFundsSettings').classList.remove('active');
       document.getElementById(targetId).classList.add('active');
-    });
-  });
-    // Подвкладки внутри Доступа (Сотрудники / Профили семей)
-  document.querySelectorAll('[data-access-tab]').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('[data-access-tab]').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const target = tab.dataset.accessTab;
-      document.getElementById('ownerStaffPane').classList.toggle('active', target === 'staff');
-      document.getElementById('ownerFamiliesPane').classList.toggle('active', target === 'families');
-      if (target === 'families') renderFamiliesTable();
     });
   });
 }
@@ -2412,159 +2114,6 @@ window.renameCategoryPrompt = (oldName) => {
   });
   STORAGE.saveProducts(products);
   renderCategories();
-};
-  window.showFamilyProfile = () => {
-  const user = STORAGE.currentUser();
-  if (!user) return;
-  if (user.status === 'pending') {
-    showScreen('pendingScreen');
-  } else {
-    showScreen('familyProfileScreen');
-    renderFamilyProfile();
-  }
-};
-
-window.renderFamilyProfile = () => {
-  const user = STORAGE.currentUser();
-  if (!user) return;
-  document.getElementById('familyProfileMembers').innerHTML = `
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-      <div class="initials-circle">${user.firstName.charAt(0)}${user.lastName.charAt(0)}</div>
-      <div><strong>${user.firstName} ${user.lastName}</strong><br>Вы (владелец профиля)</div>
-    </div>
-    ${(user.family||[]).map(m => `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        <div class="initials-circle">${m.firstName.charAt(0)}${m.lastName.charAt(0)}</div>
-        <div><strong>${m.firstName} ${m.lastName}</strong><br>${m.type} · ${m.age} лет</div>
-      </div>
-    `).join('')}
-  `;
-};
-      function renderFamiliesTable() {
-  const container = document.getElementById('familiesTableContainer');
-  if (!container) return;
-  const families = STORAGE.families();
-  let html = `<table class="users-table">
-    <thead><tr>
-      <th>Семья</th><th>Статус</th><th>Дети</th><th>Всего</th><th>Визитов всего</th><th>Визитов/мес</th><th>Лимит/мес</th><th></th>
-    </tr></thead><tbody>`;
-  families.forEach(f => {
-    html += `<tr>
-      <td class="user-info-cell">
-        <div class="user-name">${escapeHtml(f.firstName)} ${escapeHtml(f.lastName)}</div>
-        <div class="user-detail">${escapeHtml(f.phone)}</div>
-        <div class="user-detail">${escapeHtml(f.email)}</div>
-      </td>
-      <td>${escapeHtml(f.status||'')}</td>
-      <td>${f.childrenCount||0}</td>
-      <td>${f.familySize||1}</td>
-      <td>${f.totalVisits||0}</td>
-      <td>${f.monthlyVisits||0}</td>
-      <td>${f.visitLimit||5}</td>
-      <td class="action-icons">
-        <i class="fas fa-pen" onclick="editFamily('${f.id}')"></i>
-        <i class="fas fa-trash" onclick="deleteFamily('${f.id}')"></i>
-      </td>
-    </tr>`;
-  });
-  html += '</tbody></table>';
-  container.innerHTML = html;
-}
-
-window.openAddFamilyModal = () => {
-  editingFamilyId = null;
-  document.getElementById('familyModalTitle').textContent = 'Добавить семью';
-  ['familyFirstName','familyLastName','familyPhone','familyEmail','familyStatus'].forEach(id => document.getElementById(id).value = '');
-  ['familyChildren','familySize','familyTotalVisits','familyMonthlyVisits','familyVisitLimit'].forEach(id => document.getElementById(id).value = id==='familySize'?1:id==='familyVisitLimit'?5:0);
-  document.getElementById('familyModal').style.display = 'flex';
-};
-
-window.editFamily = (id) => {
-  const f = STORAGE.families().find(f => f.id === id);
-  if (!f) return;
-  editingFamilyId = id;
-  document.getElementById('familyModalTitle').textContent = 'Редактировать семью';
-  document.getElementById('familyFirstName').value = f.firstName;
-  document.getElementById('familyLastName').value = f.lastName;
-  document.getElementById('familyPhone').value = f.phone;
-  document.getElementById('familyEmail').value = f.email||'';
-  document.getElementById('familyStatus').value = f.status||'';
-  document.getElementById('familyChildren').value = f.childrenCount||0;
-  document.getElementById('familySize').value = f.familySize||1;
-  document.getElementById('familyTotalVisits').value = f.totalVisits||0;
-  document.getElementById('familyMonthlyVisits').value = f.monthlyVisits||0;
-  document.getElementById('familyVisitLimit').value = f.visitLimit||5;
-  document.getElementById('familyModal').style.display = 'flex';
-};
-
-window.saveFamily = () => {
-  const fn = document.getElementById('familyFirstName').value.trim();
-  const ln = document.getElementById('familyLastName').value.trim();
-  const phone = document.getElementById('familyPhone').value.trim();
-  if (!fn||!ln||!phone) { alert('Заполните обязательные поля'); return; }
-  const fam = {
-    id: editingFamilyId || 'fam_'+Date.now(),
-    firstName: fn, lastName: ln, phone,
-    email: document.getElementById('familyEmail').value.trim(),
-    status: document.getElementById('familyStatus').value.trim(),
-    childrenCount: +document.getElementById('familyChildren').value,
-    familySize: +document.getElementById('familySize').value,
-    totalVisits: +document.getElementById('familyTotalVisits').value,
-    monthlyVisits: +document.getElementById('familyMonthlyVisits').value,
-    visitLimit: +document.getElementById('familyVisitLimit').value
-  };
-  const families = STORAGE.families();
-  if (editingFamilyId) {
-    const idx = families.findIndex(f => f.id === editingFamilyId);
-    if (idx !== -1) families[idx] = fam;
-  } else {
-    families.push(fam);
-  }
-  STORAGE.saveFamilies(families);
-  closeModal('familyModal');
-  renderFamiliesTable();
-};
-
-window.deleteFamily = (id) => {
-  if (!confirm('Удалить эту семью?')) return;
-  STORAGE.saveFamilies(STORAGE.families().filter(f => f.id !== id));
-  renderFamiliesTable();
-};
-
-window.openPendingApplications = () => {
-  const users = STORAGE.users().filter(u => u.status === 'pending');
-  const content = document.getElementById('pendingAppsContent');
-  content.innerHTML = users.map(u => `
-    <div style="margin-bottom:12px; padding:12px; background:#f2f2f6; border-radius:12px;">
-      <strong>${escapeHtml(u.firstName)} ${escapeHtml(u.lastName)}</strong><br>
-      ${escapeHtml(u.email)} / ${escapeHtml(u.phone)}<br>
-      Категории: ${(u.categories||[]).join(', ') || 'не указаны'}<br>
-      Членов семьи: ${(u.family||[]).length + 1}
-      <div style="margin-top:8px;">
-        <button class="btn primary small" onclick="approveApplication('${u.id}')">✓ Одобрить</button>
-        <button class="btn danger small" onclick="rejectApplication('${u.id}')">✗ Отклонить</button>
-      </div>
-    </div>
-  `).join('') || '<p>Нет заявок на рассмотрении</p>';
-  document.getElementById('pendingAppsModal').style.display = 'flex';
-};
-
-window.approveApplication = (userId) => {
-  const users = STORAGE.users();
-  const user = users.find(u => u.id === userId);
-  if (user) user.status = 'approved';
-  STORAGE.saveUsers(users);
-  closeModal('pendingAppsModal');
-  openPendingApplications();
-};
-
-window.rejectApplication = (userId) => {
-  const users = STORAGE.users();
-  const user = users.find(u => u.id === userId);
-  if (user) user.status = 'rejected';
-  STORAGE.saveUsers(users);
-  closeModal('pendingAppsModal');
-  openPendingApplications();
 };
   })();
 </script>
