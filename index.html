@@ -962,10 +962,10 @@ input:checked + .slider:before { transform: translateX(22px); }
     }
     if (!user) { alert('Неверные данные'); return; }
     STORAGE.setCurrentUser(user);
-    if (user.status === 'pending') {
-      showScreen('pendingScreen');
-      return;
-    }
+    if (user.role === 'user' && user.status === 'pending') {
+  showScreen('pendingScreen');
+  return;
+}
     if (user.role === 'owner') {
       showScreen('ownerScreen');
       initOwnerTabs();
