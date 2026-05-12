@@ -818,7 +818,46 @@ STORAGE.saveFundSettings = data =>
   }
 
   // Глобальные функции
-  window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; };
+  window.showRegister = () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; // Шарик для входа: перетаскивание
+const ball = document.getElementById('loginBall');
+if (ball) {
+  let isDragging = false;
+  let startX, startY, ballX = 0, ballY = 0;
+  ball.style.position = 'absolute';
+
+  ball.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    const rect = ball.getBoundingClientRect();
+    ballX = rect.left;
+    ballY = rect.top;
+    isDragging = false;
+    ball.style.transition = 'none';
+  });
+
+  ball.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!isDragging) {
+      isDragging = true;
+    }
+    const touch = e.touches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    ball.style.left = (ballX + dx) + 'px';
+    ball.style.top = (ballY + dy) + 'px';
+  });
+
+  ball.addEventListener('touchend', e => {
+    if (!isDragging) {
+      // тап, а не перетаскивание — открываем вход
+      showLogin();
+    }
+    isDragging = false;
+    ball.style.transition = 'transform 0.1s';
+  });
+}};
   window.showLogin = () => { document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block'; };
     let loginMode = 'email';
 
