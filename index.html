@@ -437,7 +437,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- Экран профиля семьи -->
 <div id="familyProfileScreen" class="screen">
   <header>
-   <button class="ghost-btn" onclick="showScreen('mainScreen'); updateUIForUser();">
+   <button class="ghost-btn" onclick="showScreen('mainScreen');
+try { updateUIForUser(); } catch(e) { console.error(e); }">
       <i class="fas fa-chevron-left"></i> Назад
     </button>
     <h3>Моя семья</h3>
@@ -967,18 +968,18 @@ input:checked + .slider:before { transform: translateX(22px); }
   return;
 }
     if (user.role === 'owner') {
-      showScreen('ownerScreen');
-      initOwnerTabs();
-      renderCategories();
-      renderFundAddresses();
-      renderOwnerUsersTable();
-      return;
-    }
+  showScreen('ownerScreen');
+  try { initOwnerTabs(); } catch(e) { console.error(e); }
+  try { renderCategories(); } catch(e) { console.error(e); }
+  try { renderFundAddresses(); } catch(e) { console.error(e); }
+  try { renderOwnerUsersTable(); } catch(e) { console.error(e); }
+  return;
+}
     if (user.role === 'admin') {
-      showScreen('adminScreen');
-      renderAdmin();
-      return;
-    }
+  showScreen('adminScreen');
+  try { renderAdmin(); } catch(e) { console.error(e); }
+  return;
+}
     showScreen('mainScreen');
     updateUIForUser();
   };
