@@ -804,7 +804,10 @@ input:checked + .slider:before { transform: translateX(22px); }
 </div>
 <script>
 (function(){
-  'use strict';
+  'use strict'; window.onerror = function(msg, url, line) {
+  alert('Ошибка в строке ' + line + ': ' + msg);
+  return false;
+};
   let pendingUserData = null;
   let editingUserId = null;
   let editingFamilyId = null;
