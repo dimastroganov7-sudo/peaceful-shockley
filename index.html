@@ -437,7 +437,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- Экран профиля семьи -->
 <div id="familyProfileScreen" class="screen">
   <header>
-    <button class="ghost-btn" onclick="showScreen('mainScreen')">
+   <button class="ghost-btn" onclick="showScreen('mainScreen'); updateUIForUser();">
       <i class="fas fa-chevron-left"></i> Назад
     </button>
     <h3>Моя семья</h3>
@@ -1048,10 +1048,6 @@ if (user.role === 'owner') {
 
   return;
 }
-
-return;
-}
-
 if (user.role === 'admin') {
   showScreen('adminScreen');
   renderAdmin();
@@ -1238,7 +1234,7 @@ window.submitRegistration = async () => {
  window.logout = () => {
   STORAGE.setCurrentUser(null);
   STORAGE.saveCart([]);
-  showScreen('loginScreen');
+  showScreen('authScreen');
 };
 
    function showScreen(id) {
@@ -1689,11 +1685,11 @@ window.submitRegistration = async () => {
       if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
     });
   });
-        const orderSearch = document.getElementById('orderSearchInput');
-if (orderSearch) {
-  orderSearch.removeEventListener('input', window.renderAllOrders);
-  orderSearch.addEventListener('input', window.renderAllOrders);
-}
+                const orderSearch = document.getElementById('orderSearchInput');
+        if (orderSearch && !orderSearch.dataset.listenerAttached) {
+          orderSearch.addEventListener('input', renderAllOrders);
+          orderSearch.dataset.listenerAttached = 'true';
+        }
 
   function renderAdminProducts() {
     document.getElementById('adminProductsList').innerHTML = STORAGE.products().map(p => `
@@ -2133,9 +2129,8 @@ if (orderSearch) {
     return;
   }
 
-  showScreen('mainScreen');
-
-  renderMain();
+   showScreen('mainScreen');
+  updateUIForUser();
 
 });
  
