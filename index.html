@@ -195,8 +195,8 @@
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e5e5ea; transition: .2s; border-radius: 34px; }
 .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 2px; bottom: 2px; background-color: white; transition: .2s; border-radius: 50%; }
-input:checked + .slider { background-color: #34c759; }
-input:focus + .slider { box-shadow: 0 0 1px #34c759; }
+input:checked + .slider { background-color: #007aff; }
+input:focus + .slider { box-shadow: 0 0 1px #007aff; }
 input:checked + .slider:before { transform: translateX(22px); }
 .confirm-modal { max-width: 320px; text-align: center; }
 .confirm-modal h3 { margin-bottom: 8px; }
@@ -551,12 +551,16 @@ input:checked + .slider:before { transform: translateX(22px); }
           <label>Email <span class="required-star">*</span></label>
           <input type="email" id="inviteEmail" placeholder="example@mail.ru">
         </div>
-        <div class="input-group">
+                <div class="input-group">
           <label>Роль</label>
           <select id="inviteRole">
             <option value="admin">Администратор</option>
             <option value="owner">Владелец</option>
           </select>
+        </div>
+        <div class="input-group">
+          <label>Пароль</label>
+          <input type="password" id="invitePassword" placeholder="Оставьте пустым для 123456">
         </div>
         <p class="hint-text">Поможет найти пользователя в общем списке</p>
       </div>
@@ -1266,28 +1270,52 @@ else {
   }
 
   // Админка
-  function renderAdmin() {
-    renderAdminProducts();
-    renderAdminSlots();
-    renderCalendar();
-    renderAllOrders();
-    renderRecipientsTab();
-    renderPetitions();
-    renderAdminReviews();
-    document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
-        const target = document.getElementById('admin' + btn.dataset.adminTab.charAt(0).toUpperCase() + btn.dataset.adminTab.slice(1));
-        if (target) target.classList.add('active');
-        if (btn.dataset.adminTab === 'petitions') renderPetitions();
-        if (btn.dataset.adminTab === 'calendar') renderCalendar();
-        if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
-      });
+ function renderAdmin() {
+  const user = STORAGE.currentUser();
+  const perms = user?.permissions || {};
+
+  // Скрываем/показываем вкладки по правам
+  document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
+    const tab = btn.dataset.adminTab;
+    if (tab === 'products') return;                         // Товары видны всегда
+    if (perms[tab]) {
+      btn.style.display = '';                               // показываем
+    } else {
+      btn.style.display = 'none';                           // прячем
+      // если вкладка была активна – переключаем на «Товары»
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        const prodBtn = document.querySelector('#adminScreen .tab-btn[data-admin-tab="products"]');
+        if (prodBtn) prodBtn.classList.add('active');
+        document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+        const prodPane = document.getElementById('adminProducts');
+        if (prodPane) prodPane.classList.add('active');
+      }
+    }
+  });
+
+  renderAdminProducts();
+  renderAdminSlots();
+  renderCalendar();
+  renderAllOrders();
+  renderRecipientsTab();
+  renderPetitions();
+  renderAdminReviews();
+
+  document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#adminScreen .admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('admin' + btn.dataset.adminTab.charAt(0).toUpperCase() + btn.dataset.adminTab.slice(1));
+      if (target) target.classList.add('active');
+      if (btn.dataset.adminTab === 'petitions') renderPetitions();
+      if (btn.dataset.adminTab === 'calendar') renderCalendar();
+      if (btn.dataset.adminTab === 'history') { populateAdminOrderDateFilter(); renderAllOrders(); }
     });
-    document.getElementById('orderSearchInput').addEventListener('input', renderAllOrders);
-  }
+  });
+  document.getElementById('orderSearchInput').addEventListener('input', renderAllOrders);
+}
 
   function renderAdminProducts() {
     document.getElementById('adminProductsList').innerHTML = STORAGE.products().map(p => `
@@ -1677,8 +1705,14 @@ else {
   window.addEventListener('storage', e => {
     if (e.key?.startsWith('f_')) {
       const cur = STORAGE.currentUser();
-      if (cur?.role === 'admin') renderAdmin();
-      else if (cur) updateUIForUser();
+      if (cur?.role === 'admin') {
+        // Подхватываем изменения прав, если владелец изменил их в другой вкладке
+        const updatedUser = STORAGE.users().find(u => u.id === cur.id);
+        if (updatedUser) STORAGE.setCurrentUser(updatedUser);
+        renderAdmin();
+      } else if (cur) {
+        updateUIForUser();
+      }
     }
   });
 
@@ -1830,6 +1864,7 @@ window.openInviteUserModal = () => {
   document.getElementById('invitePhone').value = '';
   document.getElementById('inviteEmail').value = '';
   document.getElementById('inviteRole').value = 'admin';
+  document.getElementById('invitePassword').value = '';   // очистка
   document.getElementById('inviteUserModal').style.display = 'flex';
 };
 
@@ -1837,11 +1872,12 @@ window.goToPermissionsSetup = () => {
   const phone = document.getElementById('invitePhone').value.trim();
   const email = document.getElementById('inviteEmail').value.trim();
   const role = document.getElementById('inviteRole').value;
+  const password = document.getElementById('invitePassword').value.trim();
   if (!phone || !email) {
     alert('Заполните телефон и email');
     return;
   }
-  pendingUserData = { phone, email, role };
+  pendingUserData = { phone, email, role, password };
   if (editingUserId) {
     const user = STORAGE.users().find(u => u.id === editingUserId);
     if (user) {
@@ -1884,12 +1920,13 @@ window.createManagerUser = async () => {
     orders: document.getElementById('perm-orders').checked,
     reviews: document.getElementById('perm-reviews').checked
   };
+   const finalPassword = pendingUserData.password || '123456';
   const newUser = {
     id: 'usr_' + Date.now(),
     firstName: 'Новый',
     lastName: 'Пользователь',
     email,
-    password: await hashPassword('123456'),
+    password: await hashPassword(finalPassword),
     phone,
     role,
     avatar: '',
@@ -1910,6 +1947,7 @@ window.editUser = (id) => {
   document.getElementById('invitePhone').value = user.phone || '';
   document.getElementById('inviteEmail').value = user.email || '';
   document.getElementById('inviteRole').value = user.role;
+  document.getElementById('invitePassword').value = '';   // пароль оставляем пустым (если не менять – останется старый)
   document.getElementById('inviteUserModal').style.display = 'flex';
 };
 
@@ -1921,6 +1959,11 @@ window.saveUserPermissions = async () => {
   user.phone = pendingUserData.phone;
   user.email = pendingUserData.email;
   user.role = pendingUserData.role;
+  // Обновление пароля
+  const newPassword = pendingUserData.password;
+  if (newPassword) {
+    user.password = await hashPassword(newPassword);
+  }
   user.permissions = {
     products: document.getElementById('perm-products').checked,
     petitions: document.getElementById('perm-petitions').checked,
@@ -1929,6 +1972,14 @@ window.saveUserPermissions = async () => {
     reviews: document.getElementById('perm-reviews').checked
   };
   STORAGE.saveUsers(users);
+  // Если это текущий пользователь, обновляем сессию и админку
+  const cur = STORAGE.currentUser();
+  if (cur && cur.id === editingUserId) {
+    STORAGE.setCurrentUser(user);
+    if (user.role === 'admin') {
+      renderAdmin();
+    }
+  }
   closeModal('permissionsModal');
   editingUserId = null;
   pendingUserData = null;
