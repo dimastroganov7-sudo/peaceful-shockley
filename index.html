@@ -855,11 +855,13 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
   let petitionSelectMode=false, selectedPetitionKeys=new Set(), currentCalendarDate=new Date(), leafletMap=null, currentOrderView='today', currentIssueOrderId=null, selectedCalendarDate=null, returnToScreen='home', currentDetailOrderId=null, selectedDetailItemId=null, tempProductPhotos=[]; let selectedPhotoFilters = new Set();
 
   async function hashPassword(pwd) {
+    // Временный простой хеш для теста, если crypto.subtle недоступен
     try {
         const enc = new TextEncoder().encode(pwd);
         const hash = await crypto.subtle.digest('SHA-256', enc);
         return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
     } catch (e) {
+        // Fallback: простой хеш, небезопасный, только для проверки
         let hash = 0;
         for (let i = 0; i < pwd.length; i++) {
             const char = pwd.charCodeAt(i);
@@ -868,7 +870,7 @@ try { updateUIForUser(); } catch(e) { console.error(e); }">
         }
         return 'fb_' + Math.abs(hash).toString(16).padStart(8, '0');
     }
-  }
+}
 
   async function initData() {
     if (!STORAGE.users().length) {
