@@ -1289,17 +1289,24 @@ else {
     const permKey = tabToPerm[tab];
     if (permKey && perms[permKey]) {
       btn.style.display = '';
+ } else {
+  btn.style.display = 'none';
+  if (btn.classList.contains('active')) {
+    btn.classList.remove('active');
+    // Ищем любую другую видимую вкладку
+    const anyVisible = document.querySelector('#adminScreen .admin-tabs .tab-btn:not([style*="display: none"])');
+    if (anyVisible) {
+      anyVisible.classList.add('active');
+      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
+      const visibleTabId = 'admin' + anyVisible.dataset.adminTab.charAt(0).toUpperCase() + anyVisible.dataset.adminTab.slice(1);
+      const visiblePane = document.getElementById(visibleTabId);
+      if (visiblePane) visiblePane.classList.add('active');
     } else {
-      btn.style.display = 'none';
-      if (btn.classList.contains('active')) {
-        btn.classList.remove('active');
-        const prodBtn = document.querySelector('#adminScreen .tab-btn[data-admin-tab="products"]');
-        if (prodBtn) prodBtn.classList.add('active');
-        document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
-        const prodPane = document.getElementById('adminProducts');
-        if (prodPane) prodPane.classList.add('active');
-      }
+      // Если не осталось ни одной видимой вкладки — убираем все панели
+      document.querySelectorAll('#adminScreen .admin-pane').forEach(p => p.classList.remove('active'));
     }
+  }
+}
   });
 
   renderAdminProducts();
