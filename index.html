@@ -943,7 +943,12 @@ input:checked + .slider:before { transform: translateX(22px); }
   window.closeModal = (id) => {
     document.getElementById(id).style.display = 'none';
     if (id === 'fullscreenPhotoModal') document.getElementById('fullscreenImage').src = '';
-  };
+  };try {
+  // проверка, что всё работает
+  console.log('Скрипт загружен');
+} catch(e) {
+  alert('Ошибка до входа: ' + e.message);
+}
 
   window.appLogin = async () => {
     const identifier = document.getElementById('loginIdentifier').value.trim();
